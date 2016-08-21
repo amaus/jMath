@@ -49,7 +49,9 @@ You can generate the latest javadocs via:
 
 They will be located within the build/docs/javadoc directory in the project.
 
-Javadoc for the most recent minor release of the library can be found on [jmath.aaronpmaus.com](http://jmath.aaronpmaus.com).
+Javadoc for the most recent minor release of the library can be found at 
+
+[jmath.aaronpmaus.com](http://jmath.aaronpmaus.com).
 ## Contributing
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
