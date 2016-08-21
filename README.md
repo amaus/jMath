@@ -2,16 +2,23 @@
 
 This is a library for mathematical concepts that tend to come in useful
 when writing programs:
+
 Linear Algebra
+
 Graph Theory
+
 Anything else we decide to add
 
 ## Installation
 
 You will need to install the gradle package manager onto your machine
+
 1) Clone the project
+
 2) gradle install
+
 3) add to classpath location to jMath.jar in ~/.m2/repository/...
+
 4) Now you can import the library into any java project you write.
 
 ## Usage
@@ -21,7 +28,7 @@ to build:
 
 gradle build
 
-to build javadoc
+to build javadoc:
 
 gradle javadoc
 
@@ -38,7 +45,6 @@ located in ~/m2/repository
 
 You can then find the jar, add its location to your classpath and this library
 into any java programs you want to write.
-TODO: Write usage instructions
 ## Contributing
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
