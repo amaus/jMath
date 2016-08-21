@@ -41,6 +41,15 @@ located in ~/m2/repository
 You can then find the jar, add its location to your classpath, and then 
 import this library into any java programs you want to write.
 
+## javadoc
+
+You can generate the latest javadocs via:
+
+`gradle javadoc`
+
+They will be located within the build/docs/javadoc directory in the project.
+
+Javadoc for the most recent minor release of the library can be found on [jmath.aaronpmaus.com](http://jmath.aaronpmaus.com).
 ## Contributing
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
