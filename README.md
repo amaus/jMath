@@ -3,11 +3,9 @@
 This is a library for mathematical concepts that tend to come in useful
 when writing programs:
 
-Linear Algebra
-
-Graph Theory
-
-Anything else we decide to add
+* Linear Algebra
+* Graph Theory
+* Anything else we decide to add
 
 ## Installation
 
@@ -23,19 +21,19 @@ This project is managed by gradle.
 
 to build:
 
-gradle build
+`gradle build`
 
 to build javadoc:
 
-gradle javadoc
+`gradle javadoc`
 
 to see list of tasks you can do with gradle (essentially get help):
 
-gradle tasks
+`gradle tasks`
 
 if you issue the command:
 
-gradle install
+`gradle install`
 
 gradle will build a jar of this library and install it into a local maven repository on your machine,
 located in ~/m2/repository
