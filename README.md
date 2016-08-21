@@ -38,8 +38,8 @@ if you issue the command:
 gradle will build a jar of this library and install it into a local maven repository on your machine,
 located in ~/m2/repository
 
-You can then find the jar, add its location to your classpath and this library
-into any java programs you want to write.
+You can then find the jar, add its location to your classpath, and then 
+import this library into any java programs you want to write.
 
 ## Contributing
 1. Fork it!
