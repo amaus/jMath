@@ -10,8 +10,8 @@ import java.lang.ClassCastException;
  * but the generic type allows more flexibility. This allows for
  * there to be a graph of any type of Object.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 1.0.0
- * @since 1.0.0
+ * @version 0.1.0
+ * @since 0.1.0
 */
 public class Node<T> implements Comparable<Node<T>>{
     private T obj;

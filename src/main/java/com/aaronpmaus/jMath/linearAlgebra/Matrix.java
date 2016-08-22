@@ -4,8 +4,8 @@ import java.lang.IllegalArgumentException;
 /**
  * This class represents a 2-dimensional matrix.
  * @author  Aaron Maus aaron@aaronpmaus.com
- * @version 1.0.0
- * @since 1.0.0
+ * @version 0.1.0
+ * @since 0.1.0
  */
 public class Matrix{
     private double[][] matrix;

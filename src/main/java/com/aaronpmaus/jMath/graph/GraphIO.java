@@ -6,8 +6,8 @@ import java.io.File;
 /**
  * A class with static methods to read in graphs from files with difference formats
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 1.0.0
- * @since 1.0.0
+ * @version 0.1.0
+ * @since 0.1.0
 */
 public class GraphIO{
 

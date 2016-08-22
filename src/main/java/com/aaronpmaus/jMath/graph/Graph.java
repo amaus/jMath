@@ -6,9 +6,11 @@ import java.util.LinkedHashMap;
 
 /**
  * A general class for a Graph, by default a directed graph.
+ * A Graph is made of Nodes. The generic type is for the Object that each node
+ * holds. See the Node class for more information.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 1.0.0
- * @since 1.0.0
+ * @version 0.1.0
+ * @since 0.1.0
 */
 public class Graph<T>{
     private HashMap<T, Node<T>> adjacencyList;
