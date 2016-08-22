@@ -12,7 +12,7 @@ when writing programs:
 You will need to install the gradle package manager onto your machine
 
 1. Clone the project
-2. gradle install
+2. `gradle install`
 3. add to classpath location to jMath.jar in ~/.m2/repository/...
 4. Now you can import the library into any java project you write.
 
