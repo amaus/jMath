@@ -2,6 +2,7 @@ package com.aaronpmaus.jMath.graph;
 import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.Set;
+import java.util.ArrayList;
 import java.lang.ClassCastException;
 
 /**
@@ -10,7 +11,7 @@ import java.lang.ClassCastException;
  * but the generic type allows more flexibility. This allows for
  * there to be a graph of any type of Object.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.0
+ * @version 0.1.1
  * @since 0.1.0
 */
 public class Node<T> implements Comparable<Node<T>>{
@@ -104,6 +105,21 @@ public class Node<T> implements Comparable<Node<T>>{
         return neighbors.keySet();
         //System.out.println(keys.getClass().getName());
         //System.out.println("Yes");
+    }
+
+    /**
+     * Get ArrayList of Node and all its neighbors
+     * @return the ArrayList&lt;Node&lt;T&gt;&gt; containing this node
+     *         and all of its neighbors.
+     * @since 0.1.1
+    */
+    public ArrayList<Node<T>> getNodeAndNeighbors(){
+        ArrayList<Node<T>> list = new ArrayList<Node<T>>(numNeighbors()+1);
+        list.add(this);
+        for(Node<T> node : getNeighbors()){
+            list.add(node);
+        }
+        return list;
     }
 
     @Override

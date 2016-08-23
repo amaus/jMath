@@ -10,10 +10,11 @@ import java.util.Date;
  * A class for an UndirectedGraph. Extends Graph. The generic type is for the object that the
  * Nodes of the graph hold.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.0
+ * @version 0.1.1
  * @since 0.1.0
 */
 public class UndirectedGraph<T> extends Graph<T>{
+    private static int numRecursiveCalls = 0;
 
     /**
      * A default constructor for the UndirectedGraph
@@ -39,7 +40,7 @@ public class UndirectedGraph<T> extends Graph<T>{
         for(Node<T> node : g.getNodes()){
             addNode(node);
         }
-        /*
+        
         for(Node<T> node : g.getNodes()){
             for(Node<T> neighbor : node.getNeighbors()){
                 // We know there is an edge from node to neighbor,
@@ -49,7 +50,30 @@ public class UndirectedGraph<T> extends Graph<T>{
                     super.addEdge(neighbor,node);
                 }
             }
-        }*/
+        }
+    }
+
+    /**
+     * A copy constructor for an UndirectedGraph. Returns a deep copy of the
+     * UndirectedGraph passed in. The deep copy is of all the Nodes and Edges
+     * in the UndirectedGraph, but not of all the Objects that the Nodes
+     * contain.
+     * @param g the UndirectedGraph to Copy
+     * @since 0.1.1
+    */
+    public UndirectedGraph(UndirectedGraph<T> g){
+        super(g);
+    }
+
+    /**
+     * Another copy constructor. This one takes a Collection of nodes and builds the 
+     * UndirectedGraph from a deep copy of these nodes and all edges in them that 
+     * are between them.
+     * @param originalNodes the nodes to be in the graph
+     * @since 0.1.1
+    */
+    public UndirectedGraph(Collection<Node<T>> originalNodes){
+        super(originalNodes);
     }
 
     @Override
@@ -80,7 +104,8 @@ public class UndirectedGraph<T> extends Graph<T>{
      * {@inheritDoc}
     */
     public UndirectedGraph<T> getNeighborhood(Node<T> root){
-        return new UndirectedGraph<T>(super.getNeighborhood(root));
+        ArrayList<Node<T>> originalNodes = root.getNodeAndNeighbors();
+        return new UndirectedGraph<T>(originalNodes);
     }
 
     /**
@@ -95,7 +120,9 @@ public class UndirectedGraph<T> extends Graph<T>{
         int k = maxPossibleCliqueNum(graph);
         System.out.println("Max Possible Clique Number: " + k);
         while(k > 0){
-            clique = findMaxClique(graph, k);
+            System.out.println("***SEARCHING FOR CLIQUES OF SIZE: " + k+"***");
+            clique = findMaxClique(new UndirectedGraph<T>(graph), k);
+            System.out.println(numRecursiveCalls + " RECURSIVE CALLS SO FAR");
             if(clique != null){
                 long endTime = new Date().getTime();
                 System.out.println("Maximum Clique Finder runtime: " + (endTime-startTime) + " milliseconds");
@@ -111,15 +138,22 @@ public class UndirectedGraph<T> extends Graph<T>{
     private UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph, int k){
         while(graph.size() >= k){
             ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(graph.getNodes());
-            Collections.sort(nodes);
+            Collections.sort(nodes); // O(N*log(N)) operation. faster if I let each
+                                     // for loop go through every node? Then the 
+                                     // whole while loop is O(3N) looks at nodes.
             boolean nodesRemoved = false;
             for(Node<T> node : nodes){
                 if(node.numNeighbors() >= k-1){
                     break;
                 }
                 if(node.numNeighbors() < k-1){
+                    //System.out.print("Removing node: \n" + node);
                     graph.removeNodeFromGraph(node);
                     if(graph.size() < k){
+                        //System.out.print("Too few nodes left in graph (" + graph.size());
+                        //System.out.println(") for a clique of size " + k+".");
+                        //System.out.print(graph);
+                        //System.out.println("RETURNING null"); 
                         return null;
                     }
                     nodesRemoved = true;
@@ -133,11 +167,15 @@ public class UndirectedGraph<T> extends Graph<T>{
                 if(node.numNeighbors() > k-1){
                     break;
                 }
+                //System.out.println("Looking at neighbohood of Node: " + node.getObject());
                 if(node.numNeighbors() == k-1){
                     UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
                     if(isClique(neighborhood)){
+                        //System.out.print("Neighborhood is clique: \n" + neighborhood);
                         return neighborhood;
                     } else {
+                        //System.out.print("Neighborhood is NOT clique: \n" + neighborhood);
+                        //System.out.println("\tRemoving Node " + node.getObject());
                         graph.removeNodeFromGraph(node);
                         nodesRemoved = true;
                         break;
@@ -152,7 +190,10 @@ public class UndirectedGraph<T> extends Graph<T>{
             // Their neighborhood can not be a clique. Need to do a recursive
             // call to keep searching.
             for(Node<T> node : nodes){
-                UndirectedGraph<T> clique = findMaxClique(graph.getNeighborhood(node), k);
+                UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
+                numRecursiveCalls++;
+                //System.out.println("RECURSIVE CALL # " + numRecursiveCalls + " REACHED. Looking at neighbohood of size " + neighborhood.size());
+                UndirectedGraph<T> clique = findMaxClique(neighborhood, k);
                 if(clique == null){
                     graph.removeNodeFromGraph(node);
                     break;

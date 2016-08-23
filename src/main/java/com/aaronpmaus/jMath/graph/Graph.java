@@ -3,13 +3,14 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 
 /**
  * A general class for a Graph, by default a directed graph.
  * A Graph is made of Nodes. The generic type is for the Object that each node
  * holds. See the Node class for more information.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.0
+ * @version 0.1.1
  * @since 0.1.0
 */
 public class Graph<T>{
@@ -30,7 +31,57 @@ public class Graph<T>{
     */
     public Graph(int numNodes){
         this.adjacencyList = new HashMap<T, Node<T>>((int)((numNodes)/0.75)+1);
+    }
+
+    /**
+     * A copy constructor for a Graph. Returns a deep copy of the Graph
+     * passed in. The deep copy is of all the Nodes and Edges in the Graph,
+     * but not of the Objects that the Nodes contains.
+     * @param g the Graph to create a copy of
+     * @since 0.1.1
+    */
+    public Graph(Graph<T> g){
+        this(g.getNodes());
+    }
+
+    /**
+     * Another copy constructor. This one takes a Collection of nodes and builds the graph
+     * from a deep copy of these nodes and all edges in them that are between them.
+     * @param originalNodes the nodes to be in the graph
+     * @since 0.1.1
+    */
+    public Graph(Collection<Node<T>> originalNodes){
+        this.adjacencyList = new HashMap<T, Node<T>>((int)((originalNodes.size())/0.75)+1);
         this.numEdges = 0;
+        Collection<Node<T>> copyNodes = createDeepCopyOfNodes(originalNodes);
+        for(Node<T> node : copyNodes){
+            addNode(node);
+        }
+    }
+
+    /*
+     * A private helper method that creates a deep copy of the Collection of Nodes that is passed in
+     * along with all edges in that collection of Nodes where both end points of the edge are in this
+     * list of nodes.
+    */
+    private Collection<Node<T>> createDeepCopyOfNodes(Collection<Node<T>> originalNodes){
+        HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((originalNodes.size()+1)/0.75+1));
+        for(Node<T> node : originalNodes){
+            Node<T> newNode = new Node<T>(node.getObject());
+            copyNodes.put(node.getObject(), newNode);
+        }
+
+        for(Node<T> originalNode : originalNodes){
+            Collection<Edge<T>> edges = originalNode.getEdges();
+            Node<T> newNode = copyNodes.get(originalNode.getObject());
+            for(Edge<T> edge : edges){
+                Node<T> neighbor = edge.getEnd();
+                if(copyNodes.containsKey(neighbor.getObject())){
+                    newNode.addEdge(new Edge<T>(newNode, copyNodes.get(neighbor.getObject()), edge.getWeight()));
+                }
+            }
+        }
+        return copyNodes.values();
     }
 
     /**
@@ -153,7 +204,8 @@ public class Graph<T>{
      * @return true if the graph contains this node, false otherwise.
     */
     public boolean containsNode(Node<T> n){
-        return adjacencyList.containsKey(n.getObject());
+        T obj = n.getObject();
+        return adjacencyList.containsKey(obj);
     }
 
     // remove the node from the graph and all edges that
@@ -206,24 +258,23 @@ public class Graph<T>{
         // with an initialCapacity large enough so that we never increase the capacity. We know
         // exactly how many nodes will be added to this HashMap, it's the number of neighbors+1 (for the root). 
         // Setting the initial capacity to (numNeighbors+1)/0.75 + 1 will do the trick.
-        HashMap<T,Node<T>> originalNodes = new HashMap<T,Node<T>>((int)((root.numNeighbors()+1)/0.75+1));
-        originalNodes.put(root.getObject(),root);
-        Set<Node<T>> rootNeighbors = root.getNeighbors();
-        //System.out.print("Root: " + root.toString());
-        for(Node<T> node : rootNeighbors){
-            originalNodes.put(node.getObject(),node);
-            //System.out.print("Neighbor: " + node.toString());
+        ArrayList<Node<T>> originalNodes = root.getNodeAndNeighbors();
+        Collection<Node<T>> copyNodes = createDeepCopyOfNodes(originalNodes);
+        Graph<T> neighborhood = new Graph<T>(originalNodes.size());
+        for(Node<T> node : copyNodes){
+            neighborhood.addNode(node);
         }
 
+        return neighborhood;
+/*
         // create a copy of all the nodes, HashMap for constant time on gets.
         HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((root.numNeighbors()+1)/0.75+1));
-        Collection<Node<T>> originalNodesCollectionView = originalNodes.values();
-        for(Node<T> originalNode : originalNodesCollectionView){
+        for(Node<T> originalNode : originalNodes){
             Node<T> newNode = new Node<T>(originalNode.getObject());
             copyNodes.put(newNode.getObject(), newNode);
         }
         // and add all the edges where both end points are in the HashMap of nodes
-        for(Node<T> originalNode : originalNodesCollectionView){
+        for(Node<T> originalNode : originalNodes){
             Collection<Edge<T>> edges = originalNode.getEdges();
             Node<T> newNode = copyNodes.get(originalNode.getObject());
             for(Edge<T> edge : edges){
@@ -235,12 +286,12 @@ public class Graph<T>{
         }
         
         Graph<T> neighborhood = new Graph<T>(originalNodes.size());
-        //Collection<Node<T>> copyNodesCollectionsView = copyNodes.values();
         for(Node<T> node : copyNodes.values()){
             neighborhood.addNode(node);
         }
 
         return neighborhood;
+*/
     }
 
     @Override
