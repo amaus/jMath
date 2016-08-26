@@ -167,9 +167,9 @@ public class UndirectedGraph<T> extends Graph<T>{
             if(isClique(graph)){
                 return graph;
             }
-            if(maxPossibleCliqueNum(graph) < k){
-                return null;
-            }
+            //if(maxPossibleCliqueNum(graph) < k){
+                //return null;
+            //}
             ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(graph.getNodes());
             Collections.sort(nodes); // O(N*log(N)) operation. faster if I let each
                                      // for loop go through every node? Then the 
@@ -228,9 +228,9 @@ public class UndirectedGraph<T> extends Graph<T>{
             for(Node<T> node : nodes){
                 if(node.numNeighbors() > k-1){
                     UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
-                    if(maxPossibleCliqueNum(neighborhood) < k){
-                        return null;
-                    }
+                    //if(maxPossibleCliqueNum(neighborhood) < k){
+                        //return null;
+                    //}
                     numRecursiveCalls++;
                     //System.out.println("RECURSIVE CALL # " + numRecursiveCalls + " REACHED. Looking at neighbohood of size " + neighborhood.size());
                     UndirectedGraph<T> clique = findMaxClique(neighborhood, k);
