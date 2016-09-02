@@ -14,7 +14,7 @@ import java.util.Date;
  * @since 0.1.0
 */
 public class UndirectedGraph<T> extends Graph<T>{
-    public static int numRecursiveCalls = 0;
+    public static long numRecursiveCalls = 0;
 
     /**
      * A default constructor for the UndirectedGraph
