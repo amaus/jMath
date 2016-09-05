@@ -10,7 +10,7 @@ import java.util.Date;
  * A class for an UndirectedGraph. Extends Graph. The generic type is for the object that the
  * Nodes of the graph hold.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.1
+ * @version 0.1.2
  * @since 0.1.0
 */
 public class UndirectedGraph<T> extends Graph<T>{
@@ -137,7 +137,7 @@ public class UndirectedGraph<T> extends Graph<T>{
         System.out.println("Max Possible Clique Number: " + k);
         while(k > 0){
             System.out.println("***SEARCHING FOR CLIQUES OF SIZE: " + k+"***");
-            clique = findMaxClique(new UndirectedGraph<T>(graph), k);
+            clique = findClique(new UndirectedGraph<T>(graph), k);
             System.out.println(numRecursiveCalls + " RECURSIVE CALLS SO FAR");
             if(clique != null){
                 long endTime = new Date().getTime();
@@ -166,9 +166,21 @@ public class UndirectedGraph<T> extends Graph<T>{
     */
     public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph){
         long fullStartTime = new Date().getTime();
-        int high = maxPossibleCliqueNum(graph);
+        // the plus 1 is necessary. Imagine a trivial example where
+        // the max possible clique number is 5, and the actualy clique
+        // number is 5.
+        // If high were set to 5, then order of search would be:
+        // low high : mid  Result
+        //  0   5   :  2     T
+        //  2   5   :  3     T
+        //  3   5   :  4     T
+        //  4   5   : FIN  w(g)==4
+        // if maxPossibleCliqueNum is the size of the graph (and the whole
+        // graph is a clique), ((N+1) + N)/2 == N. Searching for a clique of
+        // size N will be the last search made.
+        int high = maxPossibleCliqueNum(graph) + 1;
         System.out.println("Original Graph Size: " + graph.size());
-        System.out.println("Max Possible Clique Number: " + high);
+        System.out.println("Max Possible Clique Number: " + (high-1));
         int low = 0;
         UndirectedGraph<T> clique = null;
         UndirectedGraph<T> maxClique = null;
@@ -176,7 +188,8 @@ public class UndirectedGraph<T> extends Graph<T>{
             int k = (high + low) / 2;
             long startTime = new Date().getTime();
             System.out.println("Searching for a clique of size: " + k);
-            clique = findMaxClique(new UndirectedGraph<T>(graph), k);
+            numRecursiveCalls = 0;
+            clique = findClique(new UndirectedGraph<T>(graph), k);
             long endTime = new Date().getTime();
             if(clique != null){ // clique found
                 System.out.println("##### Found a clique of size " + clique.size() +" #####");
@@ -187,13 +200,21 @@ public class UndirectedGraph<T> extends Graph<T>{
                 }
                 System.out.println(cliqueStr);
                 maxClique = clique;
+                // findClique can return a clique larger than k.
+                // The first thing the method does is check if the graph passed in
+                // is a clique. if it is, it returns it. This clique can be larger than
+                // the k being searched for.
+                // we'll want to bring our low up to the largest clique found so far.
+                if(clique.size() > k){
+                    k = clique.size();
+                }
                 low = k;
             } else { // NO clique of size k
                 System.out.println("##### No clique found of size " + k + " #####");
                 high = k;
             }
             System.out.println("Took " + (endTime - startTime) + " milliseconds to run findClique for k: " + k);
-            System.out.println(numRecursiveCalls + " recursive calls so far");
+            System.out.println("using " + numRecursiveCalls + " recursive calls.");
         }
         long fullEndTime = new Date().getTime();
         System.out.print("Maximum Clique\n"+maxClique);
@@ -203,17 +224,18 @@ public class UndirectedGraph<T> extends Graph<T>{
     }
 
     /**
-     * Overloaded findMaxClique. Looks for cliques of size k in a graph. It
+     * Looks for cliques of size k in a graph.
      * If there is a clique of size k, it will return it. If it returns a clique
      * larger than k, then there is definitely a clique of size k and possibly
      * a clique larger than k. If there is not a clique of size k, then returns null.
+     * If no clique of size k was found, then there are no cliques larger than k.
      * @param graph the graph to search for cliques in
      * @param k the size of the clique to search for
      * @return an UndirectedGraph&lt;T&gt; that is a clique or null if no clique
      * of size k exists.
-     * @since 0.1.1
+     * @since 0.1.2
     */
-    public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph, int k){
+    public UndirectedGraph<T> findClique(UndirectedGraph<T> graph, int k){
         while(graph.size() >= k){
             if(isClique(graph)){
                 return graph;
@@ -341,7 +363,7 @@ public class UndirectedGraph<T> extends Graph<T>{
                         clique = null;
                     } else {
                         numRecursiveCalls++;
-                        clique = findMaxClique(neighborhood, k);
+                        clique = findClique(neighborhood, k);
                     }
                     if(clique == null){
                         // at this point, can we remove any of the other nodes
