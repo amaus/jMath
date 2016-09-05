@@ -235,8 +235,6 @@ public class UndirectedGraph<T> extends Graph<T>{
                     break;
                 }
                 if(node.numNeighbors() < k-1){
-                    //System.out.print("Removing node: \n" + node);
-                    //nodes.remove(node);
                     if(numRecursiveCalls == -1){
                         System.out.println("case1 removing node:\n"+node.getObject());
                     }
@@ -245,7 +243,6 @@ public class UndirectedGraph<T> extends Graph<T>{
                         if(numRecursiveCalls == -1){
                             System.out.print("Too few nodes left in graph (" + graph.size());
                             System.out.println(") for a clique of size " + k+".");
-                        //System.out.print(graph);
                             System.out.println("RETURNING null"); 
                         }
                         return null;
@@ -260,18 +257,13 @@ public class UndirectedGraph<T> extends Graph<T>{
             for(Node<T> node : nodes){
                 if(node.numNeighbors() > k-1){
                     break;
-                    //System.out.println("NOT SUPPOSED TO BE HERE");
                 }
                 //System.out.println("Looking at neighbohood of Node: " + node.getObject());
                 if(node.numNeighbors() == k-1){
                     UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
                     if(isClique(neighborhood)){
-                        //System.out.print("Neighborhood is clique: \n" + neighborhood);
                         return neighborhood;
                     } else {
-                        //System.out.print("Neighborhood is NOT clique: \n" + neighborhood);
-                        //System.out.println("\tRemoving Node " + node.getObject());
-                        //nodes.remove(node);
                         if(numRecursiveCalls == -1){
                             System.out.println("case2 removing node:\n"+node.getObject());
                         }
@@ -295,7 +287,6 @@ public class UndirectedGraph<T> extends Graph<T>{
                 if(node.numNeighbors() > k-1){
                     UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
                     ArrayList<Node<T>> nodesWithNeighborsOnlyInNeighborhood = new ArrayList<Node<T>>();
-                    //System.out.println("Adding nodes to list");
                     for(Node<T> neighborhoodNode : neighborhood.getNodes()){
                         // if the number of neighbors of this node in the
                         // graph is the same as the number of neighbors of this
@@ -305,12 +296,7 @@ public class UndirectedGraph<T> extends Graph<T>{
                         // then we can remove these nodes from the graph as well.
                         if(!neighborhoodNode.equals(node)){
                             Node<T> nodeInGraph = graph.getNode(neighborhoodNode.getObject());
-                            //System.out.print("looking at nodes:\n");
-                            //System.out.print(neighborhoodNode);
-                            //System.out.println("numNeighbors: " + neighborhoodNode.numNeighbors());
                             try{
-                                //System.out.print(nodeInGraph);
-                                //System.out.println("numNeighbors: " + nodeInGraph.numNeighbors());
                                 if(nodeInGraph.numNeighbors() == neighborhoodNode.numNeighbors()){
                                     //System.out.println("Adding node to list: \n " + neighborhoodNode);
                                     // it must hold a reference to this node in the graph, not the
@@ -355,7 +341,6 @@ public class UndirectedGraph<T> extends Graph<T>{
                         clique = null;
                     } else {
                         numRecursiveCalls++;
-                        //System.out.println("RECURSIVE CALL # " + numRecursiveCalls + " REACHED. Looking at neighbohood of size " + neighborhood.size());
                         clique = findMaxClique(neighborhood, k);
                     }
                     if(clique == null){
