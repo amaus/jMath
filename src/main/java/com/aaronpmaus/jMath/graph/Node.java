@@ -144,7 +144,7 @@ public class Node<T> implements Comparable<Node<T>>{
         for(Node<T> node : neighbors){
             str += node.getObject().toString() + " ";
         }
-        str += "\n";
+        //str += "\n";
         return str;
     }
 

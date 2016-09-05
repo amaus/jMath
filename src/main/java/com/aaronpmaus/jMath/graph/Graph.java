@@ -301,7 +301,7 @@ public class Graph<T>{
     public String toString(){
         String str = "";
         for(Node<T> node : this.adjacencyList.values()){
-            str += node.toString();
+            str += node.toString() + "\n";// + " #neighbors: " + node.numNeighbors() + "\n";
         }
         return str;
     }

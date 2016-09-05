@@ -33,7 +33,7 @@ public class UndirectedGraph<T> extends Graph<T>{
 
     /**
      * Builds an UndirectedGraph from a Graph object.
-     * @param g the Graph to build the UndirectedGraph from.
+     * @param g the Graph to build from the UndirectedGraph
     */
     public UndirectedGraph(Graph<T> g){
         super(g.size());
@@ -124,11 +124,11 @@ public class UndirectedGraph<T> extends Graph<T>{
         return new UndirectedGraph<T>(originalNodes);
     }
 
-    /**
+    /*
      * Finds and returns the Maximum Clique of an UndirectedGraph.
      * @param graph the graph to find the max clique in
      * @return an UndirectedGraph that is the Maximum Clique
-    */
+     * TODO: write this to use binary search rather than linear to determine the max clique
     public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph){
         long startTime = new Date().getTime();
         UndirectedGraph<T> clique = null;
@@ -150,6 +150,57 @@ public class UndirectedGraph<T> extends Graph<T>{
         }
         return clique;
     }
+    */
+
+    /**
+     * Finds and returns the Maximum Clique of an UndirectedGraph. Calculates the maximum
+     * possible clique number by looking at the number of edges per node. It makes use of the
+     * fact that for a graph to have a clique of size k, there must be atleast k nodes each with
+     * atleast k-1 neighbors. For example, for there to be a clique of size 4, there must be atleast
+     * 4 nodes each with atlead 3 neighbors. It calculates that max possible number for which this
+     * criteria is satisfied. After calculating the max possible clique number, it
+     * performs a binary search on possible clique numbers. For each k, it runs findClique given
+     * a graph and k. There are O(log(N)) calls to findClique.
+     * @param graph the graph to find the max clique in
+     * @return an UndirectedGraph that is the Maximum Clique
+    */
+    public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph){
+        long fullStartTime = new Date().getTime();
+        int high = maxPossibleCliqueNum(graph);
+        System.out.println("Original Graph Size: " + graph.size());
+        System.out.println("Max Possible Clique Number: " + high);
+        int low = 0;
+        UndirectedGraph<T> clique = null;
+        UndirectedGraph<T> maxClique = null;
+        while(high - low > 1){
+            int k = (high + low) / 2;
+            long startTime = new Date().getTime();
+            System.out.println("Searching for a clique of size: " + k);
+            clique = findMaxClique(new UndirectedGraph<T>(graph), k);
+            long endTime = new Date().getTime();
+            if(clique != null){ // clique found
+                System.out.println("##### Found a clique of size " + clique.size() +" #####");
+                System.out.print(clique);
+                String cliqueStr = "CLIQUE: ";
+                for(Node<T> node : clique.getNodes()){
+                    cliqueStr += node.getObject() + " ";
+                }
+                System.out.println(cliqueStr);
+                maxClique = clique;
+                low = k;
+            } else { // NO clique of size k
+                System.out.println("##### No clique found of size " + k + " #####");
+                high = k;
+            }
+            System.out.println("Took " + (endTime - startTime) + " milliseconds to run findClique for k: " + k);
+            System.out.println(numRecursiveCalls + " recursive calls so far");
+        }
+        long fullEndTime = new Date().getTime();
+        System.out.print("Maximum Clique\n"+maxClique);
+        System.out.println("size: " + maxClique.size());
+        System.out.println("Total Time: " + (fullEndTime - fullStartTime) + " milliseconds");
+        return maxClique;
+    }
 
     /**
      * Overloaded findMaxClique. Looks for cliques of size k in a graph. It
@@ -170,6 +221,10 @@ public class UndirectedGraph<T> extends Graph<T>{
             //if(maxPossibleCliqueNum(graph) < k){
                 //return null;
             //}
+            if(numRecursiveCalls == -1){
+                System.out.print("graph:\n"+graph);
+                System.out.println("of size "+graph.size());
+            }
             ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(graph.getNodes());
             Collections.sort(nodes); // O(N*log(N)) operation. faster if I let each
                                      // for loop go through every node? Then the 
@@ -182,17 +237,22 @@ public class UndirectedGraph<T> extends Graph<T>{
                 if(node.numNeighbors() < k-1){
                     //System.out.print("Removing node: \n" + node);
                     //nodes.remove(node);
+                    if(numRecursiveCalls == -1){
+                        System.out.println("case1 removing node:\n"+node.getObject());
+                    }
                     graph.removeNodeFromGraph(node);
                     if(graph.size() < k){
-                        //System.out.print("Too few nodes left in graph (" + graph.size());
-                        //System.out.println(") for a clique of size " + k+".");
+                        if(numRecursiveCalls == -1){
+                            System.out.print("Too few nodes left in graph (" + graph.size());
+                            System.out.println(") for a clique of size " + k+".");
                         //System.out.print(graph);
-                        //System.out.println("RETURNING null"); 
+                            System.out.println("RETURNING null"); 
+                        }
                         return null;
                     }
                     nodesRemoved = true;
                 }
-            }
+            } // end of for loop for node with too few neighbors to be in clique
             if(nodesRemoved){
                 continue;
             }
@@ -212,12 +272,15 @@ public class UndirectedGraph<T> extends Graph<T>{
                         //System.out.print("Neighborhood is NOT clique: \n" + neighborhood);
                         //System.out.println("\tRemoving Node " + node.getObject());
                         //nodes.remove(node);
+                        if(numRecursiveCalls == -1){
+                            System.out.println("case2 removing node:\n"+node.getObject());
+                        }
                         graph.removeNodeFromGraph(node);
                         nodesRemoved = true;
                         break;
                     }
                 }
-            }
+            } // end of for loop for neighborhoods with right size to be clique
             if(nodesRemoved){
                 continue;
             }
@@ -226,23 +289,113 @@ public class UndirectedGraph<T> extends Graph<T>{
             // Their neighborhood can not be a clique. Need to do a recursive
             // call to keep searching.
             for(Node<T> node : nodes){
+                if(numRecursiveCalls == -1){
+                    System.out.println("looking at node:\n"+node);
+                }
                 if(node.numNeighbors() > k-1){
                     UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
-                    //if(maxPossibleCliqueNum(neighborhood) < k){
-                        //return null;
-                    //}
-                    numRecursiveCalls++;
-                    //System.out.println("RECURSIVE CALL # " + numRecursiveCalls + " REACHED. Looking at neighbohood of size " + neighborhood.size());
-                    UndirectedGraph<T> clique = findMaxClique(neighborhood, k);
+                    ArrayList<Node<T>> nodesWithNeighborsOnlyInNeighborhood = new ArrayList<Node<T>>();
+                    //System.out.println("Adding nodes to list");
+                    for(Node<T> neighborhoodNode : neighborhood.getNodes()){
+                        // if the number of neighbors of this node in the
+                        // graph is the same as the number of neighbors of this
+                        // node in the neighborhood, then remember this node.
+                        // this means that all of its neighbors are in the neighborhood
+                        // if we find that there is no Max Clique in this neighborhood
+                        // then we can remove these nodes from the graph as well.
+                        if(!neighborhoodNode.equals(node)){
+                            Node<T> nodeInGraph = graph.getNode(neighborhoodNode.getObject());
+                            //System.out.print("looking at nodes:\n");
+                            //System.out.print(neighborhoodNode);
+                            //System.out.println("numNeighbors: " + neighborhoodNode.numNeighbors());
+                            try{
+                                //System.out.print(nodeInGraph);
+                                //System.out.println("numNeighbors: " + nodeInGraph.numNeighbors());
+                                if(nodeInGraph.numNeighbors() == neighborhoodNode.numNeighbors()){
+                                    //System.out.println("Adding node to list: \n " + neighborhoodNode);
+                                    // it must hold a reference to this node in the graph, not the
+                                    // node from the neighborhood. The neighborhood is a deep copy
+                                    // and in order to properly remove this node if necessary, we need
+                                    // to have the original with all the references to the other nodes
+                                    // in the graph
+                                    nodesWithNeighborsOnlyInNeighborhood.add(nodeInGraph);
+                                }
+                            } catch(NullPointerException e){
+                                e.printStackTrace();
+                                System.out.println("looking at neighborhood of:\n"+node);
+                                int i = 0;
+                                System.out.println("Nodes in Graph");
+                                for(Node<T> n : graph.getNodes()){
+                                    System.out.println(i + ": " + n.getObject());
+                                    i++;
+                                }
+                                System.out.println("Nodes in Neighborhood");
+                                ArrayList<Integer> ns = new ArrayList<Integer>();
+                                for(Node<T> n : neighborhood.getNodes()){
+                                    T obj = n.getObject();
+                                    if(obj instanceof Integer){
+                                        ns.add((Integer)obj);
+                                    }
+                                }
+                                Collections.sort(ns);
+                                i = 0;
+                                for(Integer o : ns){
+                                    System.out.println(i + ": " + o);
+                                    i++;
+                                }
+                                System.out.println(neighborhoodNode);
+                                System.out.println(nodeInGraph);
+                                System.out.println(numRecursiveCalls);
+                                System.exit(1);
+                            }
+                        }
+                    }
+                    UndirectedGraph<T> clique = null;
+                    if(maxPossibleCliqueNum(neighborhood) < k){
+                        clique = null;
+                    } else {
+                        numRecursiveCalls++;
+                        //System.out.println("RECURSIVE CALL # " + numRecursiveCalls + " REACHED. Looking at neighbohood of size " + neighborhood.size());
+                        clique = findMaxClique(neighborhood, k);
+                    }
                     if(clique == null){
-                        //nodes.remove(node);
+                        // at this point, can we remove any of the other nodes
+                        // in the neighborhood from the graph?
+                        // yes if and only if all of its neighbors are in the neighborhood
+                        // if we know that there is not a max clique in this subset
+                        // of the graph and that the node has no neighbors outside
+                        // of this subset, then it cannot be a part of the max clique.
+                        // can this happen? yes if it is neighbors with everything
+                        // in the neighborhood. Otherwise it would have less neighbors
+                        // than the root node and we would have checked its neighborhood
+                        // first.
+                        // Can't check here though because neighborhood has been modified by
+                        // the recursive call. Would have to store all nodes with the
+                        // same numNeighbors in the neighborhood and graph before the recursive
+                        // call.
+                        if(numRecursiveCalls == -1){
+                            System.out.println("case3");
+                            System.out.println("removing node:\n"+node.getObject());
+                        }
                         graph.removeNodeFromGraph(node);
+                        for(Node<T> nodeToRemove : nodesWithNeighborsOnlyInNeighborhood){
+                            if(numRecursiveCalls == -1){
+                                System.out.println("removing node:\n"+nodeToRemove.getObject());
+                            }
+                            graph.removeNodeFromGraph(nodeToRemove);
+                        }
                         break;
                     } else {
                         return clique;
                     }
+                } else {
+                    // shouldn't be here. all nodes at this point should have greater than k-1 neighbors
+                    System.out.println("WHOA Buddy! Shouldn't be here");
+                    System.out.println("Node\n"+node+"has too few neighbors");
+                    System.out.println(node.numNeighbors());
+                    //System.exit(1);
                 }
-            }
+            } // end of for loop for recursive calls
         }
         return null;    
     }
