@@ -124,6 +124,16 @@ public class UndirectedGraph<T> extends Graph<T>{
         return new UndirectedGraph<T>(originalNodes);
     }
 
+    @Override
+    /**
+     * {@inheritDoc}
+    */
+    public double density(){
+        // the implementation of the undirected graph includes both forward and back edges.
+        // ie, double the edges. so we don't need to multiply by 2.
+        return super.density(); 
+    }
+
     /*
      * Finds and returns the Maximum Clique of an UndirectedGraph.
      * @param graph the graph to find the max clique in
@@ -187,9 +197,9 @@ public class UndirectedGraph<T> extends Graph<T>{
         while(high - low > 1){
             int k = (high + low) / 2;
             long startTime = new Date().getTime();
-            System.out.println("Searching for a clique of size: " + k);
+            System.out.println("******Searching for a clique of size: " + k + "******");
             numRecursiveCalls = 0;
-            clique = findClique(new UndirectedGraph<T>(graph), k);
+            clique = findClique(new UndirectedGraph<T>(graph), k, 1);
             long endTime = new Date().getTime();
             if(clique != null){ // clique found
                 System.out.println("##### Found a clique of size " + clique.size() +" #####");
@@ -217,8 +227,8 @@ public class UndirectedGraph<T> extends Graph<T>{
             System.out.println("using " + numRecursiveCalls + " recursive calls.");
         }
         long fullEndTime = new Date().getTime();
-        System.out.print("Maximum Clique\n"+maxClique);
-        System.out.println("size: " + maxClique.size());
+        //System.out.print("Maximum Clique\n"+maxClique);
+        //System.out.println("size: " + maxClique.size());
         System.out.println("Total Time: " + (fullEndTime - fullStartTime) + " milliseconds");
         return maxClique;
     }
@@ -231,11 +241,12 @@ public class UndirectedGraph<T> extends Graph<T>{
      * If no clique of size k was found, then there are no cliques larger than k.
      * @param graph the graph to search for cliques in
      * @param k the size of the clique to search for
+     * @param level track the level of recursion
      * @return an UndirectedGraph&lt;T&gt; that is a clique or null if no clique
      * of size k exists.
      * @since 0.1.2
     */
-    public UndirectedGraph<T> findClique(UndirectedGraph<T> graph, int k){
+    public UndirectedGraph<T> findClique(UndirectedGraph<T> graph, int k, int level){
         while(graph.size() >= k){
             if(isClique(graph)){
                 return graph;
@@ -243,9 +254,10 @@ public class UndirectedGraph<T> extends Graph<T>{
             //if(maxPossibleCliqueNum(graph) < k){
                 //return null;
             //}
-            if(numRecursiveCalls == -1){
-                System.out.print("graph:\n"+graph);
+            if(level == 1){
+                System.out.print("graph ");
                 System.out.println("of size "+graph.size());
+                System.out.println("density: " + graph.density());
             }
             ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(graph.getNodes());
             Collections.sort(nodes); // O(N*log(N)) operation. faster if I let each
@@ -257,12 +269,12 @@ public class UndirectedGraph<T> extends Graph<T>{
                     break;
                 }
                 if(node.numNeighbors() < k-1){
-                    if(numRecursiveCalls == -1){
+                    if(level == 1){
                         System.out.println("case1 removing node:\n"+node.getObject());
                     }
                     graph.removeNodeFromGraph(node);
                     if(graph.size() < k){
-                        if(numRecursiveCalls == -1){
+                        if(level == 1){
                             System.out.print("Too few nodes left in graph (" + graph.size());
                             System.out.println(") for a clique of size " + k+".");
                             System.out.println("RETURNING null"); 
@@ -286,7 +298,7 @@ public class UndirectedGraph<T> extends Graph<T>{
                     if(isClique(neighborhood)){
                         return neighborhood;
                     } else {
-                        if(numRecursiveCalls == -1){
+                        if(level == 1){
                             System.out.println("case2 removing node:\n"+node.getObject());
                         }
                         graph.removeNodeFromGraph(node);
@@ -303,11 +315,13 @@ public class UndirectedGraph<T> extends Graph<T>{
             // Their neighborhood can not be a clique. Need to do a recursive
             // call to keep searching.
             for(Node<T> node : nodes){
-                if(numRecursiveCalls == -1){
-                    System.out.println("looking at node:\n"+node);
-                }
                 if(node.numNeighbors() > k-1){
                     UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
+                    if(level == 1){
+                        System.out.println("###looking at node:\n"+node.getObject() + " with " + node.numNeighbors()
+                                        + " neighbors");
+                        System.out.println("###density of its neighborhood: " + neighborhood.density());
+                    }
                     ArrayList<Node<T>> nodesWithNeighborsOnlyInNeighborhood = new ArrayList<Node<T>>();
                     for(Node<T> neighborhoodNode : neighborhood.getNodes()){
                         // if the number of neighbors of this node in the
@@ -363,7 +377,15 @@ public class UndirectedGraph<T> extends Graph<T>{
                         clique = null;
                     } else {
                         numRecursiveCalls++;
-                        clique = findClique(neighborhood, k);
+                        long start = 0;
+                        if(level == 1){
+                            start = new Date().getTime();
+                        }
+                        clique = findClique(neighborhood, k, level+1);
+                        if(level == 1){
+                            long end = new Date().getTime();
+                            System.out.println((end-start)/1000.0 + " seconds to evaluate node");
+                        }
                     }
                     if(clique == null){
                         // at this point, can we remove any of the other nodes
@@ -380,13 +402,13 @@ public class UndirectedGraph<T> extends Graph<T>{
                         // the recursive call. Would have to store all nodes with the
                         // same numNeighbors in the neighborhood and graph before the recursive
                         // call.
-                        if(numRecursiveCalls == -1){
+                        if(level == 1){
                             System.out.println("case3");
                             System.out.println("removing node:\n"+node.getObject());
                         }
                         graph.removeNodeFromGraph(node);
                         for(Node<T> nodeToRemove : nodesWithNeighborsOnlyInNeighborhood){
-                            if(numRecursiveCalls == -1){
+                            if(level == 1){
                                 System.out.println("removing node:\n"+nodeToRemove.getObject());
                             }
                             graph.removeNodeFromGraph(nodeToRemove);

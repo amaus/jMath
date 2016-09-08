@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * A Graph is made of Nodes. The generic type is for the Object that each node
  * holds. See the Node class for more information.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.1
+ * @version 0.1.2
  * @since 0.1.0
 */
 public class Graph<T>{
@@ -241,6 +241,15 @@ public class Graph<T>{
     protected void removeNode(Node<T> n){
         this.adjacencyList.remove(n.getObject());
         decrementNumEdges(n.numNeighbors());
+    }
+
+    /**
+     * Returns the density of the graph
+     * @return the density of the graph
+     * @since 0.1.2
+    */
+    public double density(){
+        return ((double)getNumEdges())/(size()*(size()-1));
     }
 
     /**
