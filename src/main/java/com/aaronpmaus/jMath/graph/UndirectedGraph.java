@@ -257,7 +257,7 @@ public class UndirectedGraph<T> extends Graph<T>{
             if(level == 1 || level == 2){
                 if(level == 1){
                     System.out.println("------------------");
-                    System.out.println("graph of size "+graph.size());
+                    System.out.println("graph of size "+graph.size() + " - level 1");
                     System.out.println("density: " + graph.density());
                 } else {
                     System.out.println("    ------------------");
