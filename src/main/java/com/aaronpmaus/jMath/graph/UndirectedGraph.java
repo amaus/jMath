@@ -318,9 +318,10 @@ public class UndirectedGraph<T> extends Graph<T>{
                 if(node.numNeighbors() > k-1){
                     UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
                     if(level == 1){
-                        System.out.println("###looking at node:\n"+node.getObject() + " with " + node.numNeighbors()
-                                        + " neighbors");
-                        System.out.println("###density of its neighborhood: " + neighborhood.density());
+                        System.out.println("###looking for clique of size " + k + "in node: "+node.getObject() 
+                                                + "'s neighborhood.");
+                        System.out.println("###num neighbors: " + node.numNeighbors() 
+                                       + "\n###density of its neighborhood: " + neighborhood.density());
                     }
                     ArrayList<Node<T>> nodesWithNeighborsOnlyInNeighborhood = new ArrayList<Node<T>>();
                     for(Node<T> neighborhoodNode : neighborhood.getNodes()){
