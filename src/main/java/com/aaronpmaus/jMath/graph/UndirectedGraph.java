@@ -10,11 +10,12 @@ import java.util.Date;
  * A class for an UndirectedGraph. Extends Graph. The generic type is for the object that the
  * Nodes of the graph hold.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.2
+ * @version 0.1.3
  * @since 0.1.0
 */
 public class UndirectedGraph<T> extends Graph<T>{
     public static long numRecursiveCalls = 0;
+    private static int maxPrintLevel = 0;
 
     /**
      * A default constructor for the UndirectedGraph
@@ -66,14 +67,13 @@ public class UndirectedGraph<T> extends Graph<T>{
     }
 
     /**
-     * Another copy constructor. This one takes a Collection of nodes and builds the 
-     * UndirectedGraph from a deep copy of these nodes and all edges in them that 
-     * are between them.
-     * @param originalNodes the nodes to be in the graph
-     * @since 0.1.1
+     * A constructor that takes a Collection of nodes and builds an
+     * UndirectedGraph out of them.
+     * @param nodes the nodes to be in the graph
+     * @since 0.1.3
     */
-    public UndirectedGraph(Collection<Node<T>> originalNodes){
-        super(originalNodes);
+    public UndirectedGraph(Collection<Node<T>> nodes){
+        super(nodes);
     }
 
     /**
@@ -120,8 +120,8 @@ public class UndirectedGraph<T> extends Graph<T>{
      * {@inheritDoc}
     */
     public UndirectedGraph<T> getNeighborhood(Node<T> root){
-        ArrayList<Node<T>> originalNodes = root.getNodeAndNeighbors();
-        return new UndirectedGraph<T>(originalNodes);
+        Collection<Node<T>> copyNodes = getNeighborhoodNodes(root);
+        return new UndirectedGraph<T>(copyNodes);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class UndirectedGraph<T> extends Graph<T>{
         // if maxPossibleCliqueNum is the size of the graph (and the whole
         // graph is a clique), ((N+1) + N)/2 == N. Searching for a clique of
         // size N will be the last search made.
-        int high = maxPossibleCliqueNum(graph) + 1;
+        int high = maxPossibleCliqueNumDeep(graph) + 1;
         System.out.println("Original Graph Size: " + graph.size());
         System.out.println("Max Possible Clique Number: " + (high-1));
         int low = 0;
@@ -254,16 +254,10 @@ public class UndirectedGraph<T> extends Graph<T>{
             //if(maxPossibleCliqueNum(graph) < k){
                 //return null;
             //}
-            if(level == 1 || level == 2){
-                if(level == 1){
-                    System.out.println("------------------");
-                    System.out.println("graph of size "+graph.size() + " - level 1");
-                    System.out.println("density: " + graph.density());
-                } else {
-                    System.out.println("    ------------------");
-                    System.out.println("    graph of size "+graph.size());
-                    System.out.println("    density: " + graph.density());
-                }
+            if(level <= maxPrintLevel){
+                levelPrint(level, "------------------");
+                levelPrint(level, "graph of size "+graph.size() + " - level " + level + " ");
+                levelPrint(level, "density: " + graph.density());
             }
             ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(graph.getNodes());
             Collections.sort(nodes); // O(N*log(N)) operation. faster if I let each
@@ -275,15 +269,15 @@ public class UndirectedGraph<T> extends Graph<T>{
                     break;
                 }
                 if(node.numNeighbors() < k-1){
-                    if(level == 1){
-                        System.out.println("case1 too few neighbors removing node:\n"+node.getObject());
+                    if(level <= maxPrintLevel){
+                        levelPrint(level, "case1 too few neighbors ("+node.numNeighbors()+") removing node: "+node.getObject());
                     }
                     graph.removeNodeFromGraph(node);
                     if(graph.size() < k){
-                        if(level == 1){
-                            System.out.print("Too few nodes left in graph (" + graph.size());
-                            System.out.println(") for a clique of size " + k+".");
-                            System.out.println("RETURNING null"); 
+                        if(level <= maxPrintLevel){
+                            levelPrint(level, "Too few nodes left in graph (" + graph.size() 
+                                                + ") for a clique of size " + k+".");
+                            levelPrint(level, "RETURNING null"); 
                         }
                         return null;
                     }
@@ -294,47 +288,32 @@ public class UndirectedGraph<T> extends Graph<T>{
                 continue;
             }
 
-            for(Node<T> node : nodes){
-                if(node.numNeighbors() > k-1){
-                    break;
-                }
-                //System.out.println("Looking at neighbohood of Node: " + node.getObject());
-                if(node.numNeighbors() == k-1){
-                    UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
-                    if(isClique(neighborhood)){
-                        return neighborhood;
-                    } else {
-                        if(level == 1){
-                            System.out.println("case2 isClique test failed removing node:\n"+node.getObject());
-                        }
-                        graph.removeNodeFromGraph(node);
-                        nodesRemoved = true;
-                        break;
+            Node<T> node = nodes.get(0); // the node with the lowest # neighbors
+            //System.out.println("Looking at neighbohood of Node: " + node.getObject());
+            if(node.numNeighbors() == k-1){
+                UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
+                if(isClique(neighborhood)){
+                    return neighborhood;
+                } else {
+                    if(level <= maxPrintLevel){
+                        levelPrint(level, "case2 isClique test failed removing node: "+node.getObject());
                     }
+                    graph.removeNodeFromGraph(node);
+                    continue;
                 }
-            } // end of for loop for neighborhoods with right size to be clique
-            if(nodesRemoved){
-                continue;
             }
             
             // At this point, all nodes that are left have > k-1 neighbors.
             // Their neighborhood can not be a clique. Need to do a recursive
             // call to keep searching.
-            Node<T> node = nodes.get(0); // the first node in the list is the node with the lowest # neighbors.
+            node = nodes.get(0); // the first node in the list is the node with the lowest # neighbors.
             if(node.numNeighbors() > k-1){
                 UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
-                if(level == 1 || level == 2){
-                    if(level == 1){
-                            System.out.println("# looking for clique of size " + k 
-                                           + "\n# in node: "+node.getObject() +" 's neighborhood.");
-                            System.out.println("# num neighbors: " + node.numNeighbors() 
-                                           + "\n# density of its neighborhood: " + neighborhood.density());
-                    } else {
-                        System.out.println("    # looking for clique of size " + k 
-                                       + "\n    # in node: "+node.getObject() +" 's neighborhood.");
-                        System.out.println("    # num neighbors: " + node.numNeighbors() 
-                                       + "\n    # density of its neighborhood: " + neighborhood.density());
-                    }
+                if(level <= maxPrintLevel){
+                    levelPrint(level, "# looking for clique of size " + k);
+                    levelPrint(level, "# in node: "+node.getObject() +" 's neighborhood.");
+                    levelPrint(level, "# num neighbors: " + node.numNeighbors());
+                    levelPrint(level, "# density of its neighborhood: " + neighborhood.density());
                 }
                 ArrayList<Node<T>> nodesWithNeighborsOnlyInNeighborhood = new ArrayList<Node<T>>();
                 for(Node<T> neighborhoodNode : neighborhood.getNodes()){
@@ -387,22 +366,25 @@ public class UndirectedGraph<T> extends Graph<T>{
                     }
                 }
                 UndirectedGraph<T> clique = null;
-                if(maxPossibleCliqueNum(neighborhood) < k){
+                int maxPosCliqueNum = maxPossibleCliqueNum(neighborhood);
+                if(maxPosCliqueNum < k){
                     clique = null;
+                    if(level <= maxPrintLevel){
+                        String message = "Max possible clique number of neighborhood : " + maxPosCliqueNum
+                            + " is less than " + k;
+                        levelPrint(level, message);
+                    }
                 } else {
                     numRecursiveCalls++;
                     long start = 0;
-                    if(level == 1 || level == 2){
+                    if(level <= maxPrintLevel){
                         start = new Date().getTime();
                     }
                     clique = findClique(neighborhood, k, level+1);
-                    if(level == 1 || level == 2){
+                    if(level <= maxPrintLevel){
                         long end = new Date().getTime();
-                        if(level == 1){
-                            System.out.println((end-start)/1000.0 + " seconds to evaluate node");
-                        } else {
-                            System.out.println("    "+(end-start)/1000.0 + " seconds to evaluate node");
-                        }
+                        String message = (end-start)/1000.0 + " seconds to evaluate node";
+                        levelPrint(level, message);
                     }
                 }
                 if(clique == null){
@@ -420,23 +402,15 @@ public class UndirectedGraph<T> extends Graph<T>{
                     // the recursive call. Would have to store all nodes with the
                     // same numNeighbors in the neighborhood and graph before the recursive
                     // call.
-                    if(level == 1 || level == 2){
-                        if(level == 1){
-                            System.out.println("case3 recursive call evaluated to null");
-                            System.out.println("removing node: "+node.getObject() + " @ " +new Date());
-                        } else {
-                            System.out.println("    case3 recursive call evaluated to null");
-                            System.out.println("    removing node: "+node.getObject() + " @ " +new Date());
-                        }
+                    if(level <= maxPrintLevel){
+                        levelPrint(level,"case3 recursive call evaluated to null");
+                        levelPrint(level,"removing node: "+node.getObject() + " @ " +new Date());
                     }
                     graph.removeNodeFromGraph(node);
+                    
                     for(Node<T> nodeToRemove : nodesWithNeighborsOnlyInNeighborhood){
-                        if(level == 1 || level == 2){
-                            if(level == 1){
-                                System.out.println("removing node: "+nodeToRemove.getObject() + " @ " +new Date());
-                            } else { 
-                                System.out.println("    removing node: "+nodeToRemove.getObject() + " @ " +new Date());
-                            }
+                        if(level <= maxPrintLevel){
+                            levelPrint(level,"removing node: "+nodeToRemove.getObject() + " @ " +new Date());
                         }
                         graph.removeNodeFromGraph(nodeToRemove);
                     }
@@ -449,10 +423,18 @@ public class UndirectedGraph<T> extends Graph<T>{
                 System.out.println("WHOA Buddy! Shouldn't be here");
                 System.out.println("Node\n"+node+"has too few neighbors");
                 System.out.println(node.numNeighbors());
+                continue; // so that cases 1 or 2 can handle these nodes and the system won't break
                 //System.exit(1);
             }
         }
         return null;    
+    }
+
+    private void levelPrint(int level, String message){
+        for(int i = 1; i < level; i++){
+            System.out.print("|   ");
+        }
+        System.out.println(message);
     }
     
     /**
@@ -471,8 +453,8 @@ public class UndirectedGraph<T> extends Graph<T>{
         boolean cont = true;
         while(cont){
             int numPotentialMembers = 0;
-            for(Node<T> node : graph.getNodes()){
-                if(node.numNeighbors() + 1 >= k){
+            for(Node<T> n : graph.getNodes()){
+                if(n.numNeighbors() + 1 >= k){
                     numPotentialMembers++;
                 }
             }
@@ -480,6 +462,46 @@ public class UndirectedGraph<T> extends Graph<T>{
                 cont = false;
             } else {
                 k--;
+            }
+        }
+        return k;
+    }
+
+    /**
+     * Returns a second pass maximum possible clique number for an UndirectedGraph
+     * This relies on the fact that in order to have a clique of size K, there must
+     * be atleast K nodes all with atleast K-1 edges in the graph. For example, for
+     * there to be a clique of size 4, there must be 4 nodes that all have atleast 3 edges.
+     * This method looks at the neighborhood of every node in the graph and calculates the 
+     * max possible clique number of that neighborhood
+     * @param graph the graph to find the max possible clique number of
+     * @return the max possible clique number
+     * @since 0.1.3
+    */
+    public int maxPossibleCliqueNumDeep(UndirectedGraph<T> graph){
+        int k = 0;
+        for(Node<T> node : graph.getNodes()){
+            UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
+            int maxEdges = Collections.max(neighborhood.getNodes()).numNeighbors();
+            // if the node with the max edges has 3 edges, then those three
+            // neighbors plus itself makes a subgraph of 4 nodes.
+            int tempK = maxEdges + 1; 
+            boolean cont = true;
+            while(cont){
+                int numPotentialMembers = 0;
+                for(Node<T> n : neighborhood.getNodes()){
+                    if(n.numNeighbors() + 1 >= tempK){
+                        numPotentialMembers++;
+                    }
+                }
+                if(numPotentialMembers >= tempK){
+                    cont = false;
+                } else {
+                    tempK--;
+                }
+            }
+            if(tempK > k){
+                k = tempK;
             }
         }
         return k;
