@@ -72,6 +72,29 @@ public class Graph<T>{
         return getDeepCopyNodes(originalNodes);
     }
 
+    /**
+     * Returns the neighborhood of the Node passed in.
+     * The Neighborhood consists of the node and all of its neighbors
+     * and the set of edges that are between all of these nodes.
+     * @param root The node to get the neighborhood around.
+     * @return a graph of the neighborhood. This is a deep copy of this subset
+     *         of the total graph.
+    */
+    public Graph<T> getNeighborhood(Node<T> root){
+        Collection<Node<T>> copyNodes = getNeighborhoodNodes(root);
+        return new Graph<T>(copyNodes);
+    }
+
+    /**
+     * Returns the complement of this graph, that is, the graph containing all the nodes
+     * in the original graph, none of the edges in the original graph, and all of the edges
+     * NOT in the original graph
+     * @return the complement of the graph
+    */
+    public Graph<T> getComplement(){
+        return new Graph<T>(getComplementNodes());
+    }
+
     /*
      * Returns a deep copy of all the nodes in the graph.
      * The copy is a deep copy of all nodes and all edges
@@ -87,6 +110,12 @@ public class Graph<T>{
      * where both end points of the edge are in this list of nodes.
     */
     private Collection<Node<T>> getDeepCopyNodes(Collection<Node<T>> originalNodes){
+        // first get a list of these nodes
+        // store as a hashmap for constant time lookups
+        // about the parameter. The default load factor is 0.75. So we want to instantiate the HashMap
+        // with an initialCapacity large enough so that we never increase the capacity. We know
+        // exactly how many nodes will be added to this HashMap, it's the number of neighbors+1 (for the root). 
+        // Setting the initial capacity to (numNeighbors+1)/0.75 + 1 will do the trick.
         HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((originalNodes.size()+1)/0.75+1));
         for(Node<T> node : originalNodes){
             Node<T> newNode = new Node<T>(node.getObject());
@@ -310,24 +339,6 @@ public class Graph<T>{
         return ((double)getNumEdges())/(size()*(size()-1));
     }
 
-    /**
-     * Returns the neighborhood of the Node passed in.
-     * The Neighborhood consists of the node and all of its neighbors
-     * and the set of edges that are between all of these nodes.
-     * @param root The node to get the neighborhood around.
-     * @return a graph of the neighborhood. This is a deep copy of this subset
-     *         of the total graph.
-    */
-    public Graph<T> getNeighborhood(Node<T> root){
-        // first get a list of these nodes
-        // store as a hashmap for constant time lookups
-        // about the parameter. The default load factor is 0.75. So we want to instantiate the HashMap
-        // with an initialCapacity large enough so that we never increase the capacity. We know
-        // exactly how many nodes will be added to this HashMap, it's the number of neighbors+1 (for the root). 
-        // Setting the initial capacity to (numNeighbors+1)/0.75 + 1 will do the trick.
-        Collection<Node<T>> copyNodes = getNeighborhoodNodes(root);
-        return new Graph<T>(copyNodes);
-    }
 
     @Override
     /**

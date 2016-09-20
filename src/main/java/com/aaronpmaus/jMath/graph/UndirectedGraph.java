@@ -128,6 +128,14 @@ public class UndirectedGraph<T> extends Graph<T>{
     /**
      * {@inheritDoc}
     */
+    public UndirectedGraph<T> getComplement(){
+        return new UndirectedGraph<T>(getComplementNodes());
+    }
+
+    @Override
+    /**
+     * {@inheritDoc}
+    */
     public double density(){
         // the implementation of the undirected graph includes both forward and back edges.
         // ie, double the edges. so we don't need to multiply by 2.
