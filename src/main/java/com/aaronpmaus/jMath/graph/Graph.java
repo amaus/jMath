@@ -147,7 +147,7 @@ public class Graph<T>{
         Collection<Node<T>> originalNodes = getNodes();
         for(Node<T> node : originalNodes){
             for(Node<T> possibleNeighbor: originalNodes){
-                if(!node.hasNeighbor(possibleNeighbor)){
+                if(node != possibleNeighbor && !node.hasNeighbor(possibleNeighbor)){
                     Node<T> copyNode = copyNodes.get(node.getObject());
                     copyNode.addNeighbor(copyNodes.get(possibleNeighbor.getObject()));
                 }
