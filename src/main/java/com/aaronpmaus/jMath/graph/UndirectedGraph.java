@@ -196,8 +196,8 @@ public class UndirectedGraph<T> extends Graph<T>{
         // if maxPossibleCliqueNum is the size of the graph (and the whole
         // graph is a clique), ((N+1) + N)/2 == N. Searching for a clique of
         // size N will be the last search made.
-        int high = maxPossibleCliqueNumDeep(graph) + 1;
         System.out.println("Original Graph Size: " + graph.size());
+        int high = maxPossibleCliqueNumDeep(graph) + 1;
         System.out.println("Max Possible Clique Number: " + (high-1));
         int low = 0;
         UndirectedGraph<T> clique = null;
@@ -513,6 +513,84 @@ public class UndirectedGraph<T> extends Graph<T>{
             }
         }
         return k;
+    }
+
+    /**
+     * Returns an independent set of size k of a graph. Calculated this by finding a
+     * clique of size k in the complement of this graph and returning those nodes.
+     * @param graph the graph to look for the independent set in
+     * @param k the size of the independent set to look for
+     * @return the independent set if exists, null otherwise
+    */
+    public UndirectedGraph<T> findIndependentSetViaClique(UndirectedGraph<T> graph, int k){
+        UndirectedGraph<T> complement = graph.getComplement();
+        UndirectedGraph<T> clique = findClique(new UndirectedGraph<T>(complement),k,1);
+        UndirectedGraph<T> independentSet = null;
+        if(clique != null){
+            ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(clique.size());
+            for(Node<T> node : clique.getNodes()){
+                nodes.add(getNode(node.getObject()));
+            }
+            independentSet = new UndirectedGraph<T>(nodes);
+        }
+        return independentSet;
+    }
+
+    /**
+     * Returns the max independent set of size k of a graph. Calculates this by finding the
+     * max clique in the complement of this graph and returning those nodes.
+     * @param graph the graph to look for the independent set in
+     * @return the max independent set
+    */
+    public UndirectedGraph<T> findMaxIndependentSetViaClique(UndirectedGraph<T> graph){
+        UndirectedGraph<T> complement = getComplement();
+        UndirectedGraph<T> clique = findMaxClique(complement);
+        UndirectedGraph<T> independentSet = null;
+        if(clique != null){
+            ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(clique.size());
+            for(Node<T> node : clique.getNodes()){
+                nodes.add(getNode(node.getObject()));
+            }
+            independentSet = new UndirectedGraph<T>(nodes);
+        }
+        return independentSet;
+    }
+
+    /**
+     * Returns a vertex cover of size k of a graph if it exists. Calculates this by finding a
+     * clique of size k in the complement of this graph and returning all the nodes in the
+     * graph except those nodes.
+     * @param graph the graph to look for the vertext cover in
+     * @param k the size of the vertex cover to look for
+     * @return the vertex cover if exists, null otherwise
+    */
+    public UndirectedGraph<T> findVertexCoverViaClique(UndirectedGraph<T> graph, int k){
+        UndirectedGraph<T> independentSet = findIndependentSetViaClique(graph, size() - k);
+        UndirectedGraph<T> vertexCover = null;
+        if(independentSet != null){
+            Collection<Node<T>> nodes = getNodes();
+            for(Node<T> independentSetNode : independentSet.getNodes()){
+                nodes.remove(independentSetNode);
+            }
+            vertexCover = new UndirectedGraph<T>(nodes);
+        }
+        return vertexCover;
+    }
+
+    /**
+     * Returns the min vertex cover of the graph. Calculates this by finding  the max
+     * clique in the complement of this graph and returning all the nodes in the
+     * graph except those nodes.
+     * @param graph the graph to look for the vertext cover in
+     * @return the min vertex cover if exists
+    */
+    public UndirectedGraph<T> findMinVertexCoverViaClique(UndirectedGraph<T> graph){
+        UndirectedGraph<T> independentSet = findMaxIndependentSetViaClique(graph);
+        Collection<Node<T>> nodes = getNodes();
+        for(Node<T> independentSetNode : independentSet.getNodes()){
+            nodes.remove(independentSetNode);
+        }
+        return new UndirectedGraph<T>(nodes);
     }
 
     /**
