@@ -351,4 +351,19 @@ public class Graph<T>{
         }
         return str;
     }
+
+    public String getNodesString(String delimiter){
+        Collection<Node<T>> nodes = getNodes();
+        String ret = "";
+        int i = 0;
+        for(Node<T> node : nodes){
+            if(i == 0){
+                i++;
+                ret += node.getObject();
+            } else {
+                ret += delimiter+node.getObject();
+            }
+        }
+        return ret;
+    }
 }
