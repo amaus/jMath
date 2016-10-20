@@ -197,6 +197,7 @@ public class UndirectedGraph<T> extends Graph<T>{
         // graph is a clique), ((N+1) + N)/2 == N. Searching for a clique of
         // size N will be the last search made.
         System.out.println("Original Graph Size: " + graph.size());
+        //System.out.println(graph);
         int high = maxPossibleCliqueNumDeep(graph) + 1;
         System.out.println("Max Possible Clique Number: " + (high-1));
         int low = 0;
