@@ -36,9 +36,9 @@ public class TestNode{
         assertEquals(n2.numNeighbors(), 0);
         assertEquals(n3.numNeighbors(), 0);
 
-        assertEquals(n1.getObject(), new Integer(1));
-        assertEquals(n2.getObject(), new Integer(2));
-        assertEquals(n3.getObject(), new Integer(3));
+        assertEquals(n1.get(), new Integer(1));
+        assertEquals(n2.get(), new Integer(2));
+        assertEquals(n3.get(), new Integer(3));
 
         assertFalse(n1.hasNeighbor(n2));
         assertFalse(n1.hasNeighbor(n3));

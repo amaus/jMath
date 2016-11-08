@@ -1,16 +1,18 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
 /**
  * A general class for a Graph, by default a directed graph.
- * A Graph is made of Nodes. The generic type is for the Object that each node
- * holds. See the Node class for more information.
+ * A Graph is made of Nodes. Nodes represent vertices and are wrappers for a
+ * generic Object. See the Node class for more information. In this manner a graph
+ * can be built to represent anything.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.3
+ * @version 0.1.4
  * @since 0.1.0
 */
 public class Graph<T>{
@@ -59,22 +61,47 @@ public class Graph<T>{
     }
 
     /**
-     * Returns a deep copy of the neighborhood of the Node that is passed in.
-     * The collection includes that node, all its neighbors, and all edges
+     * Returns a deep copy of the neighborhood from this Graph of the Node that is
+     * passed in. The collection includes that node, all its neighbors, and all edges
      * where both end points of the edge are in this list of nodes.
-     * @param root the root node of the neighborhood. The neighborhood is this node and all its 
-     *             neighbors
-     * @return a collection of Nodes. This is a deep copy of the nodes and edges in the neighborhood
+     * @param root the root node of the neighborhood. The neighborhood is this node
+     *             and all its neighbors
+     * @return a collection of Nodes. This is a deep copy of the nodes and edges 
+     *         in the neighborhood
      * @since 0.1.3
     */
     public Collection<Node<T>> getNeighborhoodNodes(Node<T> root){
-        Collection<Node<T>> originalNodes = root.getNodeAndNeighbors();
+        // in case the collection of nodes passed in was a deep copy of
+        // the nodes from this graph, use the actual node from this graph
+        Collection<Node<T>> originalNodes = this.getNode(root.get()).getNodeAndNeighbors();
         return getDeepCopyNodes(originalNodes);
     }
 
     /**
-     * Returns the neighborhood of the Node passed in.
-     * The Neighborhood consists of the node and all of its neighbors
+     * Returns a deep copy of the neighborhood from this Graph of the Collection of
+     * Nodes that are passed in. The Collection includes all the nodes passed in, all
+     * their neighbors, and all edges where both end points of the edge are in this list
+     * of nodes.
+     * @param nodes the Collection of nodes to get the neighborhood of.
+     * @return a Collection of Nodes. This is a deep copy of the nodes and edges
+     *         in the neighborhood
+     * @since 0.1.4
+    */
+    public Collection<Node<T>> getNeighborhoodNodes(Collection<Node<T>> nodes){
+        // default load factor is 0.75. Create a HashSet large enough that it
+        // won't ever need to be enlarged.
+        HashSet<Node<T>> originalNodes = new HashSet<Node<T>>(this.size()*100/75+1);
+        for(Node<T> node : nodes){
+            // in case the collection of nodes passed in was a deep copy of
+            // the nodes from this graph, use the actual node from this graph
+            originalNodes.addAll(this.getNode(node.get()).getNodeAndNeighbors());
+        }
+        return getDeepCopyNodes(originalNodes);
+    }
+
+    /**
+     * Returns the neighborhood from this Graph of the Node passed in.
+     * The Neighborhood consists of the node, all of its neighbors,
      * and the set of edges that are between all of these nodes.
      * @param root The node to get the neighborhood around.
      * @return a graph of the neighborhood. This is a deep copy of this subset
@@ -85,6 +112,20 @@ public class Graph<T>{
         return new Graph<T>(copyNodes);
     }
 
+    /**
+     * Returns the neighborhood from this Graph of the collection of Nodes paseed in.
+     * The Neighborhood consists of the Nodes, all their neighbors,
+     * and all the edges between all of these nodes.
+     * @param nodes the Nodes to get the neighborhood around.
+     * @return a graph of the neighborhood. This is a deep
+     *         copy of this subset of the total graph.
+     * @since 0.1.4
+    */
+    public Graph<T> getNeighborhood(Collection<Node<T>> nodes){
+        Collection<Node<T>> copyNodes = getNeighborhoodNodes(nodes);
+        return new Graph<T>(copyNodes);
+    }
+    
     /**
      * Returns the complement of this graph, that is, the graph containing all the nodes
      * in the original graph, none of the edges in the original graph, and all of the edges
@@ -112,23 +153,24 @@ public class Graph<T>{
     private Collection<Node<T>> getDeepCopyNodes(Collection<Node<T>> originalNodes){
         // first get a list of these nodes
         // store as a hashmap for constant time lookups
-        // about the parameter. The default load factor is 0.75. So we want to instantiate the HashMap
-        // with an initialCapacity large enough so that we never increase the capacity. We know
-        // exactly how many nodes will be added to this HashMap, it's the number of neighbors+1 (for the root). 
+        // about the parameter. The default load factor is 0.75. So we want to instantiate
+        // the HashMap with an initialCapacity large enough so that we never increase
+        // the capacity. We know exactly how many nodes will be added to this HashMap, 
+        // it's the number of neighbors+1 (for the root). 
         // Setting the initial capacity to (numNeighbors+1)/0.75 + 1 will do the trick.
         HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((originalNodes.size()+1)/0.75+1));
         for(Node<T> node : originalNodes){
-            Node<T> newNode = new Node<T>(node.getObject());
-            copyNodes.put(node.getObject(), newNode);
+            Node<T> newNode = new Node<T>(node.get());
+            copyNodes.put(node.get(), newNode);
         }
 
         for(Node<T> originalNode : originalNodes){
             Collection<Edge<T>> edges = originalNode.getEdges();
-            Node<T> newNode = copyNodes.get(originalNode.getObject());
+            Node<T> newNode = copyNodes.get(originalNode.get());
             for(Edge<T> edge : edges){
                 Node<T> neighbor = edge.getEnd();
-                if(copyNodes.containsKey(neighbor.getObject())){
-                    newNode.addEdge(new Edge<T>(newNode, copyNodes.get(neighbor.getObject()), edge.getWeight()));
+                if(copyNodes.containsKey(neighbor.get())){
+                    newNode.addEdge(new Edge<T>(newNode, copyNodes.get(neighbor.get()), edge.getWeight()));
                 }
             }
         }
@@ -148,8 +190,8 @@ public class Graph<T>{
         for(Node<T> node : originalNodes){
             for(Node<T> possibleNeighbor: originalNodes){
                 if(node != possibleNeighbor && !node.hasNeighbor(possibleNeighbor)){
-                    Node<T> copyNode = copyNodes.get(node.getObject());
-                    copyNode.addNeighbor(copyNodes.get(possibleNeighbor.getObject()));
+                    Node<T> copyNode = copyNodes.get(node.get());
+                    copyNode.addNeighbor(copyNodes.get(possibleNeighbor.get()));
                 }
             }
         }
@@ -180,8 +222,8 @@ public class Graph<T>{
         Collection<Node<T>> originalNodes = getNodes();
         HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((originalNodes.size()+1)/0.75+1));
         for(Node<T> node : originalNodes){
-            Node<T> newNode = new Node<T>(node.getObject());
-            copyNodes.put(node.getObject(), newNode);
+            Node<T> newNode = new Node<T>(node.get());
+            copyNodes.put(node.get(), newNode);
         }
         return copyNodes;
     }
@@ -193,7 +235,7 @@ public class Graph<T>{
     public void addNode(Node<T> n){
         if(!containsNode(n)){
             //System.out.println("Adding node: " + n.hashCode());
-            adjacencyList.put(n.getObject() ,n);
+            adjacencyList.put(n.get() ,n);
             incrementNumEdges(n.numNeighbors());
         }
     }
@@ -216,7 +258,7 @@ public class Graph<T>{
     public void addEdge(Node<T> start, Node<T> end){
         addNode(start);
         addNode(end);
-        getNode(start.getObject()).addNeighbor(getNode(end.getObject()));
+        getNode(start.get()).addNeighbor(getNode(end.get()));
         incrementNumEdges();
     }
 
@@ -230,8 +272,8 @@ public class Graph<T>{
     public void addEdge(Node<T> start, Node<T> end, double weight){
         addNode(start);
         addNode(end);
-        getNode(start.getObject()).addEdge(new Edge<T>(getNode(start.getObject()),
-                                                        getNode(end.getObject()),
+        getNode(start.get()).addEdge(new Edge<T>(getNode(start.get()),
+                                                        getNode(end.get()),
                                                         weight));
         incrementNumEdges();
     }
@@ -291,7 +333,7 @@ public class Graph<T>{
      * @return true if the graph contains this node, false otherwise.
     */
     public boolean containsNode(Node<T> n){
-        T obj = n.getObject();
+        T obj = n.get();
         return adjacencyList.containsKey(obj);
     }
 
@@ -326,7 +368,7 @@ public class Graph<T>{
      * @param n the node to remove.
     */
     protected void removeNode(Node<T> n){
-        this.adjacencyList.remove(n.getObject());
+        this.adjacencyList.remove(n.get());
         decrementNumEdges(n.numNeighbors());
     }
 
@@ -352,16 +394,20 @@ public class Graph<T>{
         return str;
     }
 
-    public String getNodesString(String delimiter){
+    public String getNodesString(String delimiter, String[] resIDs){
         Collection<Node<T>> nodes = getNodes();
         String ret = "";
         int i = 0;
         for(Node<T> node : nodes){
             if(i == 0){
                 i++;
-                ret += node.getObject();
+                if(node.get() instanceof Integer){
+                    ret += resIDs[(Integer)node.get()].trim();
+                }
             } else {
-                ret += delimiter+node.getObject();
+                if(node.get() instanceof Integer){
+                    ret += delimiter+resIDs[(Integer)node.get()].trim();
+                }
             }
         }
         return ret;

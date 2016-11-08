@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.lang.ClassCastException;
 
 /**
- * A Node for a graph. A node is a wrapper for an object.
- * Typically, this can be an Integer to represent a nodeID,
- * but the generic type allows more flexibility. This allows for
+ * A Node for a graph. A Node represents a vertex and is a wrapper 
+ * for an object. In addition to its object, it also has Edges
+ * to other nodes.
+ * The Object can be anything, and the generic type allows for
  * there to be a graph of any type of Object.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.1
+ * @version 0.1.4
  * @since 0.1.0
 */
 public class Node<T> implements Comparable<Node<T>>{
@@ -36,9 +37,10 @@ public class Node<T> implements Comparable<Node<T>>{
     }
 
     /**
-     * @return the Object that this Node holds.
+     * Returns the object that is Node wraps.
+     * @return the Object that this Node wraps.
     */
-    public T getObject(){
+    public T get(){
         return this.obj;
     }
 
@@ -142,7 +144,7 @@ public class Node<T> implements Comparable<Node<T>>{
         String str = this.obj.toString() + ": ";
         Set<Node<T>> neighbors = getNeighbors();
         for(Node<T> node : neighbors){
-            str += node.getObject().toString() + " ";
+            str += node.get().toString() + " ";
         }
         //str += "\n";
         return str;
@@ -159,9 +161,9 @@ public class Node<T> implements Comparable<Node<T>>{
     }
 
     /**
-     * Two nodes are equals if this.getObject().equals(n.getObject())
+     * Two nodes are equals if this.get().equals(n.get())
      * @param obj the other node to compare to.
-     * @return true if this.getObject().equals(obj.getObject())
+     * @return true if this.get().equals(obj.get())
     */
     @Override
     @SuppressWarnings("unchecked")
@@ -170,7 +172,7 @@ public class Node<T> implements Comparable<Node<T>>{
         if(this.getClass().isInstance(obj)){
             try{
                 n = this.getClass().cast(obj);
-                return getObject().equals(n.getObject());
+                return get().equals(n.get());
             }catch(ClassCastException e){
                 e.printStackTrace();
             }
