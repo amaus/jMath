@@ -13,8 +13,11 @@ You will need to install the gradle package manager onto your machine
 
 1. Clone the project
 2. `gradle install`
-3. Add to classpath location to jMath.jar in ~/.m2/repository/...
-4. Now you can import the library into any java project you write.
+3. create new environment variable JMATHDIR and set it to location to location of jMath source
+4. Add to CLASSPATH $JMATHDIR/build/install/jMath/lib/jMath.jar
+5. Add to PATH $JMATHDIR/build/install/jMath/bin/
+4. Now you can import the library into any java project you write, and you can run any of the
+   executables provided by jMath.
 
 ## Usage
 This project is managed by gradle.
@@ -35,11 +38,11 @@ if you issue the command:
 
 `gradle install`
 
-gradle will build a jar of this library and install it into a local maven repository on your machine,
-located in ~/m2/repository
-
-You can then find the jar, add its location to your classpath, and then 
-import this library into any java programs you want to write.
+gradle will do several things. It will create and install the jar and
+executables to $JMATHDIR/build/install/jMath and to the local maven repository 
+(for archival purposes). The maven local repository is located in ~/.m2/respository
+It will also generate the javadocs, zip them up, and install them to the 
+$JMATHDIR/distributions and the maven local repository.
 
 ## javadoc
 
