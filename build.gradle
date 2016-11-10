@@ -4,7 +4,25 @@ apply plugin: "maven"
 apply plugin: "application"
 
 group = "com.aaronpmaus.jMath"
-version '0.1.0'
+version '0.1.4'
+
+// create a task to zip the javadoc files
+task zipJavadoc(type: Zip){
+    from "$buildDir/docs/javadoc"
+    classifier = 'javadoc'
+    baseName = 'jMath'
+}
+
+// install will require that the javadocs are generated and zipped. It will
+// then publish them to the local maven repository along with the jar, and
+// archives of the executables.
+// install also depends on installDist which will publish the latest version of
+// the jMath-V.E.R.jar to $buildDir/install/jMath/lib and will create a copy
+// named jMath.jar there as well. It will also create any executables (as specified
+// in this build.gradle) and save them in $buildDir/install/jMath/bin
+defaultTasks 'install'
+zipJavadoc.dependsOn javadoc
+install.dependsOn installDist, zipJavadoc
 
 repositories {
     mavenCentral()
@@ -61,6 +79,33 @@ def createScript(project, mainClass, name) {
 startScripts.enabled = false
 run.enabled = false
 
+// copy the current version of the jMath jar and rename it to be
+// jMath.jar
+installDist.doLast {
+    String location = "$buildDir/install/jMath/lib/"
+    String oldFileName = location+"jMath-$version"+".jar"
+    String versionString = "-$version"
+    copy {
+        from oldFileName
+        into location
+
+        rename { String fileName ->
+            fileName.replace(versionString,'')
+        }
+
+    }
+}
+
+// always run zipJavadoc after javadoc task. Will run even if javadoc fails.
+//javadoc.finalizedBy(zipJavadoc)
+
+// add the javadoc zip to the list of artifacts to be published in the maven repository
+def javadocZip = file("$buildDir/distributions/jMath-$version"+"-javadoc.zip")
+artifacts {
+    archives javadocZip
+}
+
 // Call this for each Main class you want to expose with an app script
 createScript(project, 'com.aaronpmaus.jMath.executables.FindClique', 'FindClique')
 createScript(project, 'com.aaronpmaus.jMath.executables.FindMaxClique', 'FindMaxClique')
+
