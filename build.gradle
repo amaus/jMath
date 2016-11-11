@@ -19,6 +19,7 @@ task zipJavadoc(type: Zip){
     baseName = 'jMath'
 }
 
+// copy any dependencies into $buildDir/lib so that executables can find them.
 task copyDepToLib(type: Copy){
     into "$buildDir/lib"
     from configurations.runtime
