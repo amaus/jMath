@@ -19,13 +19,19 @@ task zipJavadoc(type: Zip){
     baseName = 'jMath'
 }
 
+task copyDepToLib(type: Copy){
+    into "$buildDir/lib"
+    from configurations.runtime
+}
+
 // install will require that the javadocs are generated and zipped. It will
 // then publish them to the local maven repository along with the jar, and
 // archives of the executables.
 defaultTasks 'build'
 zipJavadoc.dependsOn javadoc
-install.dependsOn zipJavadoc
+install.dependsOn zipJavadoc, copyDepToLib
 //build.dependsOn zipJavadoc
+build.dependsOn copyDepToLib
 
 // add the javadoc zip to the list of artifacts to be published in the maven repository
 def javadocZip = file("$buildDir/distributions/jMath-$version"+"-javadoc.zip")
