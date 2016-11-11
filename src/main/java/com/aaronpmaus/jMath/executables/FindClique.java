@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.Date;
 
+/**
+ * <p>Usage: FindClique dimacsFilename cliqueSize</p>
+ * FindClique looks for a clique of a given size in the graph. If a clique is
+ * found, it prints it out. Otherwise it states that there are no cliques of
+ * that size in the graph.
+*/
 public class FindClique {
     public static void main(String[] args){
         if(args.length != 2){

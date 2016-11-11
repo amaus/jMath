@@ -5,6 +5,12 @@ import java.util.Set;
 import java.util.Date;
 import java.util.Collections;
 
+/**
+ * <p>Usage: FindMaxClique dimacsFilename</p>
+ * FindMaxClique finds a maximum clique in the graph. It performs a binary search on k (clique size),
+ * searching for cliques of that size until it can verify that there is a clique of size k
+ * and there are no cliques of size k+1.
+*/
 public class FindMaxClique{
     public static void main(String[] args){
         if(args.length != 1){
