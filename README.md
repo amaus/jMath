@@ -14,9 +14,9 @@ You will need to install the gradle package manager onto your machine
 1. Clone the project
 2. `gradle install`
 3. create new environment variable JMATHDIR and set it to location to location of jMath source
-4. Add to CLASSPATH $JMATHDIR/build/install/jMath/lib/jMath.jar
-5. Add to PATH $JMATHDIR/build/install/jMath/bin/
-4. Now you can import the library into any java project you write, and you can run any of the
+4. Add to your CLASSPATH $JMATHDIR/build/lib/jMath.jar (if you want to import jMath into your own projects)
+5. Add to your PATH $JMATHDIR/build/executables
+6. Now you can import the library into any java project you write, and you can run any of the
    executables provided by jMath.
 
 ## Usage
@@ -38,11 +38,21 @@ if you issue the command:
 
 `gradle install`
 
-gradle will do several things. It will create and install the jar and
-executables to $JMATHDIR/build/install/jMath and to the local maven repository 
-(for archival purposes). The maven local repository is located in ~/.m2/respository
+gradle will do a couple things. It will create and install the jar and
+executables to the local maven repository (for archival purposes). 
+The maven local repository is located in ~/.m2/respository.
 It will also generate the javadocs, zip them up, and install them to the 
 $JMATHDIR/distributions and the maven local repository.
+
+Workflow, as developing, compile and test using `gradle build`. When it is time to make
+a minor release, use `gradle install` to install jars, executables, and javadoc archive
+to local maven repository. 
+
+If you are developing within jMath, when you create a new executable, you must add it
+to the build.gradle script for it to compile. The executable start scripts will ignore
+your CLASSPATH in lieu of the latest compiled jar in $JMATHDIR/build/lib/. If you are developing
+outside of jMath, that is writing your own programs that depend on jMath, you need to make
+sure your CLASSPATH includes the location of your jMath jar.
 
 ## javadoc
 
