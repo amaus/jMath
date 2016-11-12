@@ -241,7 +241,7 @@ public class Graph<T>{
     }
 
     /**
-     * Returns a node from the graph given the object it holds
+     * Returns the node from the graph that holds the given object. 
      * @param obj the object of the node to be retrieved
      * @return the node with that object or null if it is not in the graph.
     */
@@ -392,24 +392,5 @@ public class Graph<T>{
             str += node.toString() + "\n";// + " #neighbors: " + node.numNeighbors() + "\n";
         }
         return str;
-    }
-
-    public String getNodesString(String delimiter, String[] resIDs){
-        Collection<Node<T>> nodes = getNodes();
-        String ret = "";
-        int i = 0;
-        for(Node<T> node : nodes){
-            if(i == 0){
-                i++;
-                if(node.get() instanceof Integer){
-                    ret += resIDs[(Integer)node.get()].trim();
-                }
-            } else {
-                if(node.get() instanceof Integer){
-                    ret += delimiter+resIDs[(Integer)node.get()].trim();
-                }
-            }
-        }
-        return ret;
     }
 }
