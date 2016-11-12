@@ -18,8 +18,11 @@ public class FindMaxClique{
             System.exit(1);
         }
         String filename = args[0];
+        long graphBuildStart = new Date().getTime();
         UndirectedGraph<Integer> graph = GraphIO.readFromDimacsFile(filename);
-        System.out.println("Graph built from dimacs file: " + filename);
+        long graphBuildEnd = new Date().getTime();
+        System.out.println("Graph built from dimacs file " + filename + " in " 
+                            + (graphBuildEnd-graphBuildStart) + " milliseconds.");
         System.out.println("Graph Density: " + graph.density());
         //System.out.println(graph);
         //neighborhood = graph.getNeighborhood(graph.getNode(new Integer(3)));

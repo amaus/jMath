@@ -21,8 +21,11 @@ public class FindClique {
 
         // Read in the graph from the DIMACS file and print the
         // max possible clique number
+        long graphBuildStart = new Date().getTime();
         UndirectedGraph<Integer> graph = GraphIO.readFromDimacsFile(filename);
-        System.out.println("Graph built from dimacs file: " + filename);
+        long graphBuildEnd = new Date().getTime();
+        System.out.println("Graph built from dimacs file " + filename + " in " 
+                            + (graphBuildEnd-graphBuildStart) + " milliseconds.");
         int maxPossibleCliqueNum = graph.maxPossibleCliqueNumDeep(graph);
         System.out.println("Max Possible Clique Number: " + maxPossibleCliqueNum);
 
