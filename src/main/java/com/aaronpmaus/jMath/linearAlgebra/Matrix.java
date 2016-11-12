@@ -4,7 +4,7 @@ import java.lang.IllegalArgumentException;
 /**
  * This class represents a 2-dimensional matrix.
  * @author  Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.0
+ * @version 0.1.4
  * @since 0.1.0
  */
 public class Matrix{
@@ -68,7 +68,7 @@ public class Matrix{
      * @throws IllegalArgumentException thrown if the Matrices dimensions are incompatible for matrix
      *              multiplication. this.getNumCols must be equal to other.getNumRows().
     */
-    public Matrix multiply(Matrix other){
+    public Matrix multiply(Matrix other) throws IllegalArgumentException{
         if(getNumCols() != other.getNumRows()){
             throw new IllegalArgumentException("Matrix::multiply() this.getNumCols() must equal other.getNumRows()");
         }
@@ -115,7 +115,7 @@ public class Matrix{
      * @return      a new Matrix of the same dimensions holding the sum of the two matrices.
      * @throws IllegalArgumentException thrown if the dimensions of the two matrices are not the same.
     */
-    public Matrix add(Matrix other){
+    public Matrix add(Matrix other) throws IllegalArgumentException{
         if(this.getNumRows() != other.getNumRows() || this.getNumCols() != other.getNumCols()){
             throw new IllegalArgumentException("Matrix::add(Matrix other) other must have same dimensions as this");
         }
@@ -128,6 +128,17 @@ public class Matrix{
         return new Matrix(newMat);
     }
 
+    /**
+     * Performs matrix subtraction.
+     * @param other the Matrix to subtract from this one. It must be of the same dimensions as this Matrix.
+     * @return      a new Matrix of the same dimensions holding the difference of the two matrices.
+     * @throws IllegalArgumentException thrown if the dimensions of the two matrices are not the same.
+     * @since 0.1.4
+    */
+    public Matrix subtract(Matrix other) throws IllegalArgumentException{
+        Matrix negativeOther = other.multiply(-1);
+        return add(negativeOther);
+    }
     /**
      * Returns the transpose of this Matrix.
      * @return a new Matrix holding the transpose of this matrix.
