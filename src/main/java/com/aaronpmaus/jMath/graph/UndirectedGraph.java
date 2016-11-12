@@ -17,6 +17,7 @@ import java.util.Date;
 public class UndirectedGraph<T> extends Graph<T>{
     public static long numRecursiveCalls = 0;
     private static int maxPrintLevel = 0;
+    private boolean verbose = false;
 
     /**
      * A default constructor for the UndirectedGraph
@@ -143,6 +144,10 @@ public class UndirectedGraph<T> extends Graph<T>{
      * {@inheritDoc}
     */
     public UndirectedGraph<T> getNeighborhood(Collection<Node<T>> nodes){
+        // getNeighborhoodNodes will use the nodes from THIS graph
+        // with the same objects as the nodes passed in. That way,
+        // if the nodes passed in are a deep copy, it will find
+        // the correct nodes in THIS graph.
         Collection<Node<T>> copyNodes = getNeighborhoodNodes(nodes);
         return new UndirectedGraph<T>(copyNodes);
     }
@@ -165,34 +170,6 @@ public class UndirectedGraph<T> extends Graph<T>{
         // ie, double the edges. so we don't need to multiply by 2.
         return super.density(); 
     }
-
-    /*
-     * Finds and returns the Maximum Clique of an UndirectedGraph.
-     * @param graph the graph to find the max clique in
-     * @return an UndirectedGraph that is the Maximum Clique
-     * TODO: write this to use binary search rather than linear to determine the max clique
-    public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph){
-        long startTime = new Date().getTime();
-        UndirectedGraph<T> clique = null;
-        System.out.println("Original Graph Size: " + graph.size());
-        int k = maxPossibleCliqueNum(graph);
-        System.out.println("Max Possible Clique Number: " + k);
-        while(k > 0){
-            System.out.println("***SEARCHING FOR CLIQUES OF SIZE: " + k+"***");
-            clique = findClique(new UndirectedGraph<T>(graph), k);
-            System.out.println(numRecursiveCalls + " RECURSIVE CALLS SO FAR");
-            if(clique != null){
-                long endTime = new Date().getTime();
-                System.out.println("Maximum Clique Finder runtime: " + (endTime-startTime) + " milliseconds");
-                System.out.println("Clique Number: " + clique.size());
-                return clique;
-            } else {
-                k--;
-            }
-        }
-        return clique;
-    }
-    */
 
     /**
      * Finds and returns the Maximum Clique of an UndirectedGraph. Calculates the maximum
@@ -220,28 +197,28 @@ public class UndirectedGraph<T> extends Graph<T>{
         // if maxPossibleCliqueNum is the size of the graph (and the whole
         // graph is a clique), ((N+1) + N)/2 == N. Searching for a clique of
         // size N will be the last search made.
-        System.out.println("Original Graph Size: " + graph.size());
+        if(verbose) System.out.println("Original Graph Size: " + graph.size());
         //System.out.println(graph);
         int high = maxPossibleCliqueNumDeep(graph) + 1;
-        System.out.println("Max Possible Clique Number: " + (high-1));
+        if(verbose) System.out.println("Max Possible Clique Number: " + (high-1));
         int low = 0;
         UndirectedGraph<T> clique = null;
         UndirectedGraph<T> maxClique = null;
         while(high - low > 1){
             int k = (high + low) / 2;
             long startTime = new Date().getTime();
-            System.out.println("******Searching for a clique of size: " + k + "******");
+            if(verbose) System.out.println("******Searching for a clique of size: " + k + "******");
             numRecursiveCalls = 0;
             clique = findClique(new UndirectedGraph<T>(graph), k, 1);
             long endTime = new Date().getTime();
             if(clique != null){ // clique found
-                System.out.println("##### Found a clique of size " + clique.size() +" #####");
-                System.out.print(clique);
+                if(verbose) System.out.println("##### Found a clique of size " + clique.size() +" #####");
+                if(verbose) System.out.print(clique);
                 String cliqueStr = "CLIQUE: ";
                 for(Node<T> node : clique.getNodes()){
                     cliqueStr += node.get() + " ";
                 }
-                System.out.println(cliqueStr);
+                if(verbose) System.out.println(cliqueStr);
                 maxClique = clique;
                 // findClique can return a clique larger than k.
                 // The first thing the method does is check if the graph passed in
@@ -253,16 +230,16 @@ public class UndirectedGraph<T> extends Graph<T>{
                 }
                 low = k;
             } else { // NO clique of size k
-                System.out.println("##### No clique found of size " + k + " #####");
+                if(verbose) System.out.println("##### No clique found of size " + k + " #####");
                 high = k;
             }
-            System.out.println("Took " + (endTime - startTime) + " milliseconds to run findClique for k: " + k);
-            System.out.println("using " + numRecursiveCalls + " recursive calls.");
+            if(verbose) System.out.println("Took " + (endTime - startTime) + " milliseconds to run findClique for k: " + k);
+            if(verbose) System.out.println("using " + numRecursiveCalls + " recursive calls.");
         }
         long fullEndTime = new Date().getTime();
         //System.out.print("Maximum Clique\n"+maxClique);
         //System.out.println("size: " + maxClique.size());
-        System.out.println("Total Time: " + (fullEndTime - fullStartTime) + " milliseconds");
+        if(verbose) System.out.println("Total Time: " + (fullEndTime - fullStartTime) + " milliseconds");
         return maxClique;
     }
 
