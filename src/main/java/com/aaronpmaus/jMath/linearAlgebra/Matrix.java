@@ -66,7 +66,7 @@ public class Matrix{
      * @return      a Matrix of dimensions this.getNumRows() by other.getNumCols() containing the results
      *              of the multiplication.
      * @throws IllegalArgumentException thrown if the Matrices dimensions are incompatible for matrix
-     *              multiplication. this.getNumCols must be equal to other.getNumRows().
+     *              multiplication. this.getNumCols() must be equal to other.getNumRows().
     */
     public Matrix multiply(Matrix other) throws IllegalArgumentException{
         if(getNumCols() != other.getNumRows()){
