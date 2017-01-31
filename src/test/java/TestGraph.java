@@ -31,4 +31,10 @@ public class TestGraph{
         assertEquals(1,myGraph.size());
         //assertEquals(1,0);
     }
+
+    @Test
+    public void testEdges(){
+        myGraph = GraphIO.readFromDimacsFile("./build/resources/test/example.dimacs");
+        assertEquals(15,myGraph.numEdges());
+    }
 }

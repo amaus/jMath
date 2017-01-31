@@ -28,6 +28,7 @@ public class TestNode{
         n1 = new Node<Integer>(1);
         n2 = new Node<Integer>(2);
         n3 = new Node<Integer>(3);
+        System.out.println("Running setup method");
     }
 
     @Test
