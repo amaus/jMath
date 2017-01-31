@@ -1,6 +1,7 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
@@ -199,7 +200,8 @@ public class UndirectedGraph<T> extends Graph<T>{
         // size N will be the last search made.
         if(verbose) System.out.println("Original Graph Size: " + graph.size());
         //System.out.println(graph);
-        int high = maxPossibleCliqueNumDeep(graph) + 1;
+        //int high = maxPossibleCliqueNumDeep(graph) + 1;
+        int high = maxPossibleCliqueNum(graph) + 1;
         if(verbose) System.out.println("Max Possible Clique Number: " + (high-1));
         int low = 0;
         UndirectedGraph<T> clique = null;
@@ -252,7 +254,7 @@ public class UndirectedGraph<T> extends Graph<T>{
      * @param graph the graph to search for cliques in
      * @param k the size of the clique to search for
      * @param level track the level of recursion
-     * @return an UndirectedGraph&lt;T&gt; that is a clique or null if no clique
+     * @return an UndirectedGraph{@literal <T>} that is a clique or null if no clique
      * of size k exists.
      * @since 0.1.2
     */
@@ -594,6 +596,29 @@ public class UndirectedGraph<T> extends Graph<T>{
         }
         return new UndirectedGraph<T>(nodes);
     }
+    
+    /**
+     * Returns a set of all the edges in this UndirectedGraph
+     * @return a Collection of the edges in this UndirectedGraph
+    */
+    public Collection<UndirectedEdge<T>> getEdges(){
+        HashSet<UndirectedEdge<T>> edges = new HashSet<UndirectedEdge<T>>((int)(numEdges()/0.75) + 1);
+        for(Node<T> node : getNodes()){
+            for(Edge<T> e : node.getEdges()){
+                edges.add(new UndirectedEdge<T>(e));
+            }
+        }
+        return edges;
+    }
+
+    /**
+     * Returns the number of edges in this UndirectedGraph.
+     * @return an int representing the number of edges in this UndirectedGraph
+    */
+    @Override
+    public int numEdges(){
+        return super.numEdges()/2;
+    }
 
     /**
      * Checks if a graph is a clique. A graph is a clique if there are N*(N-1)/2
@@ -604,7 +629,7 @@ public class UndirectedGraph<T> extends Graph<T>{
     public boolean isClique(UndirectedGraph<T> graph){
         int numEdges = graph.numEdges();
         int numNodes = graph.size();
-        int edgesRequired = numNodes * (numNodes - 1);
+        int edgesRequired = (numNodes * (numNodes - 1))/2;
         if(numEdges == edgesRequired){
             return true;
         }

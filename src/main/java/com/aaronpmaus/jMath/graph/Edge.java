@@ -13,7 +13,7 @@ public class Edge<T>{
     private double weight;
 
     /**
-     * Constructs and edge for a graph with a default weight of 1.0
+     * Constructs an edge for a graph with a default weight of 1.0
      * @param start the "from" node of the edge
      * @param end the "to" node of the edge
     */
@@ -22,7 +22,7 @@ public class Edge<T>{
     }
 
     /**
-     * Constructs and edge for a graph
+     * Constructs an edge for a graph
      * @param start the "from" node of the edge
      * @param end the "to" node of the edge
      * @param weight the weight of this edge
@@ -34,16 +34,16 @@ public class Edge<T>{
     }
 
     /**
-     * Returns the Node&lt;T&gt; at the start position of this edge
-     * @return the start Node&lt;T&gt;
+     * Returns the Node{@literal <T>} at the start position of this edge
+     * @return the start Node{@literal <T>}
     */
     public Node<T> getStart(){
         return this.start;
     }
 
     /**
-     * Returns the Node&lt;T&gt; at the end position of this edge
-     * @return the end Node&lt;T&gt;
+     * Returns the Node{@literal <T>} at the end position of this edge
+     * @return the end Node{@literal <T>}
     */
     public Node<T> getEnd(){
         return this.end;
@@ -55,5 +55,38 @@ public class Edge<T>{
     */
     public double getWeight(){
         return this.weight;
+    }
+
+    /**
+     * Returns the hashCode for this edge. The hashCode for an edge
+     * is the concatenation of the hashCodes of nodes of it's end
+     * points
+     * @return an int representing the hashCode of this edge
+    */
+    @Override
+    public int hashCode(){
+        String str = String.format("%d%d",getStart().hashCode(),getEnd().hashCode());
+        return Integer.parseInt(str);
+    }
+
+    /**
+     * Overridden equals() method.
+     * Two edges are equals if their starting points are equals
+     * and their ending points are equal.
+     * @param obj the other edge to compare to
+     * @return true if {@code this.getStart().equals(obj.getStart()) && this.getEnd().equals(obj.getEnd())}
+    */
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(Object obj){
+        Edge<T> other;
+        if(this.getClass().isInstance(obj)){
+            other = this.getClass().cast(obj);
+            if(getStart().equals(other.getStart())
+                && getEnd().equals(other.getEnd())){
+                return true;
+            }
+        }
+        return false;
     }
 }
