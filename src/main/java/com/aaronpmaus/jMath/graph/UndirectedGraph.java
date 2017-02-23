@@ -246,6 +246,29 @@ public class UndirectedGraph<T> extends Graph<T>{
     }
 
     /**
+     * Returns a clique covering (or partition) of a Graph.
+     * A clique covering is a set of cliques that are disjoint and
+     * cover the graph.
+     * @return a {@code Collection<UndirectedGraph<T>>} where each graph is a clique
+     * in the partition.
+     * @since 0.1.5
+    */
+    public ArrayList<UndirectedGraph<T>> getCliqueCovering( ){
+        ArrayList<UndirectedGraph<T>> theCovering = new ArrayList<UndirectedGraph<T>>();
+        UndirectedGraph<T> theGraph = new UndirectedGraph<T>(this);
+        do {
+            UndirectedGraph<T> clique = theGraph.findMaxClique(theGraph);
+            theCovering.add(clique);
+            for(Node<T> node : clique.getNodes()){
+                // need to pass in a code from the original graph, not
+                // one from the clique
+                theGraph.removeNodeFromGraph(this.getNode(node.get()));
+            }
+        } while(theGraph.size() > 0);
+        return theCovering;
+    }
+
+    /**
      * Looks for cliques of size k in a graph.
      * If there is a clique of size k, it will return it. If it returns a clique
      * larger than k, then there is definitely a clique of size k and possibly
