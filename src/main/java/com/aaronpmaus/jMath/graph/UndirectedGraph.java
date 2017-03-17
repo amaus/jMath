@@ -16,7 +16,7 @@ import java.util.Date;
  * @since 0.1.0
 */
 public class UndirectedGraph<T> extends Graph<T>{
-    public static long numRecursiveCalls = 0;
+    public static long numRecursiveCalls = -1;
     private static int maxPrintLevel = 0;
     private boolean verbose = false;
 
@@ -173,6 +173,57 @@ public class UndirectedGraph<T> extends Graph<T>{
     }
 
     /**
+     * Returns an Independent Set partition of the graph.
+     * This partition is NOT guaranteed to be optimal. It is built
+     * via a greedy algorithm. At every step, find the largest
+     * Independent Set in the graph without any nodes from 
+     * previous Independent Sets
+     * @return a {@code ArrayList<UndirectedGraph<T>>} where each graph is an
+     * Independent Set in the Partition. 
+    */
+    public ArrayList<UndirectedGraph<T>> getIndependentSetPartition( ){
+        ArrayList<UndirectedGraph<T>> independentSetPartition = new ArrayList<UndirectedGraph<T>>();
+        UndirectedGraph<T> theGraph = new UndirectedGraph<T>(this);
+        do {
+            UndirectedGraph<T> independentSet = theGraph.findMaxIndependentSetViaClique( );
+            ArrayList<Node<T>> nodesFromOrigGraph = new ArrayList<Node<T>>();
+            for(Node<T> node : independentSet.getNodes()){
+                // need to pass in a code from the original graph, not
+                // one from the clique
+                theGraph.removeNodeFromGraph(theGraph.getNode(node.get()));
+                nodesFromOrigGraph.add(this.getNode(node.get()));
+            }
+            independentSetPartition.add(new UndirectedGraph<T>(nodesFromOrigGraph));
+        } while(theGraph.size() > 0);
+        return independentSetPartition;
+    }
+
+    /**
+     * Returns a clique covering (or partition) of a Graph.
+     * A clique covering is a set of cliques that are disjoint and
+     * cover the graph.
+     * @return a {@code ArrayList<UndirectedGraph<T>>} where each graph is a clique
+     * in the partition. The Nodes are deep copies of those in the original graph.
+     * @since 0.1.5
+    */
+    public ArrayList<UndirectedGraph<T>> getCliqueCovering( ){
+        ArrayList<UndirectedGraph<T>> theCovering = new ArrayList<UndirectedGraph<T>>();
+        UndirectedGraph<T> theGraph = new UndirectedGraph<T>(this);
+        do {
+            UndirectedGraph<T> clique = theGraph.findMaxClique(theGraph);
+            ArrayList<Node<T>> nodesFromOrigGraph = new ArrayList<Node<T>>();
+            for(Node<T> node : clique.getNodes()){
+                // need to pass in a code from the original graph, not
+                // one from the clique
+                theGraph.removeNodeFromGraph(theGraph.getNode(node.get()));
+                nodesFromOrigGraph.add(this.getNode(node.get()));
+            }
+            theCovering.add(new UndirectedGraph<T>(nodesFromOrigGraph));
+        } while(theGraph.size() > 0);
+        return theCovering;
+    }
+
+    /**
      * Finds and returns the Maximum Clique of an UndirectedGraph. Calculates the maximum
      * possible clique number by looking at the number of edges per node. It makes use of the
      * fact that for a graph to have a clique of size k, there must be atleast k nodes each with
@@ -201,8 +252,19 @@ public class UndirectedGraph<T> extends Graph<T>{
         if(verbose) System.out.println("Original Graph Size: " + graph.size());
         //System.out.println(graph);
         //int high = maxPossibleCliqueNumDeep(graph) + 1;
+        ArrayList<UndirectedGraph<T>> independentSets = null;
+        //int high = graph.size();
+        //if(density() > 0.90){
+            // use IndependentSetPartition to determine bound
+            //independentSets = graph.getIndependentSetPartition();
+            //high = independentSets.size() + 1;
+            //if(verbose) System.out.println("Max Possible Clique Number (Ind Sets): " + (high-1));
+        //} else { 
+            // determine it via graph edges
+            //high = maxPossibleCliqueNum(graph) + 1;
+            //if(verbose) System.out.println("Max Possible Clique Number: " + (high-1));
+        //}
         int high = maxPossibleCliqueNum(graph) + 1;
-        if(verbose) System.out.println("Max Possible Clique Number: " + (high-1));
         int low = 0;
         UndirectedGraph<T> clique = null;
         UndirectedGraph<T> maxClique = null;
@@ -210,7 +272,9 @@ public class UndirectedGraph<T> extends Graph<T>{
             int k = (high + low) / 2;
             long startTime = new Date().getTime();
             if(verbose) System.out.println("******Searching for a clique of size: " + k + "******");
-            numRecursiveCalls = 0;
+            if(numRecursiveCalls == -1){
+                numRecursiveCalls = 0;
+            }
             clique = findClique(new UndirectedGraph<T>(graph), k, 1);
             long endTime = new Date().getTime();
             if(clique != null){ // clique found
@@ -243,29 +307,6 @@ public class UndirectedGraph<T> extends Graph<T>{
         //System.out.println("size: " + maxClique.size());
         if(verbose) System.out.println("Total Time: " + (fullEndTime - fullStartTime) + " milliseconds");
         return maxClique;
-    }
-
-    /**
-     * Returns a clique covering (or partition) of a Graph.
-     * A clique covering is a set of cliques that are disjoint and
-     * cover the graph.
-     * @return a {@code Collection<UndirectedGraph<T>>} where each graph is a clique
-     * in the partition.
-     * @since 0.1.5
-    */
-    public ArrayList<UndirectedGraph<T>> getCliqueCovering( ){
-        ArrayList<UndirectedGraph<T>> theCovering = new ArrayList<UndirectedGraph<T>>();
-        UndirectedGraph<T> theGraph = new UndirectedGraph<T>(this);
-        do {
-            UndirectedGraph<T> clique = theGraph.findMaxClique(theGraph);
-            theCovering.add(clique);
-            for(Node<T> node : clique.getNodes()){
-                // need to pass in a code from the original graph, not
-                // one from the clique
-                theGraph.removeNodeFromGraph(this.getNode(node.get()));
-            }
-        } while(theGraph.size() > 0);
-        return theCovering;
     }
 
     /**
@@ -401,7 +442,14 @@ public class UndirectedGraph<T> extends Graph<T>{
                     }
                 }
                 UndirectedGraph<T> clique = null;
-                int maxPosCliqueNum = maxPossibleCliqueNum(neighborhood);
+                int maxPosCliqueNum = neighborhood.size();
+                if(neighborhood.density() > 0.70){
+                    ArrayList<UndirectedGraph<T>> indSets = neighborhood.getIndependentSetPartition();
+                    maxPosCliqueNum = indSets.size();
+                } else {
+                    maxPosCliqueNum = maxPossibleCliqueNum(neighborhood);
+                }
+                //int maxPosCliqueNum = maxPossibleCliqueNum(neighborhood);
                 if(maxPosCliqueNum < k){
                     clique = null;
                     if(level <= maxPrintLevel){
@@ -566,10 +614,9 @@ public class UndirectedGraph<T> extends Graph<T>{
     /**
      * Returns the max independent set of size k of a graph. Calculates this by finding the
      * max clique in the complement of this graph and returning those nodes.
-     * @param graph the graph to look for the independent set in
-     * @return the max independent set
+     * @return the max independent set in this graph
     */
-    public UndirectedGraph<T> findMaxIndependentSetViaClique(UndirectedGraph<T> graph){
+    public UndirectedGraph<T> findMaxIndependentSetViaClique( ){
         UndirectedGraph<T> complement = getComplement();
         UndirectedGraph<T> clique = findMaxClique(complement);
         UndirectedGraph<T> independentSet = null;
@@ -605,14 +652,13 @@ public class UndirectedGraph<T> extends Graph<T>{
     }
 
     /**
-     * Returns the min vertex cover of the graph. Calculates this by finding  the max
+     * Returns the min vertex cover of the graph. Calculates this by finding the max
      * clique in the complement of this graph and returning all the nodes in the
      * graph except those nodes.
-     * @param graph the graph to look for the vertext cover in
-     * @return the min vertex cover if exists
+     * @return the min vertex cover of this graph if exists
     */
-    public UndirectedGraph<T> findMinVertexCoverViaClique(UndirectedGraph<T> graph){
-        UndirectedGraph<T> independentSet = findMaxIndependentSetViaClique(graph);
+    public UndirectedGraph<T> findMinVertexCoverViaClique( ){
+        UndirectedGraph<T> independentSet = findMaxIndependentSetViaClique( );
         Collection<Node<T>> nodes = getNodes();
         for(Node<T> independentSetNode : independentSet.getNodes()){
             nodes.remove(independentSetNode);
