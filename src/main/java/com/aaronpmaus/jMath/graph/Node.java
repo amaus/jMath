@@ -152,7 +152,8 @@ public class Node<T> implements Comparable<Node<T>>{
 
     @Override
     /**
-     * Overwritten compareTo from Comparable.
+     * Overwritten compareTo from Comparable compares on number
+     * of neighbors.
      * @param n the node to compare to
      * @return this.numNeighbors() - n.numNeighbors()
     */
