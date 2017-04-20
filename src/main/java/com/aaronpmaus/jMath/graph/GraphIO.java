@@ -10,7 +10,7 @@ import java.io.FileWriter;
  * A class with static methods to read in graphs from files with difference formats
  * @author Aaron Maus aaron@aaronpmaus.com
  * @version 0.1.0
- * @since 0.1.0
+ * @since 0.1.5
 */
 public class GraphIO{
 
@@ -18,37 +18,33 @@ public class GraphIO{
      * Reads in and build and UndirectedGraph{@literal <Integer>}from a DIMACS file.
      * @param filename the name of the file to read from
      * @return the UndirectedGraph{@literal <Integer>} from that file
+     * @throws FileNotFoundException if reading in the file fails
     */
-    public static UndirectedGraph<Integer> readFromDimacsFile(String filename){
-        try{
-            Scanner fileReader = new Scanner(new File(filename));
-            int numNodes = 0;
-            int numEdges = 0;
-            UndirectedGraph<Integer> graph;// = new UndirectedGraph<Integer>();
-            while(fileReader.hasNextLine()){
-                String line = fileReader.nextLine();
-                String[] tokens = line.split(" ");
-                if(tokens[0].equals("p")){
-                    numNodes = Integer.parseInt(tokens[2]);
-                    numEdges = Integer.parseInt(tokens[3]);
-                    break;
-                }
+    public static UndirectedGraph<Integer> readFromDimacsFile(String filename) throws FileNotFoundException{
+        Scanner fileReader = new Scanner(new File(filename));
+        int numNodes = 0;
+        int numEdges = 0;
+        UndirectedGraph<Integer> graph;// = new UndirectedGraph<Integer>();
+        while(fileReader.hasNextLine()){
+            String line = fileReader.nextLine();
+            String[] tokens = line.split(" ");
+            if(tokens[0].equals("p")){
+                numNodes = Integer.parseInt(tokens[2]);
+                numEdges = Integer.parseInt(tokens[3]);
+                break;
             }
-            graph = new UndirectedGraph<Integer>(numNodes);
-            while(fileReader.hasNextLine()){
-                String line = fileReader.nextLine();
-                String[] tokens = line.split(" ");
-                if(tokens[0].equals("e")){
-                    //System.out.println("Adding Edge between " + tokens[1] + " and " + tokens[2]);
-                    graph.addEdge(new Node<Integer>(new Integer(tokens[1])), 
-                                    new Node<Integer>(new Integer(tokens[2])));
-                }
-            }
-            return graph;
-        } catch(FileNotFoundException e){
-            e.printStackTrace();
         }
-        return null;
+        graph = new UndirectedGraph<Integer>(numNodes);
+        while(fileReader.hasNextLine()){
+            String line = fileReader.nextLine();
+            String[] tokens = line.split(" ");
+            if(tokens[0].equals("e")){
+                //System.out.println("Adding Edge between " + tokens[1] + " and " + tokens[2]);
+                graph.addEdge(new Node<Integer>(new Integer(tokens[1])), 
+                                new Node<Integer>(new Integer(tokens[2])));
+            }
+        }
+        return graph;
     }
 
     /**
