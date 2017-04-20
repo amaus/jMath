@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * generic Object. See the Node class for more information. In this manner a graph
  * can be built to represent anything.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.4
+ * @version 0.1.5
  * @since 0.1.0
 */
 public class Graph<T>{
@@ -113,7 +113,7 @@ public class Graph<T>{
     }
 
     /**
-     * Returns the neighborhood from this Graph of the collection of Nodes paseed in.
+     * Returns the neighborhood from this Graph of the collection of Nodes passed in.
      * The Neighborhood consists of the Nodes, all their neighbors,
      * and all the edges between all of these nodes.
      * @param nodes the Nodes to get the neighborhood around.
@@ -123,6 +123,20 @@ public class Graph<T>{
     */
     public Graph<T> getNeighborhood(Collection<Node<T>> nodes){
         Collection<Node<T>> copyNodes = getNeighborhoodNodes(nodes);
+        return new Graph<T>(copyNodes);
+    }
+
+    /**
+     * Returns a Graph of neighbors of the Node passed in.
+     * The Neighbors Graph consists of the neighboring Nodes
+     * and all the edges between all of these nodes.
+     * @param node the Node to get the neighbors of.
+     * @return a graph of the neighbors. This is a deep
+     *         copy of this subset of the total graph.
+     * @since 0.1.5
+    */
+    public Graph<T> getNeighbors(Node<T> node){
+        Collection<Node<T>> copyNodes = getDeepCopyNodes(node.getNeighbors());
         return new Graph<T>(copyNodes);
     }
     
@@ -344,6 +358,7 @@ public class Graph<T>{
      * @param n the node to remove
     */
     public void removeNodeFromGraph(Node<T> n){
+        n = this.getNode(n.get());
         for(Node<T> node : this.adjacencyList.values()){
             if(node.hasNeighbor(n)){
                 node.removeNeighbor(n);

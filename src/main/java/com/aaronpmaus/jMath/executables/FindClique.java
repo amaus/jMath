@@ -26,8 +26,6 @@ public class FindClique {
         long graphBuildEnd = new Date().getTime();
         System.out.println("Graph built from dimacs file " + filename + " in " 
                             + (graphBuildEnd-graphBuildStart) + " milliseconds.");
-        int maxPossibleCliqueNum = graph.maxPossibleCliqueNumDeep(graph);
-        System.out.println("Max Possible Clique Number: " + maxPossibleCliqueNum);
 
         //System.out.println(graph);
         //neighborhood = graph.getNeighborhood(graph.getNode(new Integer(3)));
@@ -35,8 +33,9 @@ public class FindClique {
         //System.out.println("Is Clique?: " + graph.isClique(neighborhood));
         
         // run the find clique algorithm while clocking it to know how much time it took
+        MausMaxCliqueSolver<Integer> maxCliqueTool = new MausMaxCliqueSolver<Integer>();
         long startTime = new Date().getTime();
-        UndirectedGraph<Integer> maxClique = graph.findClique(graph, k, 1);
+        UndirectedGraph<Integer> maxClique = maxCliqueTool.findClique(graph, k, 1);
         long endTime = new Date().getTime();
         System.out.println("Runtime: " + (endTime-startTime) + " milliseconds");
         
