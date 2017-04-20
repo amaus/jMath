@@ -15,6 +15,7 @@ public class MausMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
      * via a greedy algorithm. At every step, find the largest
      * Independent Set in the graph without any nodes from 
      * previous Independent Sets
+     * @param g the graph to get the Independent Set Partition of
      * @return a {@code ArrayList<UndirectedGraph<T>>} where each graph is an
      * Independent Set in the Partition. 
     */
@@ -39,6 +40,7 @@ public class MausMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
      * Returns a clique covering (or partition) of a Graph.
      * A clique covering is a set of cliques that are disjoint and
      * cover the graph.
+     * @param g the graph to get the Clique Covering of
      * @return a {@code ArrayList<UndirectedGraph<T>>} where each graph is a clique
      * in the partition. The Nodes are deep copies of those in the original graph.
      * @since 0.1.5
@@ -487,6 +489,7 @@ public class MausMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
     /**
      * Returns the max independent set of size k of a graph. Calculates this by finding the
      * max clique in the complement of this graph and returning those nodes.
+     * @param graph the graph to get the Max Independent Set of
      * @return the max independent set in this graph
     */
     public UndirectedGraph<T> findMaxIndependentSetViaClique(UndirectedGraph<T> graph){
@@ -528,6 +531,7 @@ public class MausMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
      * Returns the min vertex cover of the graph. Calculates this by finding the max
      * clique in the complement of this graph and returning all the nodes in the
      * graph except those nodes.
+     * @param graph the graph to get the min Vertex Cover of
      * @return the min vertex cover of this graph if exists
     */
     public UndirectedGraph<T> findMinVertexCoverViaClique(UndirectedGraph<T> graph){

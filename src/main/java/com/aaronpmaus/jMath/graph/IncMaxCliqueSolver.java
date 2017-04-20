@@ -33,6 +33,12 @@ public class IncMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
         return findMaxClique(graph, vertexOrdering);
     }
 
+    /**
+     * Finds the maximum clique in g
+     * @param graph the graph to search for a max clique in
+     * @param vertexOrdering the ordering of the vertices to use when searching for the clique
+     * @return An {@code UndirectedGraph<T>} that is a max clique in graph
+     */
     public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph, ArrayList<Node<T>> vertexOrdering) {
         // create a deep copy of the graph
         this.originalGraph = graph;
@@ -209,30 +215,19 @@ public class IncMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
         throw new NoSuchElementException("Smallest Vertex Not found!");
     }
 
-    public static <T> ArrayList<Node<T>> degeneracyOrdering(UndirectedGraph<T> g){
-        ArrayList<Node<T>> vertexOrdering = new ArrayList<Node<T>>(g.size());
-        // Build the Degeneracy Vertex Ordering
-        UndirectedGraph<T> temp = new UndirectedGraph<T>(g);
-        while(temp.size() > 0){
-            // get the node with the smallest degree in temp
-            Node<T> theSmallestNodeTemp = Collections.min(temp.getNodes());
-            // get a reference to that node in the original graph
-            Node<T> theSmallestNodeOriginal = g.getNode(theSmallestNodeTemp.get());
-            // add the original node reference to vertexOrdering
-            vertexOrdering.add(theSmallestNodeOriginal);
-            // remove the node from temp
-            temp.removeNodeFromGraph(theSmallestNodeTemp);
-        }
-        return vertexOrdering;
-    }
-
+    /**
+     * returns the independent set partition of a a graph
+     * @param g the graph to get the independent set partition of
+     * @param <T> the type parameter representing the type of Objects the graph contains
+     * @return an ArrayList of the graphs that make up the partition
+    */
     public static <T> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g) {
-        ArrayList<Node<T>> indSetVertexOrder = IncMaxCliqueSolver.degeneracyOrdering(g);
+        ArrayList<Node<T>> indSetVertexOrder = g.degeneracyOrdering( );
         Collections.reverse(indSetVertexOrder);
         return getIndependentSetPartition(g, indSetVertexOrder);
     }
 
-    public static <T> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g, ArrayList<Node<T>> indSetVertexOrder) {
+    private static <T> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g, ArrayList<Node<T>> indSetVertexOrder) {
         ArrayList<UndirectedGraph<T>> indSets = new ArrayList<UndirectedGraph<T>>();
         UndirectedGraph<T> gComplement = g.getComplement();
         IncMaxCliqueSolver<T> indSetSolver = new IncMaxCliqueSolver<T>();
@@ -260,13 +255,14 @@ public class IncMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
         }
         return indSets;
     }
+
     // Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
     // Li, Fang, Xu 2013
-    public static <T> ArrayList<Node<T>> vertexOrdering(UndirectedGraph<T> g){
+    private static <T> ArrayList<Node<T>> vertexOrdering(UndirectedGraph<T> g){
         numVOCalls++;
         System.out.println("#####\nvertexOrdering call # " + numVOCalls + ", g.density(): " + g.density());
         // Build the Degeneracy Vertex Ordering
-        ArrayList<Node<T>> vertexOrdering = degeneracyOrdering(g);
+        ArrayList<Node<T>> vertexOrdering = g.degeneracyOrdering( );
         System.out.println("after building degeneracy ordering, g.density(): " + g.density());
 
         ArrayList<UndirectedGraph<T>> indSets = new ArrayList<UndirectedGraph<T>>();

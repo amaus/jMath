@@ -177,6 +177,28 @@ public class UndirectedGraph<T> extends Graph<T>{
         return new UndirectedGraph<T>(getComplementNodes());
     }
 
+    /**
+     * A method to return the degeneracy ordering of a graph
+     * @return an ArrayList of Nodes representing the degeneracy ordering.
+     *         the smallest vertex is at the 0th index
+    */
+    public ArrayList<Node<T>> degeneracyOrdering( ){
+        ArrayList<Node<T>> vertexOrdering = new ArrayList<Node<T>>(this.size());
+        // Build the Degeneracy Vertex Ordering
+        UndirectedGraph<T> temp = new UndirectedGraph<T>(this);
+        while(temp.size() > 0){
+            // get the node with the smallest degree in temp
+            Node<T> theSmallestNodeTemp = Collections.min(temp.getNodes());
+            // get a reference to that node in the original graph
+            Node<T> theSmallestNodeOriginal = this.getNode(theSmallestNodeTemp.get());
+            // add the original node reference to vertexOrdering
+            vertexOrdering.add(theSmallestNodeOriginal);
+            // remove the node from temp
+            temp.removeNodeFromGraph(theSmallestNodeTemp);
+        }
+        return vertexOrdering;
+    }
+
     @Override
     /**
      * {@inheritDoc}
