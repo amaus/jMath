@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.After;
 import org.junit.AfterClass;
 import com.aaronpmaus.jMath.graph.*;
+import java.io.FileNotFoundException;
 
 // @Test flags a method as a test method.
 // @Before indicates that a method will be run before every
@@ -33,7 +34,7 @@ public class TestGraph{
     }
 
     @Test
-    public void testEdges(){
+    public void testEdges() throws FileNotFoundException{
         myGraph = GraphIO.readFromDimacsFile("./build/resources/test/example.dimacs");
         assertEquals(15,myGraph.numEdges());
     }
