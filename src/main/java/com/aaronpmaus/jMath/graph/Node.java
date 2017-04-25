@@ -15,7 +15,7 @@ import java.lang.ClassCastException;
  * @version 0.1.4
  * @since 0.1.0
 */
-public class Node<T> implements Comparable<Node<T>>{
+public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     private T obj;
     // the key is the node at the end of the edge
     private LinkedHashMap<Node<T>, Edge<T>> neighbors;
@@ -42,6 +42,14 @@ public class Node<T> implements Comparable<Node<T>>{
     */
     public T get(){
         return this.obj;
+    }
+
+    /**
+     * Change the object that this node holds.
+     * @param obj the new object for this node to hold
+    */
+    public void set(T obj) {
+        this.obj = obj;
     }
 
     /**
