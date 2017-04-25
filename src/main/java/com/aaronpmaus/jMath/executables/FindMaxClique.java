@@ -22,6 +22,7 @@ public class FindMaxClique{
         try {
             long graphBuildStart = new Date().getTime();
             UndirectedGraph<Integer> graph = GraphIO.readFromDimacsFile(filename);
+            graph.setGraphFileName("g.dimacs");
             long graphBuildEnd = new Date().getTime();
             System.out.println("Graph built from dimacs file " + filename + " in " 
                                 + (graphBuildEnd-graphBuildStart) + " milliseconds.");
@@ -31,7 +32,7 @@ public class FindMaxClique{
             //System.out.println("Neighborhood around 3:\n"+neighborhood);
             //System.out.println("Is Clique?: " + neighborhood.isClique( ));
             //MaxCliqueSolver<Integer> maxCliqueTool = new IncMaxCliqueSolver<Integer>();
-            MaxCliqueSolver<Integer> maxCliqueTool = new MausMaxCliqueSolver<Integer>();
+            MaxCliqueSolver<Integer> maxCliqueTool = new IncMaxCliqueAdapter();
             long cliqueStart = new Date().getTime();
             UndirectedGraph<Integer> maxClique1 = maxCliqueTool.findMaxClique(graph);
             //UndirectedGraph<Integer> maxClique1 = graph.findMaxClique(graph);
@@ -56,7 +57,7 @@ public class FindMaxClique{
                 System.out.println("Max clique not found. Umm.. somethings wrong");
             }
             //System.out.println(UndirectedGraph.numRecursiveCalls + " RECURSIVE CALLS MADE.");
-            System.out.println(IncMaxCliqueSolver.numCalls + " RECURSIVE CALLS MADE.");
+            //System.out.println(IncMaxCliqueSolver.numCalls + " RECURSIVE CALLS MADE.");
         } catch (FileNotFoundException e){
             System.out.println(filename + " not found. input proper filename or check file");
         }
