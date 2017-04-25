@@ -2,7 +2,7 @@ package com.aaronpmaus.jMath.graph;
 import java.util.Comparator;
 import java.util.ArrayList;
 
-public class MaxIndSetComparator<T> implements Comparator<Node<T>> {
+public class MaxIndSetComparator<T extends Comparable<T>> implements Comparator<Node<T>> {
     private ArrayList<UndirectedGraph<T>> indSetPartition;
 
     public MaxIndSetComparator(ArrayList<UndirectedGraph<T>> partition){

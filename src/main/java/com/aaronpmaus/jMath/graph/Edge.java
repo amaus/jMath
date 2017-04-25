@@ -7,7 +7,7 @@ package com.aaronpmaus.jMath.graph;
  * @version 0.1.0
  * @since 0.1.0
 */
-public class Edge<T>{
+public class Edge<T extends Comparable<T>>{
     private final Node<T> start;
     private final Node<T> end;
     private double weight;

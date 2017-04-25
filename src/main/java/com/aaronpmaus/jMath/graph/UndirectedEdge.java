@@ -16,7 +16,7 @@ package com.aaronpmaus.jMath.graph;
  * @version 0.1.5
  * @since 0.1.5
 */
-public class UndirectedEdge<T> extends Edge<T>{
+public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
 
     /**
      * Constructs an UndirectedEdge for a graph with a default weight of 1.0

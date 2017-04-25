@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Comparator;
 
 /**
  * A class for an UndirectedGraph. Extends Graph. A Graph is made of Nodes. Nodes
@@ -15,7 +16,7 @@ import java.util.Date;
  * @version 0.1.5
  * @since 0.1.0
 */
-public class UndirectedGraph<T> extends Graph<T>{
+public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     public static long numRecursiveCalls = -1;
     private static int maxPrintLevel = 0;
     private boolean verbose = false;
@@ -220,7 +221,18 @@ public class UndirectedGraph<T> extends Graph<T>{
                 edges.add(new UndirectedEdge<T>(e));
             }
         }
-        return edges;
+        //return edges;
+        ArrayList<UndirectedEdge<T>> edgesSorted = new ArrayList<UndirectedEdge<T>>(edges);
+        Collections.sort(edgesSorted, new Comparator<UndirectedEdge<T>>() {
+            public int compare(UndirectedEdge<T> e1, UndirectedEdge<T> e2) {
+                int comparison = e1.getStart().get().compareTo(e2.getStart().get());
+                if(comparison == 0) {
+                    return e1.getEnd().get().compareTo(e2.getEnd().get());
+                }
+                return comparison;
+            }
+        });
+        return edgesSorted;
     }
 
     /**

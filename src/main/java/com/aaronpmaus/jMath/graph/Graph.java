@@ -15,9 +15,10 @@ import java.util.ArrayList;
  * @version 0.1.5
  * @since 0.1.0
 */
-public class Graph<T>{
+public class Graph<T extends Comparable<T>>{
     private HashMap<T, Node<T>> adjacencyList;
     private int numEdges;
+    private String graphFileName;
 
     /**
      * A default constructor for the graph.
@@ -25,6 +26,7 @@ public class Graph<T>{
     public Graph(){
         this.adjacencyList = new HashMap<T, Node<T>>(100); // default load factor is 0.75
         this.numEdges = 0;
+        this.graphFileName = "g.dimacs";
     }
 
     /**
@@ -33,6 +35,8 @@ public class Graph<T>{
     */
     public Graph(int numNodes){
         this.adjacencyList = new HashMap<T, Node<T>>((int)((numNodes)/0.75)+1);
+        this.numEdges = 0;
+        this.graphFileName = "g.dimacs";
     }
 
     /**
@@ -53,11 +57,34 @@ public class Graph<T>{
      * @since 0.1.3
     */
     public Graph(Collection<Node<T>> nodes){
+        nodes = getDeepCopyNodes(nodes);
         this.adjacencyList = new HashMap<T, Node<T>>((int)((nodes.size())/0.75)+1);
         this.numEdges = 0;
         for(Node<T> node : nodes){
             addNode(node);
         }
+        this.graphFileName = "g.dimacs";
+    }
+
+    /**
+     * Sets the filename for the graph. This is the name
+     * to be used when writing out to file. When a graph
+     * is created by reading in from a
+     * @param name the name to set it to.
+    */
+    public void setGraphFileName(String name) {
+        this.graphFileName = name;
+    }
+
+    /**
+     * The filename to be used when writing the graph
+     * out to file. When a graph is created by reading
+     * from a dimacs file, this method will return
+     * the name of that file.
+     * @return the name of the file associated with this graph
+    */
+    public String getGraphFileName(){
+        return this.graphFileName;
     }
 
     /**
