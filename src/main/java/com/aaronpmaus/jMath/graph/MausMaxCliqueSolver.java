@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
-public class MausMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
+public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver<T> {
     public static long numRecursiveCalls = -1;
     private static int maxPrintLevel = 0;
     private boolean verbose = false;

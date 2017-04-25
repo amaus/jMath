@@ -10,7 +10,7 @@ import java.util.HashMap;
  * Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
  * Li, Fang, Xu 2013
 */
-public class IncMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
+public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver<T> {
     private ArrayList<Node<T>> vertexOrdering;
     //private ArrayList<Integer> vertexUB;
     private HashMap<Node<T>, Integer> vertexUB;
@@ -221,13 +221,13 @@ public class IncMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
      * @param <T> the type parameter representing the type of Objects the graph contains
      * @return an ArrayList of the graphs that make up the partition
     */
-    public static <T> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g) {
+    public static <T extends Comparable<T>> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g) {
         ArrayList<Node<T>> indSetVertexOrder = g.degeneracyOrdering( );
         Collections.reverse(indSetVertexOrder);
         return getIndependentSetPartition(g, indSetVertexOrder);
     }
 
-    private static <T> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g, ArrayList<Node<T>> indSetVertexOrder) {
+    private static <T extends Comparable<T>> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g, ArrayList<Node<T>> indSetVertexOrder) {
         ArrayList<UndirectedGraph<T>> indSets = new ArrayList<UndirectedGraph<T>>();
         UndirectedGraph<T> gComplement = g.getComplement();
         IncMaxCliqueSolver<T> indSetSolver = new IncMaxCliqueSolver<T>();
@@ -258,7 +258,7 @@ public class IncMaxCliqueSolver<T> implements MaxCliqueSolver<T> {
 
     // Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
     // Li, Fang, Xu 2013
-    private static <T> ArrayList<Node<T>> vertexOrdering(UndirectedGraph<T> g){
+    private static <T extends Comparable<T>> ArrayList<Node<T>> vertexOrdering(UndirectedGraph<T> g){
         numVOCalls++;
         System.out.println("#####\nvertexOrdering call # " + numVOCalls + ", g.density(): " + g.density());
         // Build the Degeneracy Vertex Ordering
