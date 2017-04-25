@@ -35,6 +35,7 @@ public class GraphIO{
             }
         }
         graph = new UndirectedGraph<Integer>(numNodes);
+        graph.setGraphFileName(filename);
         while(fileReader.hasNextLine()){
             String line = fileReader.nextLine();
             String[] tokens = line.split(" ");
