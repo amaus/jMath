@@ -9,6 +9,7 @@ import java.util.HashMap;
  * A class that implements IncMaxCliqueSolver from
  * Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
  * Li, Fang, Xu 2013
+ * INCOMPLETE - does not include UB max sat or ind set logic
 */
 public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver<T> {
     private ArrayList<Node<T>> vertexOrdering;
@@ -18,14 +19,8 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
     public static long numCalls = 0;
     public static long numVOCalls = 0;
 
-    public IncMaxCliqueSolver(){
-
-    }
-
     /**
-     * Finds the maximum clique in g
-     * @param graph the graph to search for a max clique in
-     * @return An {@code UndirectedGraph<T>} that is a max clique in graph
+     * {@inheritDoc}
      */
     public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph){
         ArrayList<Node<T>> vertexOrdering = vertexOrdering(graph);
@@ -218,16 +213,15 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
     /**
      * returns the independent set partition of a a graph
      * @param g the graph to get the independent set partition of
-     * @param <T> the type parameter representing the type of Objects the graph contains
      * @return an ArrayList of the graphs that make up the partition
     */
-    public static <T extends Comparable<T>> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g) {
+    public ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g) {
         ArrayList<Node<T>> indSetVertexOrder = g.degeneracyOrdering( );
         Collections.reverse(indSetVertexOrder);
         return getIndependentSetPartition(g, indSetVertexOrder);
     }
 
-    private static <T extends Comparable<T>> ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g, ArrayList<Node<T>> indSetVertexOrder) {
+    private ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g, ArrayList<Node<T>> indSetVertexOrder) {
         ArrayList<UndirectedGraph<T>> indSets = new ArrayList<UndirectedGraph<T>>();
         UndirectedGraph<T> gComplement = g.getComplement();
         IncMaxCliqueSolver<T> indSetSolver = new IncMaxCliqueSolver<T>();
@@ -258,7 +252,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
 
     // Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
     // Li, Fang, Xu 2013
-    private static <T extends Comparable<T>> ArrayList<Node<T>> vertexOrdering(UndirectedGraph<T> g){
+    private ArrayList<Node<T>> vertexOrdering(UndirectedGraph<T> g){
         numVOCalls++;
         System.out.println("#####\nvertexOrdering call # " + numVOCalls + ", g.density(): " + g.density());
         // Build the Degeneracy Vertex Ordering

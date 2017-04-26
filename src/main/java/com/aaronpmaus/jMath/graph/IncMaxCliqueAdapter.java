@@ -9,10 +9,52 @@ import java.util.ArrayList;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Date;
 
 public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
 
-    public UndirectedGraph<Integer> findMaxClique(String filename, UndirectedGraph<Integer> g) {
+    /**
+     * {@inheritDoc}
+     */
+    public UndirectedGraph<Integer> findMaxClique(UndirectedGraph<Integer> graph) {
+        // create a deep copy of the graph so that the client's Object is not
+        // modified
+        graph = new UndirectedGraph<Integer>(graph);
+        HashMap<Integer, Integer> nodeIDMapping = new HashMap<Integer, Integer>();
+        int nodeID = 1;
+        for(Node<Integer> n : graph.getNodes()){
+            nodeIDMapping.put(nodeID, n.get());
+            n.set(nodeID);
+            nodeID++;
+        }
+        // need to rebuild the graph for consistency now that the nodes have changed
+        UndirectedGraph<Integer> g = new UndirectedGraph<Integer>(graph);
+        //long time = new Date().getTime();
+        //String fname = "" + time + "_" + ProcessHandle.current().getPID() + ".dimacs";
+        //g.setGraphFileName(fname);
+        try {
+            GraphIO.writeDimacsFile(g, g.getGraphFileName());
+        } catch (IOException e) {
+            System.err.println("Could not write out Dimacs file: " + g.getGraphFileName());
+            e.printStackTrace();
+        }
+        UndirectedGraph<Integer> clique = findMaxClique(g.getGraphFileName(), g);
+        for(int seqID = 1; seqID < nodeID; seqID++){
+            if(clique.getNode(seqID) != null) {
+                clique.getNode(seqID).set(nodeIDMapping.get(seqID));
+            }
+        }
+        // need to rebuild the graph for consistency now that the nodes have changed
+        clique = new UndirectedGraph<Integer>(clique);
+        try {
+            Files.deleteIfExists(Paths.get(g.getGraphFileName()));
+        } catch(IOException e) {
+            System.out.println("could not remove " + g.getGraphFileName());
+        }
+        return clique;
+    }
+
+    private UndirectedGraph<Integer> findMaxClique(String filename, UndirectedGraph<Integer> g) {
         // store compiled versions of IncMaxClique in project as resources.
         // find out which OS this is running on.
         // call appropriate executable
@@ -57,43 +99,5 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
             nodes.add(node);
         }
         return new UndirectedGraph<Integer>(nodes);
-    }
-
-    /**
-     * Finds the maximum clique in g
-     * @param graph the graph to search for a max clique in
-     * @return An {@code UndirectedGraph<T>} that is a max clique in graph
-     */
-    public UndirectedGraph<Integer> findMaxClique(UndirectedGraph<Integer> graph) {
-        // create a deep copy of the graph so that the client's Object is not
-        // modified
-        graph = new UndirectedGraph<Integer>(graph);
-        HashMap<Integer, Integer> nodeIDMapping = new HashMap<Integer, Integer>();
-        int nodeID = 1;
-        for(Node<Integer> n : graph.getNodes()){
-            nodeIDMapping.put(nodeID, n.get());
-            n.set(nodeID);
-            nodeID++;
-        }
-        UndirectedGraph<Integer> g = new UndirectedGraph<Integer>(graph);
-        try {
-            GraphIO.writeDimacsFile(g, g.getGraphFileName());
-        } catch (IOException e) {
-            System.err.println("Could not write out Dimacs file: " + g.getGraphFileName());
-            e.printStackTrace();
-        }
-        UndirectedGraph<Integer> clique = findMaxClique(g.getGraphFileName(), g);
-        for(int seqID = 1; seqID < nodeID; seqID++){
-            if(clique.getNode(seqID) != null) {
-                clique.getNode(seqID).set(nodeIDMapping.get(seqID));
-            }
-        }
-        clique = new UndirectedGraph<Integer>(clique);
-        /*try {
-            Files.deleteIfExists(Paths.get(graph.getGraphFileName()));
-        } catch(IOException e) {
-            System.out.println("could not remove " + graph.getGraphFileName());
-        }*/
-        return clique;
     }
 }
