@@ -47,7 +47,13 @@ public class Graph<T extends Comparable<T>>{
      * @since 0.1.1
     */
     public Graph(Graph<T> g){
-        this(g.getDeepCopyNodes());
+        Collection<Node<T>> nodes = getDeepCopyNodes(g.getNodes());
+        this.adjacencyList = new HashMap<T, Node<T>>((int)((nodes.size())/0.75)+1);
+        this.numEdges = 0;
+        for(Node<T> node : nodes){
+            addNode(node);
+        }
+        this.graphFileName = g.getGraphFileName();
     }
 
     /**
@@ -422,7 +428,6 @@ public class Graph<T extends Comparable<T>>{
     public double density(){
         return ((double)getNumEdges())/(size()*(size()-1));
     }
-
 
     @Override
     /**
