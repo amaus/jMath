@@ -43,9 +43,6 @@ public class TestNode{
 
         assertFalse(n1.hasNeighbor(n2));
         assertFalse(n1.hasNeighbor(n3));
-        
-        Collection<Edge<Integer>> edges = n1.getEdges();
-        assertEquals(edges.size(), 0);
 
         Set<Node<Integer>> nodes = n1.getNeighbors();
         assertEquals(nodes.size(), 0);
