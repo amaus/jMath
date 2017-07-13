@@ -10,7 +10,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Date;
-
+/**
+ * A class that uses IncMaxCliqueSolver from
+ * Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
+ * Li, Fang, Xu 2013
+ * to find the maximum clique in UndirectedGraphs. Credit to the authors for
+ * the c source used by this program.
+ * @author Aaron Maus aaron@aaronpmaus.com
+ * @version 0.1.5
+ * @since 0.1.5
+*/
 public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
 
     /**
@@ -54,6 +63,12 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
         return clique;
     }
 
+    /*
+     * Find a MAX CLIQUE in g from the dimacs file filename.
+     * @param filename the name of the DIMACS file for this graph.
+     * @param g the graph to search for max clique in
+     * @return a MAX CLIQUE in the graph g
+    */
     private UndirectedGraph<Integer> findMaxClique(String filename, UndirectedGraph<Integer> g) {
         // store compiled versions of IncMaxClique in project as resources.
         // find out which OS this is running on.
@@ -91,7 +106,7 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
         //System.out.println(g);
         for(String nodeID : clique.split(" ")) {
             Node<Integer> node = g.getNode(new Integer(nodeID));
-            if(node == null) { 
+            if(node == null) {
                 System.out.println("Trying to add null to list of nodes in clique");
                 System.out.println("NodeNum: " + new Integer(nodeID));
                 System.out.println("nodeID: " + nodeID);
