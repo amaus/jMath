@@ -13,7 +13,7 @@ import java.util.Comparator;
  * represent vertices and are wrapper for a generic Object. See the Node class for
  * more information. In this manner a graph can be built to represent anything.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.5
+ * @version 0.2.0
  * @since 0.1.0
 */
 public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
@@ -126,12 +126,13 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     /**
      * {@inheritDoc}
     */
-    public void removeNodeFromGraph(Node<T> n){
-        n = this.getNode(n.get());
-        for(Node<T> neighbor : n.getNeighbors()){
-            super.removeEdge(neighbor, n);
+    public void removeNodeFromGraph(Node<T> nodeToBeRemoved){
+        nodeToBeRemoved = this.getNode(nodeToBeRemoved.get());
+        // for ever neighbor of nodeToBeRemoved,
+        for(Node<T> neighbor : nodeToBeRemoved.getNeighbors()){
+            super.removeEdge(neighbor, nodeToBeRemoved);
         }
-        removeNode(n);
+        removeNodeFromAdjacencyList(nodeToBeRemoved);
     }
 
     @Override
@@ -143,19 +144,6 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
         return new UndirectedGraph<T>(copyNodes);
     }
 
-    /*
-     * @TODO overload getNeighborhood() to take a collection of nodes and
-     *       pass it into getNeighborhoodNodes() --overloaded as well
-     *  then I can use this to build a graph of all the nodes of a clique
-     *  and their collective neighborhood. and then run max clique on that graph
-     *  step 1: given a clique, get a collection of all the nodes in a graph with 
-     *          the same IDs as those in the clique
-     *  step 2: call getNeighborhood on that collection of nodes
-     *          - will need to overload getNeighborhood here and
-     *          - getNeighborhoodNodes in Graph to take a collection of nodes
-     *  step 3: run max clique on that UndirectedGraph. it will return a clique
-     *          containing the previous clique as a subset
-    */
     @Override
     /**
      * {@inheritDoc}
