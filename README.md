@@ -5,7 +5,7 @@ when writing programs:
 
 * Linear Algebra
 * Graph Theory
-* Anything else we decide to add
+* Anything else that may be useful
 
 ## Installation
 
