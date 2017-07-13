@@ -4,6 +4,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
+/**
+ * A class to find and return maximum cliques of Undirected Graphs.
+ * IncMaxCliqueAdapter is a much faster implementation.
+ * This implementation is my own for the Max Clique Problem
+ * @author Aaron Maus aaron@aaronpmaus.com
+ * @version 0.1.5
+ * @since 0.1.5
+*/
 public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver<T> {
     public static long numRecursiveCalls = -1;
     private static int maxPrintLevel = 0;
@@ -45,7 +53,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
             //independentSets = graph.getIndependentSetPartition();
             //high = independentSets.size() + 1;
             //if(verbose) System.out.println("Max Possible Clique Number (Ind Sets): " + (high-1));
-        //} else { 
+        //} else {
             // determine it via graph edges
             //high = maxPossibleCliqueNum(graph) + 1;
             //if(verbose) System.out.println("Max Possible Clique Number: " + (high-1));
@@ -64,7 +72,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
             // last parameter is a copy of the vertex ordering so that we don't have to
             // recalculate it every time we want to call findClique. the copy passed in
             // will be modified by findClique
-            clique = findClique(new UndirectedGraph<T>(graph), k, 1); 
+            clique = findClique(new UndirectedGraph<T>(graph), k, 1);
             long endTime = new Date().getTime();
             if(clique != null){ // clique found
                 if(verbose) System.out.println("##### Found a clique of size " + clique.size() +" #####");
@@ -126,7 +134,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
             }
             ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(graph.getNodes());
             Collections.sort(nodes); // O(N*log(N)) operation. faster if I let each
-                                     // for loop go through every node? Then the 
+                                     // for loop go through every node? Then the
                                      // whole while loop is O(3N) looks at nodes.
             ArrayList<Node<T>> removedNodes = new ArrayList<Node<T>>();
             boolean nodesRemoved = false;
@@ -142,9 +150,9 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
                     removedNodes.add(node);
                     if(graph.size() < k){
                         if(level <= maxPrintLevel){
-                            levelPrint(level, "Too few nodes left in graph (" + graph.size() 
+                            levelPrint(level, "Too few nodes left in graph (" + graph.size()
                                                 + ") for a clique of size " + k+".");
-                            levelPrint(level, "RETURNING null"); 
+                            levelPrint(level, "RETURNING null");
                         }
                         return null;
                     }
@@ -192,7 +200,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
                     continue;
                 }
             }
-            
+
             // At this point, all nodes that are left have > k-1 neighbors.
             // Their neighborhood can not be a clique. Need to do a recursive
             // call to keep searching.
@@ -311,7 +319,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
                     }
                     graph.removeNodeFromGraph(node);
                     nodes.remove(node);
-                    
+
                     for(Node<T> nodeToRemove : nodesWithNeighborsOnlyInNeighborhood){
                         if(level <= maxPrintLevel){
                             levelPrint(level,"removing node: "+nodeToRemove.get() + " @ " +new Date());
@@ -332,7 +340,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
                 //System.exit(1);
             }
         }
-        return null;    
+        return null;
     }
 
     private void levelPrint(int level, String message){
@@ -341,7 +349,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
         }
         System.out.println(message);
     }
-    
+
     /**
      * Returns a first pass maximum possible clique number for an UndirectedGraph
      * This relies on the fact that in order to have a clique of size K, there must
@@ -354,7 +362,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
         int maxEdges = Collections.max(graph.getNodes()).numNeighbors();
         // if the node with the max edges has 3 edges, then those three
         // neighbors plus itself makes a subgraph of 4 nodes.
-        int k = maxEdges + 1; 
+        int k = maxEdges + 1;
         boolean cont = true;
         while(cont){
             int numPotentialMembers = 0;
@@ -377,7 +385,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
      * This relies on the fact that in order to have a clique of size K, there must
      * be atleast K nodes all with atleast K-1 edges in the graph. For example, for
      * there to be a clique of size 4, there must be 4 nodes that all have atleast 3 edges.
-     * This method looks at the neighborhood of every node in the graph and calculates the 
+     * This method looks at the neighborhood of every node in the graph and calculates the
      * max possible clique number of that neighborhood
      * @param graph the graph to find the max possible clique number of
      * @return the max possible clique number
@@ -390,7 +398,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
             int maxEdges = Collections.max(neighborhood.getNodes()).numNeighbors();
             // if the node with the max edges has 3 edges, then those three
             // neighbors plus itself makes a subgraph of 4 nodes.
-            int tempK = maxEdges + 1; 
+            int tempK = maxEdges + 1;
             boolean cont = true;
             while(cont){
                 int numPotentialMembers = 0;
