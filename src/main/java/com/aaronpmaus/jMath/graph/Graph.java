@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * generic Object. See the Node class for more information. In this manner a graph
  * can be built to represent anything.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.5
+ * @version 0.2.0
  * @since 0.1.0
 */
 public class Graph<T extends Comparable<T>>{
@@ -254,7 +254,7 @@ public class Graph<T extends Comparable<T>>{
     }
 
     /**
-     * @return a Collection&lt;Node&lt;T&gt;&gt; of the nodes
+     * @return a {@code Collection<Node<T>>} of the nodes
      * @since 0.1.3
     */
     public final Collection<Node<T>> getNodes(){
@@ -297,6 +297,18 @@ public class Graph<T extends Comparable<T>>{
     }
 
     /**
+     * Add an edge to the graph. Adds nodes containing these two objects
+     * to the graph if they are not already in the graph. Then adds
+     * an edge from start to end.
+     * @param start the start object of the edge
+     * @param end the end object of the edge
+     * @since 0.2.0
+    */
+    public void addEdge(T start, T end){
+        addEdge(new Node<T>(start), new Node<T>(end));
+    }
+
+    /**
      * Add an edge to the graph. Adds both nodes if they are not already in
      * the graph. Then adds an edge from start to end.
      * @param start the start node of the edge
@@ -307,6 +319,19 @@ public class Graph<T extends Comparable<T>>{
         addNode(end);
         getNode(start.get()).addNeighbor(getNode(end.get()));
         incrementNumEdges();
+    }
+
+    /**
+     * Add an edge to the graph. Adds nodes containing these two objects
+     * to the graph if they are not already in the graph. Then adds
+     * an edge from start to end.
+     * @param start the start object of the edge
+     * @param end the end object of the edge
+     * @param weight, the weight of the edge
+     * @since 0.2.0
+    */
+    public void addEdge(T start, T end, double weight){
+        addEdge(new Node<T>(start), new Node<T>(end), weight);
     }
 
     /**
@@ -388,17 +413,20 @@ public class Graph<T extends Comparable<T>>{
     // go to this node.
     /**
      * Removes this node and all edges leading to or from it from the graph.
-     * @param n the node to remove
+     * @param nodeToBeRemoved the node to remove
     */
-    public void removeNodeFromGraph(Node<T> n){
-        n = this.getNode(n.get());
+    public void removeNodeFromGraph(Node<T> nodeToBeRemoved){
+        nodeToBeRemoved = this.getNode(nodeToBeRemoved.get());
+        // check all nodes in this graph to see if there is an edge from it to
+        // this node
         for(Node<T> node : this.adjacencyList.values()){
-            if(node.hasNeighbor(n)){
-                node.removeNeighbor(n);
-                decrementNumEdges();
+            if(node.hasNeighbor(nodeToBeRemoved)){
+                // if there is an edge from a node to nodeToBeRemoved,
+                // remove that edge from this graph.
+                this.removeEdge(node, nodeToBeRemoved);
             }
         }
-        removeNode(n);
+        removeNodeFromAdjacencyList(nodeToBeRemoved);
     }
 
     // this is a hack so that the subclass
@@ -408,14 +436,15 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Removes this node from the graph. Does not remove edges leading to this node.
      * This method is intended as a helper method for this class and subclasses. Do
-     * not call this method, rather call removeNodeFromGraph(Node&lt;T&gt; n), it will 
+     * not call this method, rather call {@code removeNodeFromGraph(Node<T&> n)}, it will 
      * properly maintain all edges of the graph. This method does not guarantee that.
      * I wish that java had an access modifier to restrict access to only subclasses.
      * Also, I know this is not the best way of going about this. I'm still trying to
      * figure out a better way. Any suggestions?
      * @param n the node to remove.
+     * @since 0.2.0
     */
-    protected void removeNode(Node<T> n){
+    protected void removeNodeFromAdjacencyList(Node<T> n){
         this.adjacencyList.remove(n.get());
         decrementNumEdges(n.numNeighbors());
     }
