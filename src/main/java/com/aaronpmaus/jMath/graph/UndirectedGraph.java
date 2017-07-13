@@ -46,7 +46,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
         //for(Node<T> node : g.getNodes()){
             //addNode(node);
         //}
-        
+
         for(Node<T> node : g.getNodes()){
             for(Node<T> neighbor : node.getNeighbors()){
                 // We know there is an edge from node to neighbor,
@@ -156,7 +156,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
         Collection<Node<T>> copyNodes = getNeighborhoodNodes(nodes);
         return new UndirectedGraph<T>(copyNodes);
     }
-    
+
 
     @Override
     /**
@@ -195,14 +195,15 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     public double density(){
         // the implementation of the undirected graph includes both forward and back edges.
         // ie, double the edges. so we don't need to multiply by 2.
-        return super.density(); 
+        return super.density();
     }
-    
+
     /**
-     * Returns a set of all the edges in this UndirectedGraph
+     * Returns a set of all the edges in this UndirectedGraph.
      * @return a Collection of the edges in this UndirectedGraph
+     * @since 0.2.0
     */
-    public Collection<UndirectedEdge<T>> getEdges(){
+    Collection<UndirectedEdge<T>> getEdges(){
         HashSet<UndirectedEdge<T>> edges = new HashSet<UndirectedEdge<T>>((int)(numEdges()/0.75) + 1);
         for(Node<T> node : getNodes()){
             for(Edge<T> e : node.getEdges()){
