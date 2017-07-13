@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Date;
+
 /**
  * A class that uses IncMaxCliqueSolver from
  * Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
