@@ -2,13 +2,13 @@ package com.aaronpmaus.jMath.graph;
 
 /**
  * An undirected edge of a graph. Consists of the two end points of the
- * edge and the weight of the edge between them. 
+ * edge and the weight of the edge between them.
  * <P>
  * At this point 0.1.5,
  * UndirectedEdges are used for getting the Edges of an UndirectedGraph
  * which is only called when writing out a DIMACS format file. The
  * advantage is that an UndirectedEdge overrides equals so that two
- * edges are equal is the end points are the same (in either order).
+ * edges are equal if the end points are the same (in either order).
  * This allows a set of edges to be built since, at this point, an
  * "undirected edge" is represented as two directed edges, one for
  * each direction.
@@ -76,7 +76,7 @@ public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
                 && getEnd().equals(other.getStart())){
                 return true;
             }
-            
+
         }
         return false;
     }
