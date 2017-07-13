@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.lang.ClassCastException;
 
 /**
- * A Node for a graph. A Node represents a vertex and is a wrapper 
+ * A Node for a graph. A Node represents a vertex and is a wrapper
  * for an object. In addition to its object, it also has Edges
  * to other nodes.
  * The Object can be anything, and the generic type allows for
@@ -19,7 +19,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     private T obj;
     // the key is the node at the end of the edge
     private LinkedHashMap<Node<T>, Edge<T>> neighbors;
-    
+
     /**
      * Constructor for a Node.
      * @param obj the object that this node holds
@@ -101,7 +101,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * Get all the edges that leave this node
      * @return a Collection&lt;Edge&lt;T&gt;&gt; of edges
     */
-    public Collection<Edge<T>> getEdges(){
+    Collection<Edge<T>> getEdges(){
         return neighbors.values();
     }
 
