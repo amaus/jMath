@@ -170,7 +170,8 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     }
 
     /**
-     * Two nodes are equals if this.get().equals(n.get())
+     * Two nodes are equals if this.get().equals(n.get()),
+     * that is, if the objects they both contain are equal.
      * @param obj the other node to compare to.
      * @return true if this.get().equals(obj.get())
     */
