@@ -3,6 +3,16 @@ apply plugin: "maven"
 apply plugin: "application" // implictly applies the java and distribution plugins
 
 group = "com.aaronpmaus.jMath"
+// for versioning, this project uses Semantic Versioning.
+// see http://semver.org
+// MAJOR.MINOR.PATCH
+// PATCH is incremented if backwards compatible bug fixes are introduced
+// MINOR is incremented if new, backwards compatible functionality is introduced
+//       or if any public API functionality is marked as deprecated. It may
+//       be incremented if substantial new functionality or improvements are
+//       made within private code. It may include PATCH level changes
+// MAJOR is incremented if backwards incompatible changes are introduced to the
+//       public API. It may include MINOR and PATCH level changes.
 version '0.1.6'
 // the default jar destinationDir is $buildDir/libs. Make it singular so that
 // the executables made during the build phase will set their CLASSPATH correctly.
@@ -104,9 +114,9 @@ def createScript(project, mainClass, name) {
 }
 
 // The next two lines disable the tasks for the primary main which by default
-// generates a script with a name matching the project name. 
+// generates a script with a name matching the project name.
 // You can leave them enabled but if so you'll need to define mainClassName
-// And you'll be creating your application scripts two different ways which 
+// And you'll be creating your application scripts two different ways which
 // could lead to confusion
 startScripts.enabled = false
 run.enabled = false

@@ -39,18 +39,18 @@ if you issue the command:
 `gradle install`
 
 gradle will do a couple things. It will create and install the jar and
-executables to your local maven repository (for archival purposes). 
+executables to your local maven repository (for archival purposes).
 The maven local repository is located in ~/.m2/respository.
-It will also generate the javadocs, zip them up, and install them to the 
+It will also generate the javadocs, zip them up, and install them to the
 $JMATHDIR/distributions and the maven local repository.
 
 Workflow, as developing, compile and test using `gradle build`. When it is
-time to make a minor release, use `gradle install` to install jars, 
-executables, and javadoc archive to local maven repository. 
+time to make a minor release, use `gradle install` to install jars,
+executables, and javadoc archive to local maven repository.
 
 If you are developing within jMath, when you create a new executable, you must
-add it to the build.gradle script for it to compile (see the end of build.gradle). 
-The executable start scripts will ignore your CLASSPATH in lieu of the latest 
+add it to the build.gradle script for it to compile (see the end of build.gradle).
+The executable start scripts will ignore your CLASSPATH in lieu of the latest
 compiled jar in $JMATHDIR/build/lib/. If you are developing outside of jMath,
 that is writing your own programs that depend on jMath, you need to make
 sure your CLASSPATH includes the location of your jMath jar.
@@ -73,6 +73,9 @@ Javadoc for the most recent minor release of the library can be found at [jmath.
 
 ## History
 This project was started in June 2016.
+
+## About Versioning
+This project uses Semantic Versioning. See http://semver.org
 
 ## Credits
 Aaron Maus
