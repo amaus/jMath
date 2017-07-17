@@ -434,7 +434,7 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Removes this node and all edges leading to or from it from the graph.
      * @param nodeToBeRemoved the node to remove
-     * @version
+     * @version 0.2.0
      * @since 0.1.0
     */
     public void removeNodeFromGraph(Node<T> nodeToBeRemoved){
