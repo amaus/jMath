@@ -7,11 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-
+[None]
 ### Changed
-- reorganizing the inheritance hierarchy of Vector and CartesianCoordinates.
-  Vector is now the super class. Most of the functionality of
-  CartesianCoordinates has been moved into Vector.
+[None]
 ### Deprecated
 [None]
 ### Removed
@@ -21,9 +19,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
+## [0.9.0] - 2017-7-17
+### Changed
+- reorganizing the inheritance hierarchy of Vector and CartesianCoordinates.
+  Vector is now the super class. Most of the functionality of
+  CartesianCoordinates has been moved into Vector.
+
 ## [0.8.0] - 2017-7-17
 ### Added
-- overloaded method eddEdge in Graph and Undirected graph to take as parameters
+- overloaded method addEdge in Graph and Undirected graph to take as parameters
   the objects to wrap as Nodes along with overloaded methods to accept a weight
   as well.
 - this CHANGELOG.md
