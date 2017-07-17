@@ -15,6 +15,7 @@ public class Matrix{
     /**
      * @param matrix A 2-dimensional array holding the values for the matrix. It must not
      * be null. It must be rectangular, that is every row has the same number of columns.
+     * @since 0.1.0
     */
     public Matrix(double[][] matrix){
         this.matrix = matrix;
@@ -34,6 +35,7 @@ public class Matrix{
 
     /**
      * The default constructor creates a 4 by 4 identity matrix
+     * @since 0.1.0
     */
     public Matrix(){
         this.matrix = new double[4][4];
@@ -47,6 +49,7 @@ public class Matrix{
 
     /**
      * @return The number of rows of this matrix.
+     * @since 0.1.0
     */
     public int getNumRows(){
         return this.numRows;
@@ -54,6 +57,7 @@ public class Matrix{
 
     /**
      * @return The number of cols of this matrix.
+     * @since 0.1.0
     */
     public int getNumCols(){
         return this.numCols;
@@ -67,6 +71,7 @@ public class Matrix{
      *              of the multiplication.
      * @throws IllegalArgumentException thrown if the Matrices dimensions are incompatible for matrix
      *              multiplication. this.getNumCols() must be equal to other.getNumRows().
+     * @since 0.1.0
     */
     public Matrix multiply(Matrix other) throws IllegalArgumentException{
         if(getNumCols() != other.getNumRows()){
@@ -96,8 +101,9 @@ public class Matrix{
 
     /**
      * Performs scalar matrix multiplication.
-     * @param scalar the scalar to multiply this Matrix by. 
+     * @param scalar the scalar to multiply this Matrix by.
      * @return      a new Matrix of the same dimensions with the multiplied values.
+     * @since 0.1.0
     */
     public Matrix multiply(double scalar){
         double[][] newMat = new double[getNumRows()][getNumCols()];
@@ -114,6 +120,7 @@ public class Matrix{
      * @param other the Matrix to add to this one. It must be of the same dimensions as this Matrix.
      * @return      a new Matrix of the same dimensions holding the sum of the two matrices.
      * @throws IllegalArgumentException thrown if the dimensions of the two matrices are not the same.
+     * @since 0.1.0
     */
     public Matrix add(Matrix other) throws IllegalArgumentException{
         if(this.getNumRows() != other.getNumRows() || this.getNumCols() != other.getNumCols()){
@@ -133,7 +140,7 @@ public class Matrix{
      * @param other the Matrix to subtract from this one. It must be of the same dimensions as this Matrix.
      * @return      a new Matrix of the same dimensions holding the difference of the two matrices.
      * @throws IllegalArgumentException thrown if the dimensions of the two matrices are not the same.
-     * @since 0.1.4
+     * @since 0.5.0
     */
     public Matrix subtract(Matrix other) throws IllegalArgumentException{
         Matrix negativeOther = other.multiply(-1);
@@ -142,6 +149,7 @@ public class Matrix{
     /**
      * Returns the transpose of this Matrix.
      * @return a new Matrix holding the transpose of this matrix.
+     * @since 0.1.0
     */
     public Matrix transpose(){
         double[][] newMat = new double[getNumCols()][getNumRows()];
@@ -159,6 +167,7 @@ public class Matrix{
      * @param col the col index. Must be less than getNumCols().
      * @return the element at the given indices.
      * TODO: write a MatrixInvalidIndicesException and throw it if necessary
+     * @since 0.1.0
     */
     public double getElement(int row, int col){
         return this.matrix[row][col];
@@ -168,6 +177,7 @@ public class Matrix{
      * Returns a 2-Dimensional array representing the matrix. The first dimension is rows.
      * The second is columns. Modifying this array will not change the Matrix.
      * @return the 2-D double array that represents this matrix
+     * @since 0.1.0
     */
     public double[][] getArray(){
         double[][] ret = new double[getNumRows()][getNumCols()];
@@ -184,6 +194,7 @@ public class Matrix{
      * @param rowIndex  the index of the row to be retrieved. @require rowIndex &#62; getNumRows()
      * @return a Vector object holding the values of the row.
      * TODO: write a MatrixInvalidIndicesException and throw it if necessary
+     * @since 0.1.0
     */
     public Vector getRowVector(int rowIndex){
         double[] row = new double[getNumCols()];
@@ -198,6 +209,7 @@ public class Matrix{
      * @param colIndex  the index of the column to be retrieved. @require colIndex &#62; getNumcols()
      * @return a Vector object holding the values of the column.
      * TODO: write a MatrixInvalidIndicesException and throw it if necessary
+     * @since 0.1.0
     */
     public Vector getColVector(int colIndex){
         double[] col = new double[getNumRows()];
@@ -211,6 +223,7 @@ public class Matrix{
     /**
      * An overridden implementation of Object.toString().
      * @return  A String representation of this matrix.
+     * @since 0.1.0
     */
     public String toString(){
         String str = "";

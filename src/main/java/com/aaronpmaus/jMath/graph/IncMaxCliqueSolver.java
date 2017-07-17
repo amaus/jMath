@@ -10,6 +10,7 @@ import java.util.HashMap;
  * Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
  * Li, Fang, Xu 2013
  * INCOMPLETE - does not include UB max sat or ind set logic
+ * @since 0.7.0
 */
 public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver<T> {
     private ArrayList<Node<T>> vertexOrdering;
@@ -21,6 +22,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
 
     /**
      * {@inheritDoc}
+     * @since 0.7.0
      */
     public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph){
         ArrayList<Node<T>> vertexOrdering = vertexOrdering(graph);
@@ -33,6 +35,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
      * @param graph the graph to search for a max clique in
      * @param vertexOrdering the ordering of the vertices to use when searching for the clique
      * @return An {@code UndirectedGraph<T>} that is a max clique in graph
+     * @since 0.7.0
      */
     public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph, ArrayList<Node<T>> vertexOrdering) {
         // create a deep copy of the graph
@@ -84,7 +87,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
         if(vertex == null){
             throw new NullPointerException("IncMaxCliqueSolver::incUB() vertex at index in vertexOrdering not in g");
         }
-        
+
         for(int i = index+1; i < vertexOrdering.size(); i++){
             // if v_i and v_j are neighbors
             Node<T> neighbor = g.getNode(vertexOrdering.get(i).get());
@@ -102,7 +105,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
     /**
      * @param g the UndirectedGraph to look for a max clique in
      * @param c the clique being built
-     * @param gMax the max clique found so far 
+     * @param gMax the max clique found so far
      * @return an undirected graph that is the maximum clique found in g
     */
     private UndirectedGraph<T> incMaxClique(UndirectedGraph<T> g, UndirectedGraph<T> c, UndirectedGraph<T> cMax){
@@ -154,7 +157,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
         vertexUB.put(smallestVertex, Math.min(vertexUB.get(smallestVertex), incUB(smallestVertexIndex, g)));
         //System.out.println("Updating UB for " + smallestVertex.get());
         //printUB();
-        
+
         if(cMax.size() >= (vertexUB.get(smallestVertex) + c.size())){
             return cMax;
         }
@@ -182,7 +185,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
         cUnionSmallestVertex.addNode(v);
         //System.out.println("neighbors of " + smallestVertex.get() + ":\n" + neighborsGraph);
         //System.out.println("cUnionSmallestVertex:\n" + cUnionSmallestVertex);
-       
+
         UndirectedGraph<T> c2 = incMaxClique(neighborsGraph, cUnionSmallestVertex, cMax);
         //System.out.println("In Call #: " + callNumber);
         //System.out.println("second recursive call complete");
@@ -193,7 +196,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
         }
 
         vertexUB.put(smallestVertex, Math.min(vertexUB.get(smallestVertex), (c2.size() - c.size())));
-        
+
         if(c1.size() >= c2.size()){
             return c1;
         } else {
@@ -214,6 +217,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
      * returns the independent set partition of a a graph
      * @param g the graph to get the independent set partition of
      * @return an ArrayList of the graphs that make up the partition
+     * @since 0.7.0
     */
     public ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g) {
         ArrayList<Node<T>> indSetVertexOrder = g.degeneracyOrdering( );

@@ -13,8 +13,8 @@ package com.aaronpmaus.jMath.graph;
  * "undirected edge" is represented as two directed edges, one for
  * each direction.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.5
- * @since 0.1.5
+ * @version 0.6.0
+ * @since 0.6.0
 */
 public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
 
@@ -22,6 +22,7 @@ public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
      * Constructs an UndirectedEdge for a graph with a default weight of 1.0
      * @param point1 the first endpoint of this edge
      * @param point2 the second endpoint of this edge
+     * @since 0.6.0
     */
     public UndirectedEdge(Node<T> point1, Node<T> point2){
         this(point1,point2,1.0);
@@ -32,6 +33,7 @@ public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
      * @param point1 the first endpoint of this edge
      * @param point2 the second endpoint of this edge
      * @param weight the weight of this edge
+     * @since 0.6.0
     */
     public UndirectedEdge(Node<T> point1, Node<T> point2, double weight){
         super(point1,point2,weight);
@@ -40,6 +42,7 @@ public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
     /**
      * A constructor for an UndirectedEdge that takes an Edge
      * @param e the edge to use as this UndirectedEdge
+     * @since 0.6.0
     */
     public UndirectedEdge(Edge<T> e){
         this(e.getStart(), e.getEnd(), e.getWeight());
@@ -50,6 +53,7 @@ public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
      * is the concatenation of the hashCodes of nodes of it's end
      * points
      * @return an int representing the hashCode of this edge
+     * @since 0.6.0
     */
     @Override
     public int hashCode(){
@@ -61,6 +65,7 @@ public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
      * Two edges are equals if they have the same ending points
      * @param obj the other UndirectedEdge to compare to
      * @return a boolean representing whether the UndirectedEdges are equal
+     * @since 0.6.0
     */
     @Override
     @SuppressWarnings("unchecked")

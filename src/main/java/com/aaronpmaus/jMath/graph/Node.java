@@ -23,6 +23,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     /**
      * Constructor for a Node.
      * @param obj the object that this node holds
+     * @since 0.1.0
     */
     public Node(T obj){
         this.obj = obj;
@@ -31,6 +32,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
 
     /**
      * @return the number of neighbors of this node.
+     * @since 0.1.0
     */
     public int numNeighbors(){
         return this.neighbors.size();
@@ -39,6 +41,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     /**
      * Returns the object that is Node wraps.
      * @return the Object that this Node wraps.
+     * @since 0.4.0
     */
     public T get(){
         return this.obj;
@@ -47,6 +50,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     /**
      * Change the object that this node holds.
      * @param obj the new object for this node to hold
+     * @since 0.7.0
     */
     public void set(T obj) {
         this.obj = obj;
@@ -55,6 +59,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     /**
      * add an edge to this node
      * @param e the edge to add to this node
+     * @since 0.1.0
     */
     public void addEdge(Edge<T> e){
         this.neighbors.put(e.getEnd(), e);
@@ -64,6 +69,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * Add a neighbor to this node. Accomplished the same thing
      * as @see Node:addEdge(Edge&lt;T&gt; e)
      * @param n the node to add as a neighbor
+     * @since 0.1.0
     */
     public void addNeighbor(Node<T> n){
         this.neighbors.put(n, new Edge<T>(this, n));
@@ -74,6 +80,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * as @see Node:addEdge(Edge&lt;T&gt; e)
      * @param n the node to add as a neighbor
      * @param weight the weight of the edge from this node to n
+     * @since 0.1.0
     */
     public void addNeighbor(Node<T> n, double weight){
         this.neighbors.put(n, new Edge<T>(this, n, weight));
@@ -83,6 +90,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * Removes the node as a neighbor of this node. Deletes the edge
      * between it and this node.
      * @param node the node to remove
+     * @since 0.1.0
     */
     public void removeNeighbor(Node<T> node){
         this.neighbors.remove(node);
@@ -92,6 +100,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * Checks if the node is a neighbor of this node
      * @param node the node to check
      * @return true if there is an edge to the node, false otherwise
+     * @since 0.1.0
     */
     public boolean hasNeighbor(Node<T> node){
         return neighbors.containsKey(node);
@@ -99,17 +108,19 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
 
     /**
      * Get all the edges that leave this node
-     * @return a Collection&lt;Edge&lt;T&gt;&gt; of edges
+     * @return a {@code Collection<Edge<T>>} of edges
+     * @since 0.1.0
     */
-    Collection<Edge<T>> getEdges(){
+    public Collection<Edge<T>> getEdges(){
         return neighbors.values();
     }
 
     /**
      * Get all the neighbors of this node
-     * @return a Set&lt;Node&lt;T&gt;&gt; of nodes that are connected
+     * @return a {@code Set<Node<T>>} of nodes that are connected
      *         to this node by an edge going from this node
      *         to them.
+     * @since 0.1.0
     */
     public Set<Node<T>> getNeighbors(){
         return neighbors.keySet();
@@ -121,7 +132,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * Get ArrayList of Node and all its neighbors
      * @return the ArrayList&lt;Node&lt;T&gt;&gt; containing this node
      *         and all of its neighbors.
-     * @since 0.1.1
+     * @since 0.2.0
     */
     public ArrayList<Node<T>> getNodeAndNeighbors(){
         ArrayList<Node<T>> list = new ArrayList<Node<T>>(numNeighbors()+1);
@@ -137,6 +148,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * The hashCode of this node is the HashCode of the Object
      * it holds. There should only be one Node per Object in the graph
      * @return the hashcode
+     * @since 0.1.0
     */
     public int hashCode(){
         return obj.hashCode();
@@ -147,6 +159,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * Returns the toString of this node's Object followed
      * by the toStrings of all the neighbor node's Objects.
      * @return the string representing this Node and its neighbors
+     * @since 0.1.0
     */
     public String toString(){
         String str = this.obj.toString() + ": ";
@@ -164,6 +177,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * of neighbors.
      * @param n the node to compare to
      * @return this.numNeighbors() - n.numNeighbors()
+     * @since 0.1.0
     */
     public int compareTo(Node<T> n){
         return numNeighbors() - n.numNeighbors();
@@ -174,6 +188,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
      * that is, if the objects they both contain are equal.
      * @param obj the other node to compare to.
      * @return true if this.get().equals(obj.get())
+     * @since 0.1.0
     */
     @Override
     @SuppressWarnings("unchecked")

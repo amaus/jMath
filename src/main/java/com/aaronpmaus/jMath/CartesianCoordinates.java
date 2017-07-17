@@ -13,6 +13,7 @@ public class CartesianCoordinates{
 
     /**
      * @param coords  The set of values that define this point. Can create a point of any dimension.
+     * @since 0.1.0
     */
     public CartesianCoordinates(double... coords){
         this.coords = coords;
@@ -21,6 +22,7 @@ public class CartesianCoordinates{
 
     /**
      * The default constructor creates a point of 3 dimensions at (0,0,0).
+     * @since 0.1.0
     */
     public CartesianCoordinates(){
         this(0.0, 0.0, 0.0);
@@ -28,8 +30,10 @@ public class CartesianCoordinates{
 
     /**
      * Returns an array holding the values of the coordinates.
-     * @return An array holding the coordinates of this point. This array is a deep copy of
-     * the coordinates. Any changes made to this copy do not affect the original coordinates.
+     * @return An array holding the coordinates of this point. This array is
+     * a deep copy of the coordinates. Any changes made to this copy do not
+     * affect the original coordinates.
+     * @since 0.1.0
     */
     public double[] getCoords(){
         double[] coordinates = new double[dimensionality()];
@@ -42,14 +46,16 @@ public class CartesianCoordinates{
     /**
      * Returns the number of dimensions of this point.
      * @return The number of dimensions of this point.
+     * @since 0.1.0
     */
     public int dimensionality(){
         return this.dimensionality;
     }
-    
+
     /**
      * By common convention, returns the 0th coordinate of this point. Useful if the point is 3 dimensional.
      * @return The 0th coordinate of this point.
+     * @since 0.1.0
     */
     public double getX(){
         return getCoordinate(0);
@@ -58,6 +64,7 @@ public class CartesianCoordinates{
     /**
      * By common convention, returns the 1th coordinate of this point. Useful if the point is 3 dimensional.
      * @return The 1th coordinate of this point.
+     * @since 0.1.0
     */
     public double getY(){
         return getCoordinate(1);
@@ -66,6 +73,7 @@ public class CartesianCoordinates{
     /**
      * By common convention, returns the 2th coordinate of this point. Useful if the point is 3 dimensional.
      * @return The 2th coordinate of this point.
+     * @since 0.1.0
     */
     public double getZ(){
         return getCoordinate(2);
@@ -73,9 +81,10 @@ public class CartesianCoordinates{
 
     /**
      * Returns the value of the coordinate at the given dimension.
-     * @param dimension     The dimension of the coorinate to be returned. The first coordinate is at the 0th dimension.
+     * @param dimension The dimension of the coorinate to be returned. The first coordinate is at the 0th dimension.
      * @return The value of the coordinate at the given dimension.
-     * @throws IllegalArgumentException     Thrown if dimension is &#62;= dimensionality().
+     * @throws IllegalArgumentException Thrown if dimension is {@code >= dimensionality()}.
+     * @since 0.1.0
     */
     public double getCoordinate(int dimension){
         if(dimension < dimensionality()){
@@ -90,6 +99,7 @@ public class CartesianCoordinates{
     /**
      * @param coords     The coordinates for this point to be moved to.
      * @throws IllegalArgumentException     Thrown if coords.length is != dimensionality().
+     * @since 0.1.0
     */
     public void moveTo(double... coords){
         if(coords.length == dimensionality()){
@@ -101,8 +111,9 @@ public class CartesianCoordinates{
     }
 
     /**
-     * @param vector    The vector by which to move our point. 
+     * @param vector    The vector by which to move our point.
      * @throws IllegalArgumentException     Thrown if vector.length is != dimensionality().
+     * @since 0.1.0
     */
     public void moveBy(double... vector){
         if(vector.length == dimensionality()){
@@ -116,14 +127,16 @@ public class CartesianCoordinates{
     }
 
     /**
-     * This is a helper method to be used when coordinates passed in to another method do not have the same
-     * dimension at this point.
-     * @param coords    The coords that were passed into the other method.
-     * @return          A String stating that the dimensionality of the passed in coordinates do not match dimensionality().
+     * This is a helper method to be used when coordinates passed in to another
+     * method do not have the same dimension at this point.
+     * @param coords The coords that were passed into the other method.
+     * @return A String stating that the dimensionality of the passed in
+     *         coordinates do not match dimensionality().
+     * @since 0.1.0
     */
     protected String buildIllegalArgumentExceptionString(double[] coords){
             String exceptionString = "Must pass correct number of coordinates. "
-                                        + "Dimensionality: " + dimensionality() + ", requires " + dimensionality() 
+                                        + "Dimensionality: " + dimensionality() + ", requires " + dimensionality()
                                         + " arguments. Given " + coords.length + " arguments: ";
             exceptionString += buildCoordsString(coords);
             return exceptionString;
@@ -133,6 +146,7 @@ public class CartesianCoordinates{
     /**
      * An overridden implementation of Object.toString().
      * @return  A String representation of the coordinates of this point.
+     * @since 0.1.0
     */
     public String toString(){
         return buildCoordsString(getCoords());
@@ -141,6 +155,7 @@ public class CartesianCoordinates{
     /**
      * @param coords    The coordinates to build a String out of.
      * @return          The String representation of the coords.
+     * @since 0.1.0
     */
     public static String buildCoordsString(double[] coords){
         String str = "(";
@@ -156,6 +171,7 @@ public class CartesianCoordinates{
      * @param otherCartesianCoordinates    The other CartesianCoordinates to calculate the distance too.
      * @return              The Euclidean Distance between this CartesianCoordinates and otherCartesianCoordinates.
      * @throws IllegalArgumentException Thrown if otherCartesianCoordinates.dimensionality() != dimensionality
+     * @since 0.1.0
     */
     public double distance(CartesianCoordinates otherCartesianCoordinates){
         double distance = 0.0;

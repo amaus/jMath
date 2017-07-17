@@ -14,6 +14,7 @@ public class Vector extends CartesianCoordinates{
     /**
      * Creates a Vector containing the values passed in as parameters.
      * @param vals the values to be added to this vector
+     * @since 0.1.0
     */
     public Vector(double... vals){
         super(vals);
@@ -21,6 +22,7 @@ public class Vector extends CartesianCoordinates{
 
     /**
      * The default constructor creates the a 3 dimensional vector at the origin.
+     * @since 0.1.0
     */
     public Vector(){
         super();
@@ -32,6 +34,7 @@ public class Vector extends CartesianCoordinates{
      * @return  the value of the dot product
      * @throws IllegalArgumentException if the Vector passed in does not have the
      *          same dimensionality at this vector.
+     * @since 0.1.0
     */
     public double dotProduct(Vector other){
         if(dimensionality() != other.dimensionality()){
@@ -51,6 +54,7 @@ public class Vector extends CartesianCoordinates{
      * @return  the angle in degrees
      * @throws IllegalArgumentException thrown if the dimensions of the two vectors
      *          are not the same.
+     * @since 0.1.0
     */
     public double angle(Vector other){
         if(dimensionality() != other.dimensionality()){
@@ -64,6 +68,7 @@ public class Vector extends CartesianCoordinates{
     /**
      * Returns the magnitude (aka length) of this Vector.
      * @return the magnitude
+     * @since 0.1.0
     */
     public double magnitude(){
         return Math.sqrt(this.dotProduct(this));
@@ -73,6 +78,7 @@ public class Vector extends CartesianCoordinates{
     /**
      * An overridden implementation of Object.toString().
      * @return  A String representation of the coordinates of this vector.
+     * @since 0.1.0
     */
     public String toString(){
         return super.toString();

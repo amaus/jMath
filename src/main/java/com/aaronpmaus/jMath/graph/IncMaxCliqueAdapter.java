@@ -18,13 +18,14 @@ import java.util.Date;
  * to find the maximum clique in UndirectedGraphs. Credit to the authors for
  * the c source used by this program.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.5
- * @since 0.1.5
+ * @version 0.7.0
+ * @since 0.7.0
 */
 public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
 
     /**
      * {@inheritDoc}
+     * @since 0.7.0
      */
     public UndirectedGraph<Integer> findMaxClique(UndirectedGraph<Integer> graph) {
         // create a deep copy of the graph so that the client's Object is not

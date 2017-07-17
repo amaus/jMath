@@ -11,6 +11,9 @@ import java.io.FileNotFoundException;
  * FindMaxClique finds a maximum clique in the graph. It performs a binary search on k (clique size),
  * searching for cliques of that size until it can verify that there is a clique of size k
  * and there are no cliques of size k+1.
+ * @author Aaron Maus aaron@aaronpmaus.com
+ # @version 0.7.0
+ * @since 0.4.0
 */
 public class FindMaxClique{
     public static void main(String[] args){
@@ -24,7 +27,7 @@ public class FindMaxClique{
             UndirectedGraph<Integer> graph = GraphIO.readFromDimacsFile(filename);
             graph.setGraphFileName("g.dimacs");
             long graphBuildEnd = new Date().getTime();
-            System.out.println("Graph built from dimacs file " + filename + " in " 
+            System.out.println("Graph built from dimacs file " + filename + " in "
                                 + (graphBuildEnd-graphBuildStart) + " milliseconds.");
             System.out.println("Graph Density: " + graph.density());
             //System.out.println(graph);
@@ -50,7 +53,7 @@ public class FindMaxClique{
                 System.out.println("MAXIMUM CLIQUE");
                 System.out.print(maxClique1);
                 System.out.println("CLIQUE: "+cliqueStr);
-                System.out.println("Clique Found in " 
+                System.out.println("Clique Found in "
                         + (cliqueEnd-cliqueStart) + " milliseconds.");
                 System.out.println(maxClique1.size() + " nodes in clique");
             } else {

@@ -9,8 +9,8 @@ import java.util.Date;
  * IncMaxCliqueAdapter is a much faster implementation.
  * This implementation is my own for the Max Clique Problem
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.5
- * @since 0.1.5
+ * @version 0.7.0
+ * @since 0.7.0
 */
 public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver<T> {
     public static long numRecursiveCalls = -1;
@@ -28,6 +28,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
      * a graph and k. There are O(log(N)) calls to findClique.
      * @param graph the graph to find the max clique in
      * @return an UndirectedGraph that is the Maximum Clique
+     * @since 0.7.0
     */
     public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph){
         long fullStartTime = new Date().getTime();
@@ -117,7 +118,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
      * @param level track the level of recursion
      * @return an UndirectedGraph{@literal <T>} that is a clique or null if no clique
      * of size k exists.
-     * @since 0.1.2
+     * @since 0.7.0
     */
     public UndirectedGraph<T> findClique(UndirectedGraph<T> graph, int k, int level){
         while(graph.size() >= k){
@@ -357,6 +358,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
      * there to be a clique of size 4, there must be 4 nodes that all have atleast 3 edges.
      * @param graph the graph to find the max possible clique number of
      * @return the max possible clique number
+     * @since 0.7.0
     */
     public int maxPossibleCliqueNum(UndirectedGraph<T> graph){
         int maxEdges = Collections.max(graph.getNodes()).numNeighbors();
@@ -389,7 +391,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
      * max possible clique number of that neighborhood
      * @param graph the graph to find the max possible clique number of
      * @return the max possible clique number
-     * @since 0.1.3
+     * @since 0.7.0
     */
     public int maxPossibleCliqueNumDeep(UndirectedGraph<T> graph){
         int k = 0;
@@ -426,6 +428,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
      * @param graph the graph to look for the independent set in
      * @param k the size of the independent set to look for
      * @return the independent set if exists, null otherwise
+     * @since 0.7.0
     */
     public UndirectedGraph<T> findIndependentSetViaClique(UndirectedGraph<T> graph, int k){
         UndirectedGraph<T> complement = graph.getComplement();
@@ -448,6 +451,7 @@ public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolve
      * @param graph the graph to look for the vertext cover in
      * @param k the size of the vertex cover to look for
      * @return the vertex cover if exists, null otherwise
+     * @since 0.7.0
     */
     public UndirectedGraph<T> findVertexCoverViaClique(UndirectedGraph<T> graph, int k){
         UndirectedGraph<T> independentSet = findIndependentSetViaClique(graph, graph.size() - k);
