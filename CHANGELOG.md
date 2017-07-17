@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-[None]
+
 ### Changed
-[None]
+- reorganizing the inheritance hierarchy of Vector and CartesianCoordinates.
+  Vector is now the super class. Most of the functionality of
+  CartesianCoordinates has been moved into Vector.
 ### Deprecated
 [None]
 ### Removed
