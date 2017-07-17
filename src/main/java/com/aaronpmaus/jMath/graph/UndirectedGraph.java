@@ -13,7 +13,7 @@ import java.util.Comparator;
  * represent vertices and are wrapper for a generic Object. See the Node class for
  * more information. In this manner a graph can be built to represent anything.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.2.0
+ * @version 0.8.0
  * @since 0.1.0
 */
 public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
@@ -23,6 +23,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
 
     /**
      * A default constructor for the UndirectedGraph
+     * @since 0.1.0
     */
     public UndirectedGraph(){
         super();
@@ -31,6 +32,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     /**
      * Constructs an undirected graph given the number of nodes it needs to hold.
      * @param numNodes the number of nodes the graph will hold.
+     * @since 0.1.0
     */
     public UndirectedGraph(int numNodes){
         super(numNodes);
@@ -39,6 +41,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     /**
      * Builds an UndirectedGraph from a Graph object.
      * @param g the Graph to build from the UndirectedGraph
+     * @since 0.1.0
     */
     public UndirectedGraph(Graph<T> g){
         //super(g.size());
@@ -65,7 +68,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
      * in the UndirectedGraph, but not of all the Objects that the Nodes
      * contain.
      * @param g the UndirectedGraph to Copy
-     * @since 0.1.1
+     * @since 0.2.0
     */
     public UndirectedGraph(UndirectedGraph<T> g){
         super(g);
@@ -75,7 +78,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
      * A constructor that takes a Collection of nodes and builds an
      * UndirectedGraph out of them.
      * @param nodes the nodes to be in the graph
-     * @since 0.1.3
+     * @since 0.2.0
     */
     public UndirectedGraph(Collection<Node<T>> nodes){
         super(nodes);
@@ -88,7 +91,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
      * @param node the Node to get the neighbors of.
      * @return an UndirectedGraph of the neighbors. This is a deep
      *         copy of this subset of the total graph.
-     * @since 0.1.5
+     * @since 0.3.0
     */
     public UndirectedGraph<T> getNeighbors(Node<T> node){
         return new UndirectedGraph<T>(super.getNeighbors(node));
@@ -99,7 +102,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
      * objects form a clique in the graph.
      * @param objects the objects to check
      * @return true if the nodes containing these objects are a clique. false otherwise
-     * @since 0.1.1
+     * @since 0.7.0
     */
     public boolean checkIfClique(Collection<T> objects){
         ArrayList<Node<T>> nodesInClique = new ArrayList<Node<T>>(objects.size());
@@ -110,21 +113,63 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
         return clique.isClique( );
     }
 
+    /**
+     * Add an edge to the graph. Adds nodes containing these two objects
+     * to the graph if they are not already in the graph. Then adds
+     * an edge from start to end.
+     * @param start the start object of the edge
+     * @param end the end object of the edge
+     * @since 0.8.0
+    */
     @Override
+    public void addEdge(T start, T end){
+        this.addEdge(new Node<T>(start), new Node<T>(end));
+    }
+
+
     /**
      * Add an edge to this Undirected graph.
      * @param n1 one of the end nodes of this edge
      * @param n2 the other end node of this edge
+     * @since 0.1.0
     */
+    @Override
     public void addEdge(Node<T> n1, Node<T> n2){
         super.addEdge(n1,n2);
         super.addEdge(n2,n1);
+    }
+
+    /**
+     * Add an edge to the graph. Adds nodes containing these two objects
+     * to the graph if they are not already in the graph. Then adds
+     * an edge from start to end.
+     * @param start the start object of the edge
+     * @param end the end object of the edge
+     * @param weight, the weight of the edge
+     * @since 0.8.0
+    */
+    @Override
+    public void addEdge(T start, T end, double weight){
+        this.addEdge(new Node<T>(start), new Node<T>(end), weight);
+    }
+
+    /**
+     * Add an edge to this Undirected graph.
+     * @param n1 one of the end nodes of this edge
+     * @param n2 the other end node of this edge
+     * @since 0.8.0
+    */
+    @Override
+    public void addEdge(Node<T> n1, Node<T> n2, double weight){
+        super.addEdge(n1,n2,weight);
+        super.addEdge(n2,n1,weight);
     }
 
     // this implementation is for an undirected graph.
     @Override
     /**
      * {@inheritDoc}
+     * @since 0.1.0
     */
     public void removeNodeFromGraph(Node<T> nodeToBeRemoved){
         nodeToBeRemoved = this.getNode(nodeToBeRemoved.get());
@@ -138,6 +183,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     @Override
     /**
      * {@inheritDoc}
+     * @since 0.1.0
     */
     public UndirectedGraph<T> getNeighborhood(Node<T> root){
         Collection<Node<T>> copyNodes = getNeighborhoodNodes(root);
@@ -147,6 +193,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     @Override
     /**
      * {@inheritDoc}
+     * @since 0.3.0
     */
     public UndirectedGraph<T> getNeighborhood(Collection<Node<T>> nodes){
         // getNeighborhoodNodes will use the nodes from THIS graph
@@ -161,6 +208,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     @Override
     /**
      * {@inheritDoc}
+     * @since 0.3.0
     */
     public UndirectedGraph<T> getComplement(){
         return new UndirectedGraph<T>(getComplementNodes());
@@ -170,6 +218,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
      * A method to return the degeneracy ordering of a graph
      * @return an ArrayList of Nodes representing the degeneracy ordering.
      *         the smallest vertex is at the 0th index
+     * @since 0.7.0
     */
     public ArrayList<Node<T>> degeneracyOrdering( ){
         ArrayList<Node<T>> vertexOrdering = new ArrayList<Node<T>>(this.size());
@@ -188,10 +237,11 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
         return vertexOrdering;
     }
 
-    @Override
+
     /**
      * {@inheritDoc}
     */
+    @Override
     public double density(){
         // the implementation of the undirected graph includes both forward and back edges.
         // ie, double the edges. so we don't need to multiply by 2.
@@ -201,9 +251,9 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     /**
      * Returns a set of all the edges in this UndirectedGraph.
      * @return a Collection of the edges in this UndirectedGraph
-     * @since 0.2.0
+     * @since 0.6.0
     */
-    Collection<UndirectedEdge<T>> getEdges(){
+    public Collection<UndirectedEdge<T>> getEdges(){
         HashSet<UndirectedEdge<T>> edges = new HashSet<UndirectedEdge<T>>((int)(numEdges()/0.75) + 1);
         for(Node<T> node : getNodes()){
             for(Edge<T> e : node.getEdges()){
@@ -227,6 +277,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     /**
      * Returns the number of edges in this UndirectedGraph.
      * @return an int representing the number of edges in this UndirectedGraph
+     * @since 0.3.0
     */
     @Override
     public int numEdges(){
@@ -237,6 +288,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
      * Checks if a graph is a clique. A graph is a clique if there are N*(N-1)/2
      * edges in it.
      * @return true if the graph is a clique, false otherwise
+     * @since 0.7.0
     */
     public boolean isClique( ){
         int numEdges = numEdges();

@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * generic Object. See the Node class for more information. In this manner a graph
  * can be built to represent anything.
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.2.0
+ * @version 0.8.0
  * @since 0.1.0
 */
 public class Graph<T extends Comparable<T>>{
@@ -22,6 +22,8 @@ public class Graph<T extends Comparable<T>>{
 
     /**
      * A default constructor for the graph.
+     * @version 0.7.0
+     * @since 0.1.0
     */
     public Graph(){
         this.adjacencyList = new HashMap<T, Node<T>>(100); // default load factor is 0.75
@@ -32,6 +34,8 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Constructs a graph given the number of nodes that will go in the graph.
      * @param numNodes the number of nodes to go in the graph.
+     * @version 0.7.0
+     * @since 0.1.0
     */
     public Graph(int numNodes){
         this.adjacencyList = new HashMap<T, Node<T>>((int)((numNodes)/0.75)+1);
@@ -44,7 +48,8 @@ public class Graph<T extends Comparable<T>>{
      * passed in. The deep copy is of all the Nodes and Edges in the Graph,
      * but not of the Objects that the Nodes contains.
      * @param g the Graph to create a copy of
-     * @since 0.1.1
+     * @version 0.7.0
+     * @since 0.2.0
     */
     public Graph(Graph<T> g){
         Collection<Node<T>> nodes = getDeepCopyNodes(g.getNodes());
@@ -60,7 +65,8 @@ public class Graph<T extends Comparable<T>>{
      * A constructor that takes a Collection of nodes and builds a graph out
      * of them
      * @param nodes the nodes to be in the graph
-     * @since 0.1.3
+     * @version 0.7.0
+     * @since 0.2.0
     */
     public Graph(Collection<Node<T>> nodes){
         nodes = getDeepCopyNodes(nodes);
@@ -77,6 +83,7 @@ public class Graph<T extends Comparable<T>>{
      * to be used when writing out to file. When a graph
      * is created by reading in from a
      * @param name the name to set it to.
+     * @since 0.7.0
     */
     public void setGraphFileName(String name) {
         this.graphFileName = name;
@@ -88,6 +95,7 @@ public class Graph<T extends Comparable<T>>{
      * from a dimacs file, this method will return
      * the name of that file.
      * @return the name of the file associated with this graph
+     * @since 0.7.0
     */
     public String getGraphFileName(){
         return this.graphFileName;
@@ -99,9 +107,9 @@ public class Graph<T extends Comparable<T>>{
      * where both end points of the edge are in this list of nodes.
      * @param root the root node of the neighborhood. The neighborhood is this node
      *             and all its neighbors
-     * @return a collection of Nodes. This is a deep copy of the nodes and edges 
+     * @return a collection of Nodes. This is a deep copy of the nodes and edges
      *         in the neighborhood
-     * @since 0.1.3
+     * @since 0.3.0
     */
     public Collection<Node<T>> getNeighborhoodNodes(Node<T> root){
         // in case the collection of nodes passed in was a deep copy of
@@ -118,7 +126,7 @@ public class Graph<T extends Comparable<T>>{
      * @param nodes the Collection of nodes to get the neighborhood of.
      * @return a Collection of Nodes. This is a deep copy of the nodes and edges
      *         in the neighborhood
-     * @since 0.1.4
+     * @since 0.3.0
     */
     public Collection<Node<T>> getNeighborhoodNodes(Collection<Node<T>> nodes){
         // default load factor is 0.75. Create a HashSet large enough that it
@@ -139,6 +147,7 @@ public class Graph<T extends Comparable<T>>{
      * @param root The node to get the neighborhood around.
      * @return a graph of the neighborhood. This is a deep copy of this subset
      *         of the total graph.
+     * @since 0.1.0
     */
     public Graph<T> getNeighborhood(Node<T> root){
         Collection<Node<T>> copyNodes = getNeighborhoodNodes(root);
@@ -152,7 +161,7 @@ public class Graph<T extends Comparable<T>>{
      * @param nodes the Nodes to get the neighborhood around.
      * @return a graph of the neighborhood. This is a deep
      *         copy of this subset of the total graph.
-     * @since 0.1.4
+     * @since 0.3.0
     */
     public Graph<T> getNeighborhood(Collection<Node<T>> nodes){
         Collection<Node<T>> copyNodes = getNeighborhoodNodes(nodes);
@@ -166,18 +175,19 @@ public class Graph<T extends Comparable<T>>{
      * @param node the Node to get the neighbors of.
      * @return a graph of the neighbors. This is a deep
      *         copy of this subset of the total graph.
-     * @since 0.1.5
+     * @since 0.3.0
     */
     public Graph<T> getNeighbors(Node<T> node){
         Collection<Node<T>> copyNodes = getDeepCopyNodes(node.getNeighbors());
         return new Graph<T>(copyNodes);
     }
-    
+
     /**
      * Returns the complement of this graph, that is, the graph containing all the nodes
      * in the original graph, none of the edges in the original graph, and all of the edges
      * NOT in the original graph
      * @return the complement of the graph
+     * @since 0.3.0
     */
     public Graph<T> getComplement(){
         return new Graph<T>(getComplementNodes());
@@ -202,8 +212,8 @@ public class Graph<T extends Comparable<T>>{
         // store as a hashmap for constant time lookups
         // about the parameter. The default load factor is 0.75. So we want to instantiate
         // the HashMap with an initialCapacity large enough so that we never increase
-        // the capacity. We know exactly how many nodes will be added to this HashMap, 
-        // it's the number of neighbors+1 (for the root). 
+        // the capacity. We know exactly how many nodes will be added to this HashMap,
+        // it's the number of neighbors+1 (for the root).
         // Setting the initial capacity to (numNeighbors+1)/0.75 + 1 will do the trick.
         HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((originalNodes.size()+1)/0.75+1));
         for(Node<T> node : originalNodes){
@@ -229,6 +239,7 @@ public class Graph<T extends Comparable<T>>{
      * that is, a copy of all the Nodes with all the edges that are NOT in
      * this graph
      * @return a Collection of Nodes that would belong to the complement of this graph
+     * @since 0.3.0
     */
     public Collection<Node<T>> getComplementNodes(){
         // create a new node for every node in the graph.
@@ -248,6 +259,7 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Returns the number of Nodes in this graph
      * @return the number of Nodes in this graph
+     * @since 0.1.0
     */
     public int size(){
         return this.adjacencyList.size();
@@ -255,7 +267,7 @@ public class Graph<T extends Comparable<T>>{
 
     /**
      * @return a {@code Collection<Node<T>>} of the nodes
-     * @since 0.1.3
+     * @since 0.1.0
     */
     public final Collection<Node<T>> getNodes(){
         return this.adjacencyList.values();
@@ -278,6 +290,7 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Add a node to the graph. Only adds the node if it is not already in the graph.
      * @param n the node to add to the graph.
+     * @since 0.1.0
     */
     public void addNode(Node<T> n){
         if(!containsNode(n)){
@@ -288,9 +301,10 @@ public class Graph<T extends Comparable<T>>{
     }
 
     /**
-     * Returns the node from the graph that holds the given object. 
+     * Returns the node from the graph that holds the given object.
      * @param obj the object of the node to be retrieved
      * @return the node with that object or null if it is not in the graph.
+     * @since 0.1.0
     */
     public Node<T> getNode(T obj){
         return this.adjacencyList.get(obj);
@@ -302,7 +316,7 @@ public class Graph<T extends Comparable<T>>{
      * an edge from start to end.
      * @param start the start object of the edge
      * @param end the end object of the edge
-     * @since 0.2.0
+     * @since 0.8.0
     */
     public void addEdge(T start, T end){
         addEdge(new Node<T>(start), new Node<T>(end));
@@ -313,6 +327,7 @@ public class Graph<T extends Comparable<T>>{
      * the graph. Then adds an edge from start to end.
      * @param start the start node of the edge
      * @param end the end node of the edge
+     * @since 0.1.0
     */
     public void addEdge(Node<T> start, Node<T> end){
         addNode(start);
@@ -328,7 +343,7 @@ public class Graph<T extends Comparable<T>>{
      * @param start the start object of the edge
      * @param end the end object of the edge
      * @param weight, the weight of the edge
-     * @since 0.2.0
+     * @since 0.8.0
     */
     public void addEdge(T start, T end, double weight){
         addEdge(new Node<T>(start), new Node<T>(end), weight);
@@ -340,6 +355,7 @@ public class Graph<T extends Comparable<T>>{
      * @param start the start node of the edge
      * @param end the end node of the edge
      * @param weight the weight of the edge
+     * @since 0.1.0
     */
     public void addEdge(Node<T> start, Node<T> end, double weight){
         addNode(start);
@@ -354,6 +370,7 @@ public class Graph<T extends Comparable<T>>{
      * Remove an edge from the graph.
      * @param start the node at the start of the edge
      * @param end the node at the end of the edge
+     * @since 0.1.0
     */
     public void removeEdge(Node<T> start, Node<T> end){
         if(containsNode(start)){
@@ -382,6 +399,7 @@ public class Graph<T extends Comparable<T>>{
      * Calculates the number of edges. To be used for testing purposes to
      * check that we are keeping track of the number of edges correctly.
      * @return the number of edges
+     * @since 0.1.0
     */
     public int getNumEdges(){
         int numEdges = 0;
@@ -394,6 +412,7 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Returns the number of edges of the graph. a constant time operation
      * @return the number of edges of the graph.
+     * @since 0.1.0
     */
     public int numEdges(){
         return this.numEdges;
@@ -403,6 +422,7 @@ public class Graph<T extends Comparable<T>>{
      * checks if a node is in the graph.
      * @param n the node to check for
      * @return true if the graph contains this node, false otherwise.
+     * @since 0.1.0
     */
     public boolean containsNode(Node<T> n){
         T obj = n.get();
@@ -414,6 +434,8 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Removes this node and all edges leading to or from it from the graph.
      * @param nodeToBeRemoved the node to remove
+     * @version
+     * @since 0.1.0
     */
     public void removeNodeFromGraph(Node<T> nodeToBeRemoved){
         nodeToBeRemoved = this.getNode(nodeToBeRemoved.get());
@@ -436,7 +458,7 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Removes this node from the graph. Does not remove edges leading to this node.
      * This method is intended as a helper method for this class and subclasses. Do
-     * not call this method, rather call {@code removeNodeFromGraph(Node<T&> n)}, it will 
+     * not call this method, rather call {@code removeNodeFromGraph(Node<T&> n)}, it will
      * properly maintain all edges of the graph. This method does not guarantee that.
      * I wish that java had an access modifier to restrict access to only subclasses.
      * Also, I know this is not the best way of going about this. I'm still trying to
@@ -452,7 +474,7 @@ public class Graph<T extends Comparable<T>>{
     /**
      * Returns the density of the graph
      * @return the density of the graph
-     * @since 0.1.2
+     * @since 0.3.0
     */
     public double density(){
         return ((double)getNumEdges())/(size()*(size()-1));
@@ -461,6 +483,7 @@ public class Graph<T extends Comparable<T>>{
     @Override
     /**
      * @return a string representation of this graph in the form of an adjacency list.
+     * @since 0.1.0
     */
     public String toString(){
         String str = "";
