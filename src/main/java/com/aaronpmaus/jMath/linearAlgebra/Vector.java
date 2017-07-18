@@ -100,10 +100,10 @@ public class Vector{
     }
 
     /**
-     * Returns the value of the coordinate at the given dimension.
+     * Returns the value of the vector at the given dimension.
      * @param dimension The dimension of the coorinate to be returned. The first
-     *                  coordinate is at the 0th dimension.
-     * @return The value of the coordinate at the given dimension.
+     *                  value is at the 0th dimension.
+     * @return The value of the vector at the given dimension.
      * @throws IllegalArgumentException Thrown if dimension is {@code >= getNumDimensions()}.
      * @since 0.9.0
     */
@@ -148,7 +148,7 @@ public class Vector{
     }
 
     /**
-     * This is a helper method to be used when coordinates passed in to another
+     * This is a helper method to be used when a vector passed in to another
      * method do not have the same dimension at this point.
      * @param values The values that were passed into the other method.
      * @return A String stating that the Num Dimensions of the Vector passed in
@@ -156,7 +156,7 @@ public class Vector{
      * @since 0.9.0
     */
     protected String buildIllegalArgumentExceptionString(double[] values){
-            String exceptionString = "Must pass correct number of coordinates. "
+            String exceptionString = "Must pass a vector with the correct number of dimensions. "
                                         + "Num Dimensions: " + getNumDimensions() + ", requires " + getNumDimensions()
                                         + " arguments. Given " + values.length + " arguments: ";
             exceptionString += buildVectorString(values);
@@ -166,7 +166,7 @@ public class Vector{
     @Override
     /**
      * An overridden implementation of Object.toString().
-     * @return  A String representation of the coordinates of this point.
+     * @return  A String representation of this vector.
      * @since 0.1.0
     */
     public String toString(){
@@ -174,7 +174,7 @@ public class Vector{
     }
 
     /**
-     * @param values The coordinates to build a String out of.
+     * @param values The values to build a String out of.
      * @return The String representation of the values.
      * @since 0.9.0
     */
