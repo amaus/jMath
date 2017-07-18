@@ -34,7 +34,7 @@ public class CartesianCoordinates extends Vector{
      * @since 0.1.0
     */
     public double getX(){
-        return getElement(0);
+        return getValue(0);
     }
 
     /**
@@ -44,7 +44,7 @@ public class CartesianCoordinates extends Vector{
      * @since 0.1.0
     */
     public double getY(){
-        return getElement(1);
+        return getValue(1);
     }
 
     /**
@@ -54,7 +54,7 @@ public class CartesianCoordinates extends Vector{
      * @since 0.1.0
     */
     public double getZ(){
-        return getElement(2);
+        return getValue(2);
     }
 
 }// end of class CartesianCoordinates

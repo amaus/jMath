@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
-## [0.9.0] - 2017-7-17
+## [0.9.0] - 2017-7-18
 ### Changed
 - reorganizing the inheritance hierarchy of Vector and CartesianCoordinates.
   Vector is now the super class. Most of the functionality of

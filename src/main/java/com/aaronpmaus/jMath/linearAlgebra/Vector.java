@@ -39,7 +39,7 @@ public class Vector{
     public double[] getValues(){
         double[] coordinates = new double[getNumDimensions()];
         for(int i = 0; i < getNumDimensions(); i++){
-            coordinates[i] = getElement(i);
+            coordinates[i] = getValue(i);
         }
         return coordinates;
     }
@@ -68,7 +68,7 @@ public class Vector{
 
         double product = 0;
         for(int i = 0; i < getNumDimensions(); i++){
-            product += getElement(i) * other.getElement(i);
+            product += getValue(i) * other.getValue(i);
         }
         return product;
     }
@@ -101,12 +101,13 @@ public class Vector{
 
     /**
      * Returns the value of the coordinate at the given dimension.
-     * @param dimension The dimension of the coorinate to be returned. The first coordinate is at the 0th dimension.
+     * @param dimension The dimension of the coorinate to be returned. The first
+     *                  coordinate is at the 0th dimension.
      * @return The value of the coordinate at the given dimension.
      * @throws IllegalArgumentException Thrown if dimension is {@code >= getNumDimensions()}.
      * @since 0.9.0
     */
-    public double getElement(int dimension){
+    public double getValue(int dimension){
         if(dimension < getNumDimensions()){
             return this.values[dimension];
         } else {
@@ -197,7 +198,7 @@ public class Vector{
         double distance = 0.0;
         if(otherVector.getNumDimensions() == getNumDimensions()){
             for(int i = 0; i < getNumDimensions(); i++){
-                distance += Math.pow(getElement(i) - otherVector.getElement(i), 2);
+                distance += Math.pow(getValue(i) - otherVector.getValue(i), 2);
             }
             distance = Math.sqrt(distance);
         } else {

@@ -13,6 +13,9 @@ group = "com.aaronpmaus.jMath"
 //       made within private code. It may include PATCH level changes
 // MAJOR is incremented if backwards incompatible changes are introduced to the
 //       public API. It may include MINOR and PATCH level changes.
+// After making a release, update the number. at the very least increment
+// PATCH, so that the release jars won't get overriden by active development
+// jars.
 version '0.9.0'
 // the default jar destinationDir is $buildDir/libs. Make it singular so that
 // the executables made during the build phase will set their CLASSPATH correctly.
@@ -56,9 +59,11 @@ task copyExternalExes(type: Copy){
 // archives of the executables.
 defaultTasks 'build'
 zipJavadoc.dependsOn javadoc
+// ONLY USE INSTALL WHEN CREATING A RELEASE. If used for routine compilation, it
+// will override the release file in the local maven repository
 install.dependsOn zipJavadoc, copyDepToLib, includeExternalExecutablesInBin, copyExternalExes
-//build.dependsOn zipJavadoc
-build.dependsOn copyDepToLib, includeExternalExecutablesInBin, copyExternalExes
+// use build for day in and out compilation.
+build.dependsOn javadoc, copyDepToLib, includeExternalExecutablesInBin, copyExternalExes
 
 // add the javadoc zip to the list of artifacts to be published in the maven repository
 def javadocZip = file("$buildDir/distributions/jMath-$version"+"-javadoc.zip")
