@@ -19,13 +19,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
-## [0.9.0] - 2017-7-18
+## [0.9.0] - 2017-07-18
 ### Changed
 - reorganizing the inheritance hierarchy of Vector and CartesianCoordinates.
   Vector is now the super class. Most of the functionality of
   CartesianCoordinates has been moved into Vector.
 
-## [0.8.0] - 2017-7-17
+## [0.8.0] - 2017-07-17
 ### Added
 - overloaded method addEdge in Graph and Undirected graph to take as parameters
   the objects to wrap as Nodes along with overloaded methods to accept a weight
@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   of all methods and classes
 - minor updates throughout javadocs to use code tags
 
-## [0.7.0] - 2017-4-26
+## [0.7.0] - 2017-04-26
 ### Added
 - added inheritance hierarchy for Max Clique Algorithms. MaxCliqueSolver is
   super class. Under it are MausMaxCliqueSolver, IncMaxCliqueSolver, and
@@ -64,7 +64,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   in UndirectedGraph. These methods have been moved into Max Clique Algorithms
   Inheritance hierarchy.
 
-## [0.6.0] - 2017-1-17
+## [0.6.0] - 2017-01-17
 ### Added
 - ability to write out dimacs files to GraphIO.
 - hashCode and equals methods to Edge
@@ -99,7 +99,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - installation instructions in README to reflect the changes in the build
   process
 
-## [0.4.0] - 2016-11-8
+## [0.4.0] - 2016-11-08
 ### Added
 - initial .gitignore file
 - Executables FindClique and FindMaxClique. updated build.gradle to create
@@ -107,7 +107,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - changed name of method getObject() in Node to get()
 
-## [0.3.0] - 2016-9-20
+## [0.3.0] - 2016-09-20
 ### Added
 - output statements to format output based on level of recursion
 - internal helper method to get a deep copy of all the nodes. This simplifies
@@ -122,7 +122,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - refactored getNeighborhood method to simplify and use private helper method.
 - cleaned up development print statements
 
-## [0.2.0] - 2016-9-2
+## [0.2.0] - 2016-09-02
 ### Added
 - Copy constructors in Graph, one takes a Graph, the other a Collection
   of Nodes.
@@ -132,7 +132,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   a MAX CLIQUE, stores this number in a long because the number of calls
   can get HUGE.
 
-## [0.1.0] - 2016-8-21
+## [0.1.0] - 2016-08-21
 ### Added
 - initial build.gradle for managing this project. Includes basic information on
   project: group, version, plugins (maven, maven-publish, application)
