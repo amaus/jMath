@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [None]
 
 ## [0.9.0] - 2017-07-18
+### Added
+- Section in README about the workflow of this project and a preemptive
+  contributing section for when a license is added
 ### Changed
 - reorganizing the inheritance hierarchy of Vector and CartesianCoordinates.
   Vector is now the super class. Most of the functionality of

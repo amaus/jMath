@@ -55,6 +55,24 @@ compiled jar in $JMATHDIR/build/lib/. If you are developing outside of jMath,
 that is writing your own programs that depend on jMath, you need to make
 sure your CLASSPATH includes the location of your jMath jar.
 
+## Contributing
+
+This section will go into effect when a license is added.
+
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
+
+## Development Workflow
+
+This project uses the [Gitflow Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows#gitflow-workflow).
+
+If you contribute to this project and your pull request is accepted,
+your feature branch will be merged into the develop branch and included
+in the next release.
+
 ## javadoc
 
 You can generate the latest javadocs via:
