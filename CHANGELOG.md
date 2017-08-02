@@ -7,13 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-[None]
+- overloaded method to readFromDimacsFile using an InputStream. This will
+  make it easier to read in graphs from resource files within this project.
+- block in build.gradle to have javadoc include links to Java APIs when
+  generating documentation for this project
+- class TestVector and unit tests for it's methods
+- graph.GraphIO#readFromDimacsFile(InputStream in, String filename). This
+  makes it easier to use project resources as input for graphs.
 ### Changed
-[None]
+- Moved tests and their resources into package specific directories
+- Class linearAlgebra#Vector. Class now stores numbers in BigDecimals. Various
+  method parameters and return types have changed to accommodate this. Methods
+  that calculate quantities: magnitude, angle, and distance still return doubles.
 ### Deprecated
 [None]
 ### Removed
-[None]
+- linearAlgebra.Vector#moveTo(double... values)
+- linearAlgebra.Vector#moveBy(doubel... vector)
 ### Fixed
 - Updated dates in CHANGELOG to better conform to ISO 8601
 ### Security

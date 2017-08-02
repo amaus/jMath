@@ -5,24 +5,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.FileInputStream;
 
 /**
  * A class with static methods to read in graphs from files with difference formats
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.6.0
+ * @version 0.10.0
  * @since 0.1.0
 */
 public class GraphIO{
 
     /**
      * Reads in and build and UndirectedGraph{@literal <Integer>}from a DIMACS file.
-     * @param filename the name of the file to read from
+     * @param inputStream the InputStream to read from
+     * @param graphFileName the filename of the graph
      * @return the UndirectedGraph{@literal <Integer>} from that file
-     * @throws FileNotFoundException if reading in the file fails
-     * @since 0.1.0
+     * @since 0.10.0
     */
-    public static UndirectedGraph<Integer> readFromDimacsFile(String filename) throws FileNotFoundException{
-        Scanner fileReader = new Scanner(new File(filename));
+    public static UndirectedGraph<Integer> readFromDimacsFile(InputStream inputStream, String graphFileName) {
+        Scanner fileReader = new Scanner(inputStream);
         int numNodes = 0;
         int numEdges = 0;
         UndirectedGraph<Integer> graph;// = new UndirectedGraph<Integer>();
@@ -36,7 +38,7 @@ public class GraphIO{
             }
         }
         graph = new UndirectedGraph<Integer>(numNodes);
-        graph.setGraphFileName(filename);
+        graph.setGraphFileName(graphFileName);
         while(fileReader.hasNextLine()){
             String line = fileReader.nextLine();
             String[] tokens = line.split(" ");
@@ -47,6 +49,18 @@ public class GraphIO{
             }
         }
         return graph;
+    }
+
+    /**
+     * Reads in and build and UndirectedGraph{@literal <Integer>}from a DIMACS file.
+     * @param filename the name of the file to read from
+     * @return the UndirectedGraph{@literal <Integer>} from that file
+     * @throws FileNotFoundException if reading in the file fails
+     * @since 0.1.0
+    */
+    public static UndirectedGraph<Integer> readFromDimacsFile(String filename) throws FileNotFoundException{
+        FileInputStream in = new FileInputStream(new File(filename));
+        return readFromDimacsFile(in, filename);
     }
 
     /**

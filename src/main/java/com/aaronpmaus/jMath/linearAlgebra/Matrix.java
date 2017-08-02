@@ -1,5 +1,8 @@
 package com.aaronpmaus.jMath.linearAlgebra;
+
 import java.lang.IllegalArgumentException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 /**
  * This class represents a 2-dimensional matrix.
@@ -179,7 +182,7 @@ public class Matrix{
      * @return the 2-D double array that represents this matrix
      * @since 0.1.0
     */
-    public double[][] getArray(){
+    public double[][] toArray(){
         double[][] ret = new double[getNumRows()][getNumCols()];
         for(int i = 0; i < getNumRows(); i++){
             for(int j = 0; j < getNumCols(); j++){
@@ -197,9 +200,9 @@ public class Matrix{
      * @since 0.1.0
     */
     public Vector getRowVector(int rowIndex){
-        double[] row = new double[getNumCols()];
+        BigDecimal[] row = new BigDecimal[getNumCols()];
         for(int colIndex = 0; colIndex < getNumCols(); colIndex++){
-            row[colIndex] = getElement(rowIndex,colIndex);
+            row[colIndex] = new BigDecimal(getElement(rowIndex,colIndex), MathContext.DECIMAL64);
         }
         return new Vector(row);
     }
@@ -212,9 +215,9 @@ public class Matrix{
      * @since 0.1.0
     */
     public Vector getColVector(int colIndex){
-        double[] col = new double[getNumRows()];
+        BigDecimal[] col = new BigDecimal[getNumRows()];
         for(int rowIndex = 0; rowIndex < getNumRows(); rowIndex++){
-            col[rowIndex] = getElement(rowIndex,colIndex);
+            col[rowIndex] = new BigDecimal(getElement(rowIndex,colIndex), MathContext.DECIMAL64);
         }
         return new Vector(col);
     }

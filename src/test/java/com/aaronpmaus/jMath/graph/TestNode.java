@@ -1,3 +1,5 @@
+package com.aaronpmaus.jMath.graph;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;

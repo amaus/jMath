@@ -81,11 +81,23 @@ test {
     }
 }
 
-//include the -Xlint compiler arg to all compiles
+// include the -Xlint compiler arg to all compiles
 allprojects {
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile){
             options.compilerArgs << "-Xlint"
+        }
+    }
+}
+
+// include links to Java APIs when generating all javadocs
+// this is equivalent to including cmd line arg
+// -link http://docs.oracle.com/javase/8/docs/api/
+// when running javadoc program
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(Javadoc){
+            options.links("http://docs.oracle.com/javase/8/docs/api/");
         }
     }
 }

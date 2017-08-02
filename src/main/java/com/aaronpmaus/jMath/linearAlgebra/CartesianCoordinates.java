@@ -1,5 +1,7 @@
 package com.aaronpmaus.jMath.linearAlgebra;
+
 import java.lang.IllegalArgumentException;
+import java.math.BigDecimal;
 
 /**
  * This class represents a general set of cartesian coordinates in any number
@@ -15,7 +17,7 @@ public class CartesianCoordinates extends Vector{
      *               point of any dimension.
      * @since 0.1.0
     */
-    public CartesianCoordinates(double... coords){
+    public CartesianCoordinates(String... coords){
         super(coords);
     }
 
@@ -24,7 +26,7 @@ public class CartesianCoordinates extends Vector{
      * @since 0.1.0
     */
     public CartesianCoordinates(){
-        super(0.0, 0.0, 0.0);
+        super("0.0", "0.0", "0.0");
     }
 
     /**
@@ -33,7 +35,7 @@ public class CartesianCoordinates extends Vector{
      * @return The 0th coordinate of this point.
      * @since 0.1.0
     */
-    public double getX(){
+    public BigDecimal getX(){
         return getValue(0);
     }
 
@@ -43,7 +45,7 @@ public class CartesianCoordinates extends Vector{
      * @return The 1th coordinate of this point.
      * @since 0.1.0
     */
-    public double getY(){
+    public BigDecimal getY(){
         return getValue(1);
     }
 
@@ -53,7 +55,7 @@ public class CartesianCoordinates extends Vector{
      * @return The 2th coordinate of this point.
      * @since 0.1.0
     */
-    public double getZ(){
+    public BigDecimal getZ(){
         return getValue(2);
     }
 

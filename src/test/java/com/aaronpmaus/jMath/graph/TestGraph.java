@@ -1,3 +1,5 @@
+package com.aaronpmaus.jMath.graph;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
@@ -6,6 +8,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import com.aaronpmaus.jMath.graph.*;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 // @Test flags a method as a test method.
 // @Before indicates that a method will be run before every
@@ -35,7 +38,9 @@ public class TestGraph{
 
     @Test
     public void testEdges() throws FileNotFoundException{
-        myGraph = GraphIO.readFromDimacsFile("./build/resources/test/example.dimacs");
+        String fileName = "example.dimacs";
+        InputStream stream = TestGraph.class.getResourceAsStream(fileName);
+        myGraph = GraphIO.readFromDimacsFile(stream, fileName);
         assertEquals(15,myGraph.numEdges());
     }
 }
