@@ -53,6 +53,7 @@ public class TestVector{
         three = new Vector("3","0");
         four = new Vector("3","4");
     }
+
     @Test
     public void testEquals(){
 
