@@ -21,40 +21,40 @@ import java.util.Set;
 //  all the other methods in the test suite finish..
 
 public class TestNode{
-    private Node<Integer> n1;
-    private Node<Integer> n2;
-    private Node<Integer> n3;
+  private Node<Integer> n1;
+  private Node<Integer> n2;
+  private Node<Integer> n3;
 
-    @Before
-    public void setUp(){
-        n1 = new Node<Integer>(1);
-        n2 = new Node<Integer>(2);
-        n3 = new Node<Integer>(3);
-        System.out.println("Running setup method");
-    }
+  @Before
+  public void setUp(){
+    n1 = new Node<Integer>(1);
+    n2 = new Node<Integer>(2);
+    n3 = new Node<Integer>(3);
+    System.out.println("Running setup method");
+  }
 
-    @Test
-    public void testNodeConstruction(){
-        assertEquals(n1.numNeighbors(), 0);
-        assertEquals(n2.numNeighbors(), 0);
-        assertEquals(n3.numNeighbors(), 0);
+  @Test
+  public void testNodeConstruction(){
+    assertEquals(n1.numNeighbors(), 0);
+    assertEquals(n2.numNeighbors(), 0);
+    assertEquals(n3.numNeighbors(), 0);
 
-        assertEquals(n1.get(), new Integer(1));
-        assertEquals(n2.get(), new Integer(2));
-        assertEquals(n3.get(), new Integer(3));
+    assertEquals(n1.get(), new Integer(1));
+    assertEquals(n2.get(), new Integer(2));
+    assertEquals(n3.get(), new Integer(3));
 
-        assertFalse(n1.hasNeighbor(n2));
-        assertFalse(n1.hasNeighbor(n3));
+    assertFalse(n1.hasNeighbor(n2));
+    assertFalse(n1.hasNeighbor(n3));
 
-        Set<Node<Integer>> nodes = n1.getNeighbors();
-        assertEquals(nodes.size(), 0);
+    Set<Node<Integer>> nodes = n1.getNeighbors();
+    assertEquals(nodes.size(), 0);
 
-    }
+  }
 
-    @Test
-    public void TestHashCode(){
-        assertEquals(n1.hashCode(), 1);
-        assertEquals(n2.hashCode(), 2);
-        assertEquals(n3.hashCode(), 3);
-    }
+  @Test
+  public void TestHashCode(){
+    assertEquals(n1.hashCode(), 1);
+    assertEquals(n2.hashCode(), 2);
+    assertEquals(n3.hashCode(), 3);
+  }
 }
