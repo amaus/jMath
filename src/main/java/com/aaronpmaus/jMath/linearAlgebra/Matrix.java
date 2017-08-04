@@ -78,6 +78,8 @@ public class Matrix{
   * @param colVectors the column vectors to build this matrix from
   * @throws IllegalArgumentException if the preconditions aren't met.
   * @since 0.10.0
+  * TODO (Aaron Maus): change this to take row vectors. Row vectors will make
+  * constructor calls more intuitive.
   */
   public Matrix(Vector... colVectors){
     this.numCols = colVectors.length;
