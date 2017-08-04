@@ -13,6 +13,7 @@ import org.junit.rules.ExpectedException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.DecimalFormat;
+import java.util.Random;
 /*
  * @Test flags a method as a test method.
  * @Before indicates that a method will be run before every
@@ -104,4 +105,25 @@ public class TestMatrix{
     columnVec.multiply(colTimesRow);
   }
 
+  @Test
+  public void testDistributiveProperty(){
+    Matrix a = generateMatrix(3, 3, 1);
+    Matrix b = generateMatrix(3, 3, 2);
+    Matrix c = generateMatrix(3, 3, 3);
+    // test whether A(B+C) = AB + AC
+    Matrix leftHandSide = a.multiply( b.add(c) );
+    Matrix rightHandSide = ( a.multiply(b) ).add( a.multiply(c) );
+    assertTrue(leftHandSide.equals(rightHandSide));
+  }
+
+  private Matrix generateMatrix(int numRows, int numCols, int seed){
+    Random gen = new Random(seed);
+    Double[][] values = new Double[numRows][numCols];
+    for(int i = 0; i < numRows; i++){
+      for(int j = 0; j < numCols; j++){
+        values[i][j] = gen.nextDouble();
+      }
+    }
+    return new Matrix(values);
+  }
 }
