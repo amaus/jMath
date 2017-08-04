@@ -38,7 +38,7 @@ public class Matrix{
           String.format("matrix[%d][%d] is null.",i,j)
           + "The matrix must not contain any null values.");
         }
-        this.matrix[i][j] = new BigDecimal(matrix[i][j], MathContext.DECIMAL64);
+        this.matrix[i][j] = new BigDecimal(matrix[i][j], MathContext.DECIMAL128);
       }
     }
   }
@@ -132,9 +132,9 @@ public class Matrix{
     for(int i = 0; i < numRows; i++){
       for(int j = 0; j < numCols; j++){
         if(i == j){
-          this.matrix[i][j] = new BigDecimal("1.0", MathContext.DECIMAL64);
+          this.matrix[i][j] = new BigDecimal("1.0", MathContext.DECIMAL128);
         } else {
-          this.matrix[i][j] = new BigDecimal("0.0", MathContext.DECIMAL64);
+          this.matrix[i][j] = new BigDecimal("0.0", MathContext.DECIMAL128);
         }
       }
     }
@@ -205,13 +205,10 @@ public class Matrix{
     BigDecimal[][] newMat = new BigDecimal[getNumRows()][other.getNumCols()];
     for(int i = 0; i < getNumRows(); i++){
       for(int j = 0; j < other.getNumCols(); j++){
-        BigDecimal dotProduct = new BigDecimal("0.0", MathContext.DECIMAL64);
+        BigDecimal dotProduct = new BigDecimal("0.0", MathContext.DECIMAL128);
         for(int k = 0; k < getNumCols(); k++){
-          dotProduct = dotProduct
-              .add( this.getElement(i,k)
-                  .multiply(other.getElement(k,j)
-                  ,MathContext.DECIMAL64)
-              ,MathContext.DECIMAL64 );
+          dotProduct = dotProduct.add(
+              (this.getElement(i,k).multiply(other.getElement(k,j))) );
         }
         newMat[i][j] = dotProduct;
         // It seems more elegant to get the row and col vector and
@@ -239,7 +236,7 @@ public class Matrix{
     for(int rowIndex = 0; rowIndex < getNumRows(); rowIndex++){
       for(int colIndex = 0; colIndex < getNumCols(); colIndex++){
         newMat[rowIndex][colIndex] = this.getElement(rowIndex,colIndex)
-            .multiply(scalar, MathContext.DECIMAL64);
+            .multiply(scalar);
       }
     }
     return new Matrix(newMat);
@@ -262,8 +259,7 @@ public class Matrix{
     for(int rowIndex = 0; rowIndex < getNumRows(); rowIndex++){
       for(int colIndex = 0; colIndex < getNumCols(); colIndex++){
         newMat[rowIndex][colIndex] = this.getElement(rowIndex,colIndex)
-            .add(other.getElement(rowIndex,colIndex)
-            ,MathContext.DECIMAL64);
+            .add(other.getElement(rowIndex,colIndex));
       }
     }
     return new Matrix(newMat);
@@ -279,7 +275,7 @@ public class Matrix{
   * @since 0.5.0
   */
   public Matrix subtract(Matrix other) throws IllegalArgumentException{
-    Matrix negativeOther = other.multiply(new BigDecimal("-1.0", MathContext.DECIMAL64));
+    Matrix negativeOther = other.multiply(new BigDecimal("-1.0", MathContext.DECIMAL128));
     return add(negativeOther);
   }
 
@@ -382,10 +378,19 @@ public class Matrix{
       }
       for(int i = 0; i < getNumRows(); i++){
         for(int j = 0; j < getNumCols(); j++){
-          BigDecimal num1 = this.getElement(i,j).setScale(15);
-          BigDecimal num2 = other.getElement(i,j).setScale(15);
-          if(! (num1.equals(num2))){
-            return false;
+          try{
+            BigDecimal num1 = this.getElement(i,j).setScale(15,BigDecimal.ROUND_HALF_EVEN);
+            BigDecimal num2 = other.getElement(i,j).setScale(15,BigDecimal.ROUND_HALF_EVEN);
+            if(! (num1.equals(num2))){
+              //System.out.printf("%s\n",
+              //    new DecimalFormat("0.0000000000000000000000000000000000000000").format(num1));
+              //System.out.printf("%s\n",
+              //    new DecimalFormat("0.0000000000000000000000000000000000000000").format(num2));
+              return false;
+            }
+          } catch(ArithmeticException e){
+            e.printStackTrace();
+            System.exit(1);
           }
         }
       }
@@ -407,8 +412,8 @@ public class Matrix{
     for(int i = 0; i < getNumRows(); i++){
       str += "|";
       for(int j = 0; j < getNumCols(); j++){
-        str += String.format("%6.2f",getElement(i,j).doubleValue());
-        //str += String.format("%6s", new DecimalFormat("0.00").format(getElement(i,j)));
+        //str += String.format("%6.2f",getElement(i,j).doubleValue());
+        str += String.format("%6s", new DecimalFormat("0.00").format(getElement(i,j)));
       }
       if(i == getNumRows()-1){
         str += "  |";

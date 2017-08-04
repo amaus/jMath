@@ -33,7 +33,7 @@ public class Vector{
     this.values = new BigDecimal[vals.length];
     int i = 0;
     for(String val : vals){
-      this.values[i] = new BigDecimal(val, MathContext.DECIMAL64);
+      this.values[i] = new BigDecimal(val, MathContext.DECIMAL128);
       i++;
     }
   }
@@ -253,9 +253,9 @@ public class Vector{
     double distance = 0.0;
     if(otherVector.getNumDimensions() == getNumDimensions()){
       for(int i = 0; i < getNumDimensions(); i++){
-        distance += getValue(i).subtract(
-                    otherVector.getValue(i)).pow(
-                      2, MathContext.DECIMAL64).doubleValue();
+        distance += getValue(i).subtract(otherVector.getValue(i))
+            .pow(2)
+            .doubleValue();
       }
       distance = Math.sqrt(distance);
     } else {
@@ -285,17 +285,22 @@ public class Vector{
   /**
    * Returns true if both Vectors contain the same values.
    *
-   * If every BigDecimal in the vectors are equal
-   * (see {@link java.math.BigDecimal#equals(Object obj)})
-   * and in order, then these two vector are equal.
-   *
-   * @see java.util.Arrays#equals(Object[] a, Object[] a2)
    * @since 0.10.0
   */
   @Override
   public boolean equals(Object obj){
     if(obj instanceof Vector){
       Vector other = (Vector)obj;
+      if(this.getNumDimensions() != other.getNumDimensions()){
+        return false;
+      }
+      for(int i = 0; i < this.getNumDimensions(); i++){
+        BigDecimal num1 = this.getValue(i).setScale(15,BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal num2 = other.getValue(i).setScale(15,BigDecimal.ROUND_HALF_EVEN);
+        if(!num1.equals(num2)){
+          return false;
+        }
+      }
       return Arrays.equals(this.getValues(), other.getValues());
     }
     return false;
