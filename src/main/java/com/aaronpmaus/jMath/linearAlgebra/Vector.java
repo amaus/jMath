@@ -26,13 +26,16 @@ public class Vector{
    * @since 0.1.0
   */
   public Vector(String... vals){
+    this.numDimensions = vals.length;
+    if(this.numDimensions == 0){
+      throw new IllegalArgumentException("Vector must contain atleast one value.");
+    }
     this.values = new BigDecimal[vals.length];
     int i = 0;
     for(String val : vals){
       this.values[i] = new BigDecimal(val, MathContext.DECIMAL64);
       i++;
     }
-    this.numDimensions = vals.length;
   }
 
   /**
@@ -45,8 +48,11 @@ public class Vector{
    * @param vals the BigDecimals to build the vector from
   */
   public Vector(BigDecimal... vals){
-    this.values = vals;
     this.numDimensions = vals.length;
+    if(this.numDimensions == 0){
+      throw new IllegalArgumentException("Vector must contain atleast one value.");
+    }
+    this.values = vals;
   }
 
   /**
