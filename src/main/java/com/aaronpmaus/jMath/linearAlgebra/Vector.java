@@ -298,10 +298,16 @@ public class Vector{
         BigDecimal num1 = this.getValue(i).setScale(15,BigDecimal.ROUND_HALF_EVEN);
         BigDecimal num2 = other.getValue(i).setScale(15,BigDecimal.ROUND_HALF_EVEN);
         if(!num1.equals(num2)){
+          /*
+          System.out.printf("%s\n",
+              new DecimalFormat("0.0000000000000000000000000000000000000000").format(num1));
+          System.out.printf("%s\n",
+              new DecimalFormat("0.0000000000000000000000000000000000000000").format(num2));
+          */
           return false;
         }
       }
-      return Arrays.equals(this.getValues(), other.getValues());
+      return true;
     }
     return false;
   }

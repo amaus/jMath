@@ -73,6 +73,12 @@ public class TestVector{
         Vector v3 = new Vector(total);
         Vector v4 = new Vector("738479.92");
         assertTrue(v3.equals(v4));
+
+        Vector one = new Vector(new BigDecimal("0.1"));
+        Vector doubleOne = new Vector(new BigDecimal(0.1));
+        //System.out.printf("%s\n",
+        //    new DecimalFormat("0.0000000000000000000000000000000000000000").format(new BigDecimal(0.1)));
+        assertTrue(one.equals(doubleOne));
     }
 
     @Test
