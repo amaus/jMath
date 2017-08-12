@@ -1,4 +1,4 @@
-package com.aaronpmaus.jMath.graph;
+package com.aaronpmaus.jMath.linearAlgebra;
 
 import com.aaronpmaus.jMath.linearAlgebra.*;
 import static org.junit.Assert.*;
