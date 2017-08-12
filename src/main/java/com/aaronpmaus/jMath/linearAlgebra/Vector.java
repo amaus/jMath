@@ -39,6 +39,25 @@ public class Vector{
   }
 
   /**
+   * Construct a Vector containing the numeric values passed in as Doubles.
+   *
+   * @param vals the values to be added to this vector
+   * @since 0.1.0
+  */
+  public Vector(Double... vals){
+    this.numDimensions = vals.length;
+    if(this.numDimensions == 0){
+      throw new IllegalArgumentException("Vector must contain atleast one value.");
+    }
+    this.values = new BigDecimal[vals.length];
+    int i = 0;
+    for(Double val : vals){
+      this.values[i] = new BigDecimal(val, MathContext.DECIMAL128);
+      i++;
+    }
+  }
+
+  /**
    * Construct a vector from a set of BigDecimals.
    *
    * It is preferred that one of the other constructors is used, but if you
