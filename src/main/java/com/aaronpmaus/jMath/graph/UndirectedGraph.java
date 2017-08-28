@@ -171,7 +171,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
   * {@inheritDoc}
   * @since 0.1.0
   */
-  public void removeNodeFromGraph(Node<T> nodeToBeRemoved){
+  public void removeNode(Node<T> nodeToBeRemoved){
     nodeToBeRemoved = this.getNode(nodeToBeRemoved.get());
     // for ever neighbor of nodeToBeRemoved,
     for(Node<T> neighbor : nodeToBeRemoved.getNeighbors()){
@@ -232,7 +232,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
       // add the original node reference to vertexOrdering
       vertexOrdering.add(theSmallestNodeOriginal);
       // remove the node from temp
-      temp.removeNodeFromGraph(theSmallestNodeTemp);
+      temp.removeNode(theSmallestNodeTemp);
     }
     return vertexOrdering;
   }

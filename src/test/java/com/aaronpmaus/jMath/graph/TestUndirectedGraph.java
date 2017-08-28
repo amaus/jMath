@@ -226,7 +226,7 @@ public class TestUndirectedGraph{
   @Test
   public void testGetNeighborhoodException(){
     Node<Integer> two = example.getNode(2);
-    example.removeNodeFromGraph(two);
+    example.removeNode(two);
     exception.expect(NoSuchElementException.class);
     example.getNeighborhood(two);
   }
@@ -238,7 +238,7 @@ public class TestUndirectedGraph{
     ArrayList<Node<Integer>> list = new ArrayList<Node<Integer>>();
     list.add(one);
     list.add(two);
-    example.removeNodeFromGraph(two);
+    example.removeNode(two);
     exception.expect(NoSuchElementException.class);
     example.getNeighborhood(list);
   }
@@ -317,8 +317,33 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testRemoveNodeFromGraph(){
-    example.removeNodeFromGraph(two);
+  public void testGetComplementNoEdgesBoundary(){
+    example.addEdge(four,two);
+
+    UndirectedGraph<Integer> complement = example.getComplement();
+    one = complement.getNode(1);
+    two = complement.getNode(2);
+    three = complement.getNode(3);
+    four = complement.getNode(4);
+    five = complement.getNode(5);
+    six = complement.getNode(6);
+    seven = complement.getNode(7);
+
+    assertEquals(7, complement.size());
+    assertEquals(5, complement.numEdges());
+
+    assertEquals(2, one.numNeighbors());
+    assertEquals(1, two.numNeighbors());
+    assertEquals(2, three.numNeighbors());
+    assertEquals(0, four.numNeighbors());
+    assertEquals(1, five.numNeighbors());
+    assertEquals(2, six.numNeighbors());
+    assertEquals(2, seven.numNeighbors());
+  }
+
+  @Test
+  public void testRemoveNode(){
+    example.removeNode(two);
 
     assertEquals(6, example.size());
     assertEquals(11, example.numEdges());

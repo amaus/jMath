@@ -484,23 +484,24 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   // remove the node from the graph and all edges that
   // go to this node.
   /**
-  * Removes this node and all edges leading to or from it from the graph.
-  * @param nodeToBeRemoved the node to remove
+  * Remove this node and all edges leading to or from it from the graph.
+  *
+  * @param node the node to remove
   * @version 0.2.0
   * @since 0.1.0
   */
-  public void removeNodeFromGraph(Node<T> nodeToBeRemoved){
-    nodeToBeRemoved = this.getNode(nodeToBeRemoved.get());
+  public void removeNode(Node<T> node){
+    node = this.getNode(node.get());
     // check all nodes in this graph to see if there is an edge from it to
     // this node
-    for(Node<T> node : this.adjacencyList.values()){
-      if(node.hasNeighbor(nodeToBeRemoved)){
+    for(Node<T> n : this.adjacencyList.values()){
+      if(n.hasNeighbor(node)){
         // if there is an edge from a node to nodeToBeRemoved,
         // remove that edge from this graph.
-        this.removeEdge(node, nodeToBeRemoved);
+        this.removeEdge(n, node);
       }
     }
-    removeNodeFromAdjacencyList(nodeToBeRemoved);
+    removeNodeFromAdjacencyList(node);
   }
 
   // this is a hack so that the subclass
@@ -510,7 +511,7 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   /**
   * Removes this node from the graph. Does not remove edges leading to this node.
   * This method is intended as a helper method for this class and subclasses. Do
-  * not call this method, rather call {@code removeNodeFromGraph(Node<T&> n)}, it will
+  * not call this method, rather call {@code removeNode(Node<T&> n)}, it will
   * properly maintain all edges of the graph. This method does not guarantee that.
   * I wish that java had an access modifier to restrict access to only subclasses.
   * Also, I know this is not the best way of going about this. I'm still trying to

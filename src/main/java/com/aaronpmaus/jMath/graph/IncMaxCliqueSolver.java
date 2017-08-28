@@ -129,7 +129,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
     }
     int smallestVertexIndex = vertexOrdering.indexOf(smallestVertex);
     UndirectedGraph<T> gWithoutSmallestVertex = new UndirectedGraph<T>(g);
-    gWithoutSmallestVertex.removeNodeFromGraph(gWithoutSmallestVertex.getNode(smallestVertex.get()));
+    gWithoutSmallestVertex.removeNode(gWithoutSmallestVertex.getNode(smallestVertex.get()));
     if(numCalls < 100){
       //System.out.println("graph without smallest vertex");
       //System.out.println(gWithoutSmallestVertex);
@@ -238,7 +238,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
       }
       UndirectedGraph<T> indSet = new UndirectedGraph<T>();
       for(Node<T> n : indSetComplementNodes.getNodes()){
-        gComplement.removeNodeFromGraph(n);
+        gComplement.removeNode(n);
         indSet.addNode(g.getNode(n.get()));
         indSetVertexOrder.remove(n);
       }
