@@ -177,7 +177,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
     // for every neighbor of the smallestVertex
     for(Node<T> neighbor : neighbors){
       // if that neighbor is in c:
-      if(cUnionSmallestVertex.containsNode(neighbor)){
+      if(cUnionSmallestVertex.contains(neighbor)){
         // add an edge to the union graph between smallestVertex and the neighbor
         cUnionSmallestVertex.addEdge(v, cUnionSmallestVertex.getNode(neighbor.get()));
       }
@@ -206,7 +206,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
 
   private Node<T> getSmallestVertex(UndirectedGraph<T> g){
     for(int i = 0; i < vertexOrdering.size(); i++){
-      if(g.containsNode(vertexOrdering.get(i))){
+      if(g.contains(vertexOrdering.get(i))){
         return g.getNode(vertexOrdering.get(i).get());
       }
     }

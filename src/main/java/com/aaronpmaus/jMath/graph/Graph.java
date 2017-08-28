@@ -5,17 +5,24 @@ import java.util.HashSet;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
-* A general class for a Graph, by default a directed graph.
-* A Graph is made of Nodes. Nodes represent vertices and are wrappers for a
-* generic Object. See the Node class for more information. In this manner a graph
-* can be built to represent anything.
+* A Graph is a Directed Graph.
+*
+* A Graph is made of Nodes which represent vertices and are wrappers for a values.
+*
+* There is a strong relationship between the nodes and the graph and the values they wrap. A node is
+* defined by its value. Its edges may change, but as long as it contains the same value. it is the
+* same node. The values in the graph must be unique, that is, there can not be more than one node
+* that containing the same value.
+*
 * @author Aaron Maus aaron@aaronpmaus.com
 * @version 0.8.0
 * @since 0.1.0
 */
-public class Graph<T extends Comparable<T>>{
+public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   private HashMap<T, Node<T>> adjacencyList;
   private int numEdges;
   private String graphFileName;
@@ -102,24 +109,47 @@ public class Graph<T extends Comparable<T>>{
   }
 
   /**
-  * Returns a deep copy of the neighborhood from this Graph of the Node that is
-  * passed in. The collection includes that node, all its neighbors, and all edges
+  * Return a deep copy of the neighborhood from this Graph of the Node that is
+  * passed in.
+  *
+  * The collection includes that node, all its neighbors, and all edges
   * where both end points of the edge are in this list of nodes.
+  *
   * @param root the root node of the neighborhood. The neighborhood is this node
   *             and all its neighbors
   * @return a collection of Nodes. This is a deep copy of the nodes and edges
   *         in the neighborhood
   * @since 0.3.0
   */
-  public Collection<Node<T>> getNeighborhoodNodes(Node<T> root){
-    // in case the collection of nodes passed in was a deep copy of
-    // the nodes from this graph, use the actual node from this graph
-    Collection<Node<T>> originalNodes = this.getNode(root.get()).getNodeAndNeighbors();
+  protected Collection<Node<T>> getNeighborhoodNodes(T root){
+    if(!contains(root)){
+      throw new NoSuchElementException("Can not get neighborhood of node requested, not in graph.");
+    }
+    Collection<Node<T>> originalNodes = this.getNode(root).getNodeAndNeighbors();
     return getDeepCopyNodes(originalNodes);
   }
 
   /**
-  * Returns a deep copy of the neighborhood from this Graph of the Collection of
+  * Return a deep copy of the neighborhood from this Graph of the Node that is
+  * passed in.
+  *
+  * The collection includes that node, all its neighbors, and all edges
+  * where both end points of the edge are in this list of nodes.
+  *
+  * @param root the root node of the neighborhood. The neighborhood is this node
+  *             and all its neighbors
+  * @return a collection of Nodes. This is a deep copy of the nodes and edges
+  *         in the neighborhood
+  * @since 0.3.0
+  */
+  protected Collection<Node<T>> getNeighborhoodNodes(Node<T> root){
+    // in case the collection of nodes passed in was a deep copy of
+    // the nodes from this graph, use the actual node from this graph
+    return getNeighborhoodNodes(root.get());
+  }
+
+  /**
+  * Return a deep copy of the neighborhood from this Graph of the Collection of
   * Nodes that are passed in. The Collection includes all the nodes passed in, all
   * their neighbors, and all edges where both end points of the edge are in this list
   * of nodes.
@@ -128,22 +158,26 @@ public class Graph<T extends Comparable<T>>{
   *         in the neighborhood
   * @since 0.3.0
   */
-  public Collection<Node<T>> getNeighborhoodNodes(Collection<Node<T>> nodes){
+  protected Collection<Node<T>> getNeighborhoodNodes(Collection<Node<T>> nodes){
     // default load factor is 0.75. Create a HashSet large enough that it
     // won't ever need to be enlarged.
     HashSet<Node<T>> originalNodes = new HashSet<Node<T>>(this.size()*100/75+1);
     for(Node<T> node : nodes){
-      // in case the collection of nodes passed in was a deep copy of
-      // the nodes from this graph, use the actual node from this graph
+      if(!contains(node)){
+        throw new NoSuchElementException("Cannot get neighborhood of nodes requested, "
+          +"one of the nodes not in graph.");
+      }
       originalNodes.addAll(this.getNode(node.get()).getNodeAndNeighbors());
     }
     return getDeepCopyNodes(originalNodes);
   }
 
   /**
-  * Returns the neighborhood from this Graph of the Node passed in.
+  * Return the neighborhood from this Graph of the Node passed in.
+  *
   * The Neighborhood consists of the node, all of its neighbors,
   * and the set of edges that are between all of these nodes.
+  *
   * @param root The node to get the neighborhood around.
   * @return a graph of the neighborhood. This is a deep copy of this subset
   *         of the total graph.
@@ -155,9 +189,11 @@ public class Graph<T extends Comparable<T>>{
   }
 
   /**
-  * Returns the neighborhood from this Graph of the collection of Nodes passed in.
+  * Return the neighborhood from this Graph of the collection of Nodes passed in.
+  *
   * The Neighborhood consists of the Nodes, all their neighbors,
   * and all the edges between all of these nodes.
+  *
   * @param nodes the Nodes to get the neighborhood around.
   * @return a graph of the neighborhood. This is a deep
   *         copy of this subset of the total graph.
@@ -169,9 +205,11 @@ public class Graph<T extends Comparable<T>>{
   }
 
   /**
-  * Returns a Graph of neighbors of the Node passed in.
+  * Return a Graph of neighbors of the Node passed in.
+  *
   * The Neighbors Graph consists of the neighboring Nodes
   * and all the edges between all of these nodes.
+  *
   * @param node the Node to get the neighbors of.
   * @return a graph of the neighbors. This is a deep
   *         copy of this subset of the total graph.
@@ -183,9 +221,11 @@ public class Graph<T extends Comparable<T>>{
   }
 
   /**
-  * Returns the complement of this graph, that is, the graph containing all the nodes
-  * in the original graph, none of the edges in the original graph, and all of the edges
-  * NOT in the original graph
+  * Return the complement of this graph.
+  *
+  * The complement is the graph containing all the nodes in the original graph, none
+  * of the edges in the original graph, and all of the edges NOT in the original graph.
+  *
   * @return the complement of the graph
   * @since 0.3.0
   */
@@ -194,7 +234,8 @@ public class Graph<T extends Comparable<T>>{
   }
 
   /*
-  * Returns a deep copy of all the nodes in the graph.
+  * Return a deep copy of all the nodes in the graph.
+  *
   * The copy is a deep copy of all nodes and all edges
   * where both end points of the edge are in this list of nodes.
   */
@@ -235,13 +276,15 @@ public class Graph<T extends Comparable<T>>{
   }
 
   /**
-  * Returns a the nodes that would belong to the complement of this graph.
-  * that is, a copy of all the Nodes with all the edges that are NOT in
-  * this graph
+  * Return the nodes that would belong to the complement of this graph.
+  *
+  * These are a copy of all the Nodes with all the edges that are NOT in
+  * this graph.
+  *
   * @return a Collection of Nodes that would belong to the complement of this graph
   * @since 0.3.0
   */
-  public Collection<Node<T>> getComplementNodes(){
+  protected Collection<Node<T>> getComplementNodes(){
     // create a new node for every node in the graph.
     HashMap<T, Node<T>> copyNodes = getCopyNodesNoEdges();
     Collection<Node<T>> originalNodes = getNodes();
@@ -293,7 +336,7 @@ public class Graph<T extends Comparable<T>>{
   * @since 0.1.0
   */
   public void addNode(Node<T> n){
-    if(!containsNode(n)){
+    if(!contains(n)){
       //System.out.println("Adding node: " + n.hashCode());
       adjacencyList.put(n.get() ,n);
       incrementNumEdges(n.numNeighbors());
@@ -360,9 +403,7 @@ public class Graph<T extends Comparable<T>>{
   public void addEdge(Node<T> start, Node<T> end, double weight){
     addNode(start);
     addNode(end);
-    getNode(start.get()).addEdge(new Edge<T>(getNode(start.get()),
-    getNode(end.get()),
-    weight));
+    getNode(start.get()).addNeighbor(getNode(end.get()), weight);
     incrementNumEdges();
   }
 
@@ -373,7 +414,7 @@ public class Graph<T extends Comparable<T>>{
   * @since 0.1.0
   */
   public void removeEdge(Node<T> start, Node<T> end){
-    if(containsNode(start)){
+    if(contains(start)){
       start.removeNeighbor(end);
       decrementNumEdges();
     }
@@ -419,14 +460,25 @@ public class Graph<T extends Comparable<T>>{
   }
 
   /**
-  * checks if a node is in the graph.
-  * @param n the node to check for
+  * Check if a node is in the graph.
+  *
+  * @param node the node to check for
   * @return true if the graph contains this node, false otherwise.
   * @since 0.1.0
   */
-  public boolean containsNode(Node<T> n){
-    T obj = n.get();
-    return adjacencyList.containsKey(obj);
+  public boolean contains(Node<T> node){
+    return contains(node.get());
+  }
+
+  /**
+  * Check if there is a node containing a particular value is in this graph.
+  *
+  * @param nodeValue the value to check for.
+  * @return true if one of the nodes in the graph contain the nodeValue, false otherwise.
+  * @since 0.1.0
+  */
+  public boolean contains(T nodeValue){
+    return adjacencyList.containsKey(nodeValue);
   }
 
   // remove the node from the graph and all edges that
@@ -479,6 +531,15 @@ public class Graph<T extends Comparable<T>>{
   public double density(){
     return ((double)getNumEdges())/(size()*(size()-1));
   }
+
+  /**
+  * {@inheritDoc}
+  */
+  @Override
+  public Iterator<Node<T>> iterator(){
+    return this.getNodes().iterator();
+  }
+
 
   @Override
   /**

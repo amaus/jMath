@@ -52,7 +52,7 @@ public class MaxIndSetComparator<T extends Comparable<T>> implements Comparator<
   private int getIndSetPartitionIndex(Node<T> n){
     for(int i = 0; i < indSetPartition.size(); i++){
       UndirectedGraph<T> g = indSetPartition.get(i);
-      if(g.containsNode(n)){
+      if(g.contains(n)){
         return i;
       }
     }
