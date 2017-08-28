@@ -258,20 +258,20 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
   // Li, Fang, Xu 2013
   private ArrayList<Node<T>> vertexOrdering(UndirectedGraph<T> g){
     numVOCalls++;
-    System.out.println("#####\nvertexOrdering call # " + numVOCalls + ", g.density(): " + g.density());
+    // System.out.println("#####\nvertexOrdering call # " + numVOCalls + ", g.density(): " + g.density());
     // Build the Degeneracy Vertex Ordering
     ArrayList<Node<T>> vertexOrdering = g.degeneracyOrdering( );
-    System.out.println("after building degeneracy ordering, g.density(): " + g.density());
+    // System.out.println("after building degeneracy ordering, g.density(): " + g.density());
 
     ArrayList<UndirectedGraph<T>> indSets = new ArrayList<UndirectedGraph<T>>();
 
     if(g.density() < 0.70) { // if g is not dense
-      System.out.println("graph sparse, returning degeneracy vertex ordering");
+      // System.out.println("graph sparse, returning degeneracy vertex ordering");
       return vertexOrdering;
     } else {
       ArrayList<Node<T>> indSetVertexOrder = new ArrayList<Node<T>>(vertexOrdering);
       Collections.reverse(indSetVertexOrder);
-      System.out.println("graph dense, finding ind set partition");
+      // System.out.println("graph dense, finding ind set partition");
       indSets = getIndependentSetPartition(g,indSetVertexOrder);
 
       boolean isIrregular = false; //partition is irregular if there are >=2 indSets of size 1
@@ -285,12 +285,12 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
         isIrregular = true;
       }
       if(isIrregular){
-        System.out.println("Ind Set Partition is irregular, returning degeneracy ordering");
+        // System.out.println("Ind Set Partition is irregular, returning degeneracy ordering");
         return vertexOrdering;
       } else { //return MaxIndSet vertex ordering
         vertexOrdering = new ArrayList<Node<T>>(g.getNodes());
         Collections.sort(vertexOrdering, new MaxIndSetComparator<T>(indSets));
-        System.out.println("Ind Set Parition is regular, returning Ind Set Ordering");
+        // System.out.println("Ind Set Parition is regular, returning Ind Set Ordering");
         return vertexOrdering;
       }
     }

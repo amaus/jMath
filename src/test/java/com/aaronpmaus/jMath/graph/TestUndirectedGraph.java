@@ -14,7 +14,6 @@ import com.aaronpmaus.jMath.graph.*;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 // @Test flags a method as a test method.

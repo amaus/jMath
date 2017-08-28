@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   make it easier to read in graphs from resource files within this project.
 - block in build.gradle to have javadoc include links to Java APIs when
   generating documentation for this project
-- jUnit tests for Vector and Matrix
+- jUnit tests
+  - for Vector and Matrix
+  - for UndirectedGraph. Graph is being indirectly tested.
+  - for the various clique algorithms.
 - graph.GraphIO#readFromDimacsFile(InputStream in, String filename). This
   makes it easier to use project resources as input for graphs.
 ### Changed
@@ -20,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   in BigDecimals. Various method parameters and return types have changed to
   accommodate this. Methods in Vector that calculate quantities (magnitude,
   angle, and distance) still return doubles.
+- method removeNodeFromGraph() in Graph and UndirectedGraph to removeNode()
 ### Deprecated
 [None]
 ### Removed
