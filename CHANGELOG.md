@@ -7,14 +7,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- overloaded method to readFromDimacsFile using an InputStream. This will
-  make it easier to read in graphs from resource files within this project.
-- block in build.gradle to have javadoc include links to Java APIs when
-  generating documentation for this project
+[None]
+### Changed
+[None]
+### Deprecated
+[None]
+### Removed
+[None]
+### Fixed
+[None]
+### Security
+[None]
+
+## [0.10.0] - 2017-08-28
+### Added
 - jUnit tests
   - for Vector and Matrix
   - for UndirectedGraph. Graph is being indirectly tested.
   - for the various clique algorithms.
+- overloaded method to readFromDimacsFile using an InputStream. This will
+  make it easier to read in graphs from resource files within this project.
+- block in build.gradle to have javadoc include links to Java APIs when
+  generating documentation for this project
 - graph.GraphIO#readFromDimacsFile(InputStream in, String filename). This
   makes it easier to use project resources as input for graphs.
 ### Changed
@@ -24,15 +38,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   accommodate this. Methods in Vector that calculate quantities (magnitude,
   angle, and distance) still return doubles.
 - method removeNodeFromGraph() in Graph and UndirectedGraph to removeNode()
-### Deprecated
-[None]
 ### Removed
 - linearAlgebra.Vector#moveTo(double... values)
 - linearAlgebra.Vector#moveBy(doubel... vector)
 ### Fixed
 - Updated dates in CHANGELOG to better conform to ISO 8601
-### Security
-[None]
 
 ## [0.9.0] - 2017-07-18
 ### Added
