@@ -343,6 +343,7 @@ public class TestUndirectedGraph{
   @Test
   public void testRemoveNode(){
     example.removeNode(two);
+    example.removeNode(two);
 
     assertEquals(6, example.size());
     assertEquals(11, example.numEdges());
