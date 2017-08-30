@@ -7,9 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-[None]
+- Graph::shortestPath(source, target) that implements Dijkstra's algorithm
+  to return a shortest path from source to target.
+- Graph::equals() and hashCode()
 ### Changed
-[None]
+- Graph::getNodes() now returns a collection that won't change the graph if
+  modified.
+- Graph::getNode() throws an IllegalArgumentException if the node is not in
+  the graph.
+  - Updated IncMaxCliqueSolver and IncMaxCliqueAdapter to use Graph::contains()
+    instead of checking for null like they were doing before the change.
+- Node::getNeighbors() now also returns a collection that won't change the node
+  if modified.
+  - Minor implementation changes in Node and IncMaxCliqueSolver to work with
+    a the Collection instead of a Set.
 ### Deprecated
 [None]
 ### Removed

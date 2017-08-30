@@ -84,7 +84,7 @@ public class GraphIO{
     out.write(String.format("c edges density      : %.6f\n", theGraph.density()));
     out.write(String.format("p col %d %d\n", theGraph.size(), theGraph.numEdges()));
 
-    for(UndirectedEdge<Integer> e : theGraph.getEdges()){
+    for(Edge<Integer> e : theGraph.getEdges()){
       out.write(String.format("e %d %d\n",e.getStart().get(), e.getEnd().get()));
     }
     out.close();

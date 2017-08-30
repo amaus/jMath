@@ -2,7 +2,7 @@ package com.aaronpmaus.jMath.graph;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Collections;
-import java.util.Set;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -90,12 +90,14 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
 
     for(int i = index+1; i < vertexOrdering.size(); i++){
       // if v_i and v_j are neighbors
-      Node<T> neighbor = g.getNode(vertexOrdering.get(i).get());
-      //if(neighbor != null) System.out.println("looking at " + neighbor.get());
-      if(neighbor != null && vertex.hasNeighbor(neighbor)){
-        //System.out.println(neighbor.get() + " is a neighbor with UB of " + vertexUB.get(vertexOrdering.get(i)));
-        // set vertexUB[i] = vertexUB[j] + 1
-        return vertexUB.get(vertexOrdering.get(i))+1;
+      if(g.contains(vertexOrdering.get(i).get())){
+        Node<T> neighbor = g.getNode(vertexOrdering.get(i).get());
+        //if(neighbor != null) System.out.println("looking at " + neighbor.get());
+        if(vertex.hasNeighbor(neighbor)){
+          //System.out.println(neighbor.get() + " is a neighbor with UB of " + vertexUB.get(vertexOrdering.get(i)));
+          // set vertexUB[i] = vertexUB[j] + 1
+          return vertexUB.get(vertexOrdering.get(i))+1;
+        }
       }
     }
     // if v_i has no neighbors after it in vertexOrdering, set vertexUB[i] = 1
@@ -163,7 +165,7 @@ public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver
     }
     // save the vertexUB values of the neighbors of smallestVertex
     // first, get the set of neighbors
-    Set<Node<T>> neighbors = smallestVertex.getNeighbors();
+    Collection<Node<T>> neighbors = smallestVertex.getNeighbors();
     // copy all the vertexUB values for the neighbors of smallestVertex
     HashMap<Node<T>, Integer> vertexUB_bkup = new HashMap<Node<T>,Integer>();
     for(Node<T> neighbor : neighbors){

@@ -251,9 +251,9 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
   /**
   * Returns a set of all the edges in this UndirectedGraph.
   * @return a Collection of the edges in this UndirectedGraph
-  * @since 0.6.0
+  * @since 0.11.0
   */
-  public Collection<UndirectedEdge<T>> getEdges(){
+  public Collection<? extends Edge<T>> getEdges(){
     HashSet<UndirectedEdge<T>> edges = new HashSet<UndirectedEdge<T>>((int)(numEdges()/0.75) + 1);
     for(Node<T> node : getNodes()){
       for(Edge<T> e : node.getEdges()){

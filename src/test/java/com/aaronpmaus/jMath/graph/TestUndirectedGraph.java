@@ -13,6 +13,7 @@ import com.aaronpmaus.jMath.graph.*;
 
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.io.InputStream;
 
@@ -27,7 +28,7 @@ import java.io.InputStream;
 //  all the other methods in the test suite finish..
 
 public class TestUndirectedGraph{
-  private UndirectedGraph<Integer> myGraph;
+  private UndirectedGraph<Integer> graph;
   private UndirectedGraph<Integer> example;
   private Node<Integer> one;
   private Node<Integer> two;
@@ -43,7 +44,7 @@ public class TestUndirectedGraph{
 
   @Before
   public void setUp(){
-    myGraph = new UndirectedGraph<Integer>();
+    graph = new UndirectedGraph<Integer>();
     String fileName = "example.dimacs";
     InputStream stream = TestUndirectedGraph.class.getResourceAsStream(fileName);
     example = GraphIO.readFromDimacsFile(stream, fileName);
@@ -54,7 +55,6 @@ public class TestUndirectedGraph{
     five = example.getNode(5);
     six = example.getNode(6);
     seven = example.getNode(7);
-
   }
 
   @Test
@@ -122,9 +122,9 @@ public class TestUndirectedGraph{
 
   @Test
   public void testAddNode(){
-    assertEquals(0,myGraph.size());
-    myGraph.addNode(new Node<Integer>(1));
-    assertEquals(1,myGraph.size());
+    assertEquals(0,graph.size());
+    graph.addNode(new Node<Integer>(1));
+    assertEquals(1,graph.size());
     //assertEquals(1,0);
   }
 
@@ -360,5 +360,54 @@ public class TestUndirectedGraph{
 
     assertFalse(four.hasNeighbor(two));
     assertFalse(six.hasNeighbor(two));
+  }
+
+  /**
+  * The method getNodes should return a Collection of nodes and if that Collection is
+  * modified by adding or removing elements, the graph should not be changed.
+  */
+  @Test
+  public void testGetNodesGraphSafety(){
+    Collection<Node<Integer>> values = example.getNodes();
+    assertEquals(7, example.size());
+
+    values.remove(one);
+    assertEquals(7, example.size());
+
+    values.add(new Node<Integer>(8));
+    values.add(new Node<Integer>(9));
+    assertEquals(7, example.size());
+  }
+
+  @Test
+  public void testShortestPath(){
+    Node<Integer> n1 = new Node<Integer>(1);
+    Node<Integer> n2 = new Node<Integer>(2);
+    Node<Integer> n3 = new Node<Integer>(3);
+    Node<Integer> n4 = new Node<Integer>(4);
+    Node<Integer> n5 = new Node<Integer>(5);
+    Node<Integer> n6 = new Node<Integer>(6);
+    Node<Integer> n7 = new Node<Integer>(7);
+    graph.addEdge(n1,n2);
+    graph.addEdge(n2,n3);
+    graph.addEdge(n3,n7);
+    graph.addEdge(n1,n4);
+    graph.addEdge(n4,n5);
+    graph.addEdge(n5,n6);
+    graph.addEdge(n6,n7);
+    assertTrue(n1.hasNeighbor(n2));
+    assertTrue(n2.hasNeighbor(n1));
+    List<Node<Integer>> path = graph.shortestPath(n1,n2);
+    assertEquals(2, path.size());
+    assertEquals(n1, path.get(0));
+    assertEquals(n2, path.get(1));
+
+    path = graph.shortestPath(n1,n7);
+    assertEquals(4, path.size());
+    assertEquals(n1, path.get(0));
+    assertEquals(n2, path.get(1));
+    assertEquals(n3, path.get(2));
+    assertEquals(n7, path.get(3));
+
   }
 }
