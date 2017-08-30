@@ -631,7 +631,9 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
 
     // build the list of nodes in the shortest path from source to target
     LinkedList<Node<T>> path = new LinkedList<Node<T>>();
-    path.add(targetNode);
+    if(prevNodeInPath.get(targetNode) != null){
+      path.add(targetNode);
+    }
     Node<T> nodeInPath = targetNode;
     while(prevNodeInPath.get(nodeInPath) != null){
       path.add(0,prevNodeInPath.get(nodeInPath));
