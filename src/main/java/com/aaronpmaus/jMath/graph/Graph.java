@@ -503,8 +503,6 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
     return adjacencyList.containsKey(nodeValue);
   }
 
-  // remove the node from the graph and all edges that
-  // go to this node.
   /**
   * If this node is in the graph, remove it and all edges leading to or from it from the graph.
   * If the node is not in the graph, do nothing.
@@ -514,8 +512,19 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   * @since 0.1.0
   */
   public void removeNode(Node<T> node){
-    if(contains(node)){
-      node = this.getNode(node.get());
+    removeNode(node.get());
+  }
+
+  /**
+  * If this node containing this value is in the graph, remove it and all edges leading to or from
+  * it from the graph. If the node is not in the graph, do nothing.
+  *
+  * @param nodeValue the value of the node to remove
+  * @since 0.11.0
+  */
+  public void removeNode(T nodeValue){
+    if(contains(nodeValue)){
+      Node<T> node = this.getNode(nodeValue);
       // check all nodes in this graph to see if there is an edge from it to
       // this node
       for(Node<T> n : this.adjacencyList.values()){
@@ -680,7 +689,7 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   @Override
   public String toString(){
     String str = "";
-    for(Node<T> node : this.adjacencyList.values()){
+    for(Node<T> node : this){
       str += node.toString() + "\n";// + " #neighbors: " + node.numNeighbors() + "\n";
     }
     return str;

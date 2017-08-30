@@ -26,7 +26,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 [None]
 ### Fixed
-[None]
+- Bug in UndirectedGraph::removeNode(). Added conditional to only remove the
+  Node if the graph contains it.
+  - jUnit test now verifies this behavior.
 ### Security
 [None]
 

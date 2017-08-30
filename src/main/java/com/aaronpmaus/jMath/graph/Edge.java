@@ -62,6 +62,11 @@ public class Edge<T extends Comparable<T>>{
     return this.weight;
   }
 
+  @Override
+  public String toString(){
+    return String.format("(%s, %s)", getStart().get(), getEnd().get());
+  }
+
   /**
   * Returns the hashCode for this edge. The hashCode for an edge
   * is the concatenation of the hashCodes of nodes of it's end
