@@ -173,34 +173,32 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     return list;
   }
 
-  @Override
   /**
   * The hashCode of this node is the HashCode of the Object
   * it holds. There should only be one Node per Object in the graph
   * @return the hashcode
   * @since 0.1.0
   */
+  @Override
   public int hashCode(){
     return obj.hashCode();
   }
 
-  @Override
   /**
   * Returns the toString of this node's Object followed
   * by the toStrings of all the neighbor node's Objects.
   * @return the string representing this Node and its neighbors
   * @since 0.1.0
   */
+  @Override
   public String toString(){
-    String str = this.obj.toString() + ": ";
+    String str = this.get() + ": ";
     for(Node<T> node : getNeighbors()){
-      str += node.get().toString() + " ";
+      str += node.get() + " ";
     }
-    //str += "\n";
     return str;
   }
 
-  @Override
   /**
   * Overwritten compareTo from Comparable compares on number
   * of neighbors.
@@ -208,6 +206,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
   * @return this.numNeighbors() - n.numNeighbors()
   * @since 0.1.0
   */
+  @Override
   public int compareTo(Node<T> n){
     return numNeighbors() - n.numNeighbors();
   }
