@@ -567,7 +567,7 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   *
   * @param source the source to calculate the path from
   * @param target the target to calculate the path to
-  * @return a List containing the path from source to target
+  * @return a List containing the path from source to target, or an empty list if no path exists.
   * @throws IllegalArgumentException if there are no nodes containing the source and target values.
   */
   public List<Node<T>> shortestPath(T source, T target){
@@ -659,7 +659,8 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   *
   * @param source the source node to calculate the path from
   * @param target the target node to calculate the path to
-  * @return a List containing the path from source to target
+  * @return a List containing the path from source to target, or an empty list if no path exists.
+  * @throws IllegalArgumentException if there are no nodes containing the source and target values.
   */
   public List<Node<T>> shortestPath(Node<T> source, Node<T> target){
     return shortestPath(source.get(), target.get());
