@@ -389,6 +389,8 @@ public class TestUndirectedGraph{
     Node<Integer> n5 = new Node<Integer>(5);
     Node<Integer> n6 = new Node<Integer>(6);
     Node<Integer> n7 = new Node<Integer>(7);
+    Node<Integer> n8 = new Node<Integer>(8);
+    Node<Integer> n9 = new Node<Integer>(9);
     graph.addEdge(n1,n2);
     graph.addEdge(n2,n3);
     graph.addEdge(n3,n7);
@@ -396,6 +398,7 @@ public class TestUndirectedGraph{
     graph.addEdge(n4,n5);
     graph.addEdge(n5,n6);
     graph.addEdge(n6,n7);
+    graph.addEdge(n8,n9);
     assertTrue(n1.hasNeighbor(n2));
     assertTrue(n2.hasNeighbor(n1));
     List<Node<Integer>> path = graph.shortestPath(n1,n2);
@@ -410,5 +413,7 @@ public class TestUndirectedGraph{
     assertEquals(n3, path.get(2));
     assertEquals(n7, path.get(3));
 
+    path = graph.shortestPath(n1,n8);
+    assertEquals(0, path.size());
   }
 }
