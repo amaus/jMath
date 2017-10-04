@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+[None]
+### Changed
+[None]
+### Deprecated
+[None]
+### Removed
+[None]
+### Fixed
+[None]
+### Security
+[None]
+
+## [0.11.0] - 2017-10-04
+### Added
 - Graph::shortestPath(source, target) that implements Dijkstra's algorithm
   to return a shortest path from source to target.
 - Graph::equals() and hashCode()
@@ -23,16 +37,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   if modified.
   - Minor implementation changes in Node and IncMaxCliqueSolver to work with
     a the Collection instead of a Set.
-### Deprecated
-[None]
-### Removed
-[None]
 ### Fixed
 - Bug in UndirectedGraph::removeNode(). Added conditional to only remove the
   Node if the graph contains it.
   - jUnit test now verifies this behavior.
-### Security
-[None]
 
 ## [0.10.0] - 2017-08-28
 ### Added

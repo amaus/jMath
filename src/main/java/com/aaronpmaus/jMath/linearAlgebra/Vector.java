@@ -176,6 +176,7 @@ public class Vector{
 
   /**
   * @return the square of the magnitude of this vector
+  * @since 0.11.0
   */
   public double magnitudeSquared(){
     return this.dotProduct(this);
