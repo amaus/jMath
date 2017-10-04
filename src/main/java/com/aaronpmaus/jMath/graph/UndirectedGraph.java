@@ -44,12 +44,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
   * @since 0.1.0
   */
   public UndirectedGraph(Graph<T> g){
-    //super(g.size());
     super(g);
-    //for(Node<T> node : g.getNodes()){
-    //addNode(node);
-    //}
-
     for(Node<T> node : g.getNodes()){
       for(Node<T> neighbor : node.getNeighbors()){
         // We know there is an edge from node to neighbor,
@@ -165,26 +160,32 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     super.addEdge(n2,n1,weight);
   }
 
-  // this implementation is for an undirected graph.
-  @Override
   /**
   * {@inheritDoc}
   * @since 0.1.0
   */
-  public void removeNode(Node<T> nodeToBeRemoved){
-    nodeToBeRemoved = this.getNode(nodeToBeRemoved.get());
-    // for ever neighbor of nodeToBeRemoved,
-    for(Node<T> neighbor : nodeToBeRemoved.getNeighbors()){
-      super.removeEdge(neighbor, nodeToBeRemoved);
-    }
-    removeNodeFromAdjacencyList(nodeToBeRemoved);
+  @Override
+  public void removeNode(Node<T> node){
+    removeNode(node.get());
   }
 
   @Override
+  public void removeNode(T nodeValue){
+    if(contains(nodeValue)){
+      Node<T> node = this.getNode(nodeValue);
+      // for ever neighbor of nodeToBeRemoved,
+      for(Node<T> neighbor : node.getNeighbors()){
+        super.removeEdge(neighbor, node);
+      }
+      removeNodeFromAdjacencyList(node);
+    }
+  }
+
   /**
   * {@inheritDoc}
   * @since 0.1.0
   */
+  @Override
   public UndirectedGraph<T> getNeighborhood(Node<T> root){
     Collection<Node<T>> copyNodes = getNeighborhoodNodes(root);
     return new UndirectedGraph<T>(copyNodes);
@@ -251,9 +252,9 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
   /**
   * Returns a set of all the edges in this UndirectedGraph.
   * @return a Collection of the edges in this UndirectedGraph
-  * @since 0.6.0
+  * @since 0.11.0
   */
-  public Collection<UndirectedEdge<T>> getEdges(){
+  public Collection<? extends Edge<T>> getEdges(){
     HashSet<UndirectedEdge<T>> edges = new HashSet<UndirectedEdge<T>>((int)(numEdges()/0.75) + 1);
     for(Node<T> node : getNodes()){
       for(Edge<T> e : node.getEdges()){

@@ -51,7 +51,7 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
     }
     UndirectedGraph<Integer> clique = findMaxClique(g.getGraphFileName(), g);
     for(int seqID = 1; seqID < nodeID; seqID++){
-      if(clique.getNode(seqID) != null) {
+      if(clique.contains(seqID)) {
         clique.getNode(seqID).set(nodeIDMapping.get(seqID));
       }
     }

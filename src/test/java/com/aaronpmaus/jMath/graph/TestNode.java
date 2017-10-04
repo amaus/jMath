@@ -8,7 +8,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import com.aaronpmaus.jMath.graph.*;
 import java.util.Collection;
-import java.util.Set;
 
 // @Test flags a method as a test method.
 // @Before indicates that a method will be run before every
@@ -24,16 +23,29 @@ public class TestNode{
   private Node<Integer> n1;
   private Node<Integer> n2;
   private Node<Integer> n3;
+  private Node<Integer> n4;
+  private Node<Integer> n5;
+  private Node<Integer> n6;
 
   @Before
   public void setUp(){
     n1 = new Node<Integer>(1);
     n2 = new Node<Integer>(2);
     n3 = new Node<Integer>(3);
+    n4 = new Node<Integer>(4);
+    n5 = new Node<Integer>(5);
+    n6 = new Node<Integer>(6);
+    n4.addNeighbor(n1);
+    n4.addNeighbor(n2);
+    n4.addNeighbor(n3);
   }
 
   @Test
   public void testNodeConstruction(){
+    n1 = new Node<Integer>(1);
+    n2 = new Node<Integer>(2);
+    n3 = new Node<Integer>(3);
+
     assertEquals(n1.numNeighbors(), 0);
     assertEquals(n2.numNeighbors(), 0);
     assertEquals(n3.numNeighbors(), 0);
@@ -45,15 +57,29 @@ public class TestNode{
     assertFalse(n1.hasNeighbor(n2));
     assertFalse(n1.hasNeighbor(n3));
 
-    Set<Node<Integer>> nodes = n1.getNeighbors();
+    Collection<Node<Integer>> nodes = n1.getNeighbors();
     assertEquals(nodes.size(), 0);
-
   }
 
   @Test
-  public void TestHashCode(){
+  public void testHashCode(){
     assertEquals(n1.hashCode(), 1);
     assertEquals(n2.hashCode(), 2);
     assertEquals(n3.hashCode(), 3);
+  }
+
+  @Test
+  public void testGetNeighbors(){
+    Collection<Node<Integer>> neighbors = n4.getNeighbors();
+    assertEquals(3, neighbors.size());
+    neighbors.remove(n1);
+    assertEquals(3, n4.numNeighbors());
+    assertTrue(n4.hasNeighbor(n1));
+
+    neighbors.add(n5);
+    neighbors.add(n6);
+    assertEquals(3, n4.numNeighbors());
+    assertFalse(n4.hasNeighbor(n5));
+    assertFalse(n4.hasNeighbor(n6));
   }
 }

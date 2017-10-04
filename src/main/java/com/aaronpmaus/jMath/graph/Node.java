@@ -1,7 +1,6 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.LinkedHashMap;
 import java.util.Collection;
-import java.util.Set;
 import java.util.ArrayList;
 import java.lang.ClassCastException;
 
@@ -12,7 +11,7 @@ import java.lang.ClassCastException;
 * The Object can be anything, and the generic type allows for
 * there to be a graph of any type of Object.
 * @author Aaron Maus aaron@aaronpmaus.com
-* @version 0.1.4
+* @version 0.11.0
 * @since 0.1.0
 */
 public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
@@ -107,6 +106,21 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
   }
 
   /**
+  * Return the Edge from this node to neighbor
+  *
+  * @param neighbor a node that is connected to this node by an edge
+  * @return the Edge between this and neighbor
+  * @throws IllegalArgumentException if neighbor is not a neighbor
+  * @since 0.11.0
+  */
+  public Edge<T> getEdge(Node<T> neighbor){
+    if(!hasNeighbor(neighbor)){
+      throw new IllegalArgumentException("Node passed to Node::getEdge() is not a neighbor.");
+    }
+    return this.neighbors.get(neighbor);
+  }
+
+  /**
   * Get all the edges that leave this node
   * @return a {@code Collection<Edge<T>>} of edges
   * @since 0.1.0
@@ -116,16 +130,32 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
   }
 
   /**
-  * Get all the neighbors of this node
-  * @return a {@code Set<Node<T>>} of nodes that are connected
-  *         to this node by an edge going from this node
-  *         to them.
-  * @since 0.1.0
+  * Return the neighbors of this node.
+  *
+  * Any changes to the collection (such as adding or removing nodes) will not affect this node.
+  * Any changes to the nodes in the collection however will affect the graph.
+  *
+  * @return a {@code Collection<Node<T>>} of all nodes that are connected
+  *         to this node by an edge
+  * @since 0.11.0
   */
-  public Set<Node<T>> getNeighbors(){
-    return neighbors.keySet();
-    //System.out.println(keys.getClass().getName());
-    //System.out.println("Yes");
+  public Collection<Node<T>> getNeighbors(){
+    return new ArrayList<Node<T>>(neighbors.keySet());
+  }
+
+  /**
+  * Return the weight of the edge to the neighbor.
+  *
+  * @param neighbor a node that is connected to this node by an edge
+  * @return the weight of the edge
+  * @throws IllegalArgumentException if neighbor is not a neighbor
+  * @since 0.11.0
+  */
+  public double getEdgeWeight(Node<T> neighbor){
+    if(!hasNeighbor(neighbor)){
+      throw new IllegalArgumentException("Node passed to Node::getWeight() is not a neighbor.");
+    }
+    return getEdge(neighbor).getWeight();
   }
 
   /**
@@ -143,35 +173,32 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
     return list;
   }
 
-  @Override
   /**
   * The hashCode of this node is the HashCode of the Object
   * it holds. There should only be one Node per Object in the graph
   * @return the hashcode
   * @since 0.1.0
   */
+  @Override
   public int hashCode(){
     return obj.hashCode();
   }
 
-  @Override
   /**
   * Returns the toString of this node's Object followed
   * by the toStrings of all the neighbor node's Objects.
   * @return the string representing this Node and its neighbors
   * @since 0.1.0
   */
+  @Override
   public String toString(){
-    String str = this.obj.toString() + ": ";
-    Set<Node<T>> neighbors = getNeighbors();
-    for(Node<T> node : neighbors){
-      str += node.get().toString() + " ";
+    String str = this.get() + ": ";
+    for(Node<T> node : getNeighbors()){
+      str += node.get() + " ";
     }
-    //str += "\n";
     return str;
   }
 
-  @Override
   /**
   * Overwritten compareTo from Comparable compares on number
   * of neighbors.
@@ -179,6 +206,7 @@ public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
   * @return this.numNeighbors() - n.numNeighbors()
   * @since 0.1.0
   */
+  @Override
   public int compareTo(Node<T> n){
     return numNeighbors() - n.numNeighbors();
   }

@@ -17,7 +17,8 @@ import java.io.FileInputStream;
 public class GraphIO{
 
   /**
-  * Reads in and build and UndirectedGraph{@literal <Integer>}from a DIMACS file.
+  * Read in and build and UndirectedGraph{@literal <Integer>}from a DIMACS file.
+  *
   * @param inputStream the InputStream to read from
   * @param graphFileName the filename of the graph
   * @return the UndirectedGraph{@literal <Integer>} from that file
@@ -27,7 +28,7 @@ public class GraphIO{
     Scanner fileReader = new Scanner(inputStream);
     int numNodes = 0;
     int numEdges = 0;
-    UndirectedGraph<Integer> graph;// = new UndirectedGraph<Integer>();
+    UndirectedGraph<Integer> graph;
     while(fileReader.hasNextLine()){
       String line = fileReader.nextLine();
       String[] tokens = line.split(" ");
@@ -42,10 +43,17 @@ public class GraphIO{
     while(fileReader.hasNextLine()){
       String line = fileReader.nextLine();
       String[] tokens = line.split(" ");
-      if(tokens[0].equals("e")){
-        //System.out.println("Adding Edge between " + tokens[1] + " and " + tokens[2]);
-        graph.addEdge(new Node<Integer>(new Integer(tokens[1])),
-        new Node<Integer>(new Integer(tokens[2])));
+      tokens[0] = tokens[0].toLowerCase();
+      // e for edge and a for arc. both can be used to indicate an edge in the graph
+      if(tokens[0].equals("e") || tokens[0].equals("a")){
+        if(tokens.length == 3){
+          graph.addEdge(new Node<Integer>(new Integer(tokens[1])),
+                        new Node<Integer>(new Integer(tokens[2])));
+        } else if (tokens.length == 4){
+          graph.addEdge(new Node<Integer>(new Integer(tokens[1])),
+                        new Node<Integer>(new Integer(tokens[2])),
+                        new Double(tokens[3]));
+        }
       }
     }
     return graph;
@@ -84,7 +92,7 @@ public class GraphIO{
     out.write(String.format("c edges density      : %.6f\n", theGraph.density()));
     out.write(String.format("p col %d %d\n", theGraph.size(), theGraph.numEdges()));
 
-    for(UndirectedEdge<Integer> e : theGraph.getEdges()){
+    for(Edge<Integer> e : theGraph.getEdges()){
       out.write(String.format("e %d %d\n",e.getStart().get(), e.getEnd().get()));
     }
     out.close();

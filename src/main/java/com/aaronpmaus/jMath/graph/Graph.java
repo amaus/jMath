@@ -1,12 +1,14 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Comparator;
 
 /**
 * A Graph is a Directed Graph.
@@ -300,7 +302,7 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   }
 
   /**
-  * Returns the number of Nodes in this graph
+  * Return the number of Nodes in this graph
   * @return the number of Nodes in this graph
   * @since 0.1.0
   */
@@ -313,12 +315,28 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   * @since 0.1.0
   */
   public final Collection<Node<T>> getNodes(){
-    return this.adjacencyList.values();
+    return new ArrayList<Node<T>>(this.adjacencyList.values());
+  }
+
+  /**
+  * Returns a set of all the edges in this Graph.
+  *
+  * @return a Collection of the edges in this Graph
+  * @since 0.11.0
+  */
+  public Collection<? extends Edge<T>> getEdges(){
+    HashSet<Edge<T>> edges = new HashSet<Edge<T>>((int)(numEdges()/0.75) + 1);
+    for(Node<T> node : getNodes()){
+      for(Edge<T> e : node.getEdges()){
+        edges.add(e);
+      }
+    }
+    return edges;
   }
 
   /*
-  * Returns a copy of the nodes without any edges.
-  * returns as a HashMap.
+  * Return a copy of the nodes without any edges.
+  * returns a HashMap.
   */
   private HashMap<T,Node<T>> getCopyNodesNoEdges(){
     Collection<Node<T>> originalNodes = getNodes();
@@ -348,8 +366,12 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   * @param obj the object of the node to be retrieved
   * @return the node with that object or null if it is not in the graph.
   * @since 0.1.0
+  * @throws IllegalArgumentException if there is no node containing obj.
   */
   public Node<T> getNode(T obj){
+    if(!this.adjacencyList.containsKey(obj)){
+      throw new IllegalArgumentException("Node holding obj not in graph.");
+    }
     return this.adjacencyList.get(obj);
   }
 
@@ -481,27 +503,39 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
     return adjacencyList.containsKey(nodeValue);
   }
 
-  // remove the node from the graph and all edges that
-  // go to this node.
   /**
-  * Remove this node and all edges leading to or from it from the graph.
+  * If this node is in the graph, remove it and all edges leading to or from it from the graph.
+  * If the node is not in the graph, do nothing.
   *
   * @param node the node to remove
   * @version 0.2.0
   * @since 0.1.0
   */
   public void removeNode(Node<T> node){
-    node = this.getNode(node.get());
-    // check all nodes in this graph to see if there is an edge from it to
-    // this node
-    for(Node<T> n : this.adjacencyList.values()){
-      if(n.hasNeighbor(node)){
-        // if there is an edge from a node to nodeToBeRemoved,
-        // remove that edge from this graph.
-        this.removeEdge(n, node);
+    removeNode(node.get());
+  }
+
+  /**
+  * If this node containing this value is in the graph, remove it and all edges leading to or from
+  * it from the graph. If the node is not in the graph, do nothing.
+  *
+  * @param nodeValue the value of the node to remove
+  * @since 0.11.0
+  */
+  public void removeNode(T nodeValue){
+    if(contains(nodeValue)){
+      Node<T> node = this.getNode(nodeValue);
+      // check all nodes in this graph to see if there is an edge from it to
+      // this node
+      for(Node<T> n : this.adjacencyList.values()){
+        if(n.hasNeighbor(node)){
+          // if there is an edge from a node to nodeToBeRemoved,
+          // remove that edge from this graph.
+          this.removeEdge(n, node);
+        }
       }
+      removeNodeFromAdjacencyList(node);
     }
-    removeNodeFromAdjacencyList(node);
   }
 
   // this is a hack so that the subclass
@@ -525,6 +559,114 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
   }
 
   /**
+  * Return the shortest path from source to target.
+  *
+  * This method implements Dijkstra's algorithm with a priority queue to find the shortest
+  * path between two vertices. The nodes that contain the source and target values are used
+  * as the end points.
+  *
+  * @param source the source to calculate the path from
+  * @param target the target to calculate the path to
+  * @return a List containing the path from source to target, or an empty list if no path exists.
+  * @throws IllegalArgumentException if there are no nodes containing the source and target values.
+  */
+  public List<Node<T>> shortestPath(T source, T target){
+    Node<T> sourceNode = getNode(source);
+    Node<T> targetNode = getNode(target);
+
+    // Create a HashMap large enough so that the default load factor (0.75) will not be
+    // exceeded when all elements are added to it. This avoids any costly increases in
+    // capacity since the map will never get too full.
+    HashMap<Node<T>, Double> distToSource =
+        new HashMap<Node<T>, Double>( (int)((this.size()+1)/0.75+1) );
+
+    HashMap<Node<T>, Node<T>> prevNodeInPath =
+        new HashMap<Node<T>, Node<T>>( (int)((this.size()+1)/0.75+1) );
+
+    distToSource.put(sourceNode,0.0);
+    prevNodeInPath.put(sourceNode,null);
+
+    for(Node<T> node : getNodes()){
+      if(!node.equals(sourceNode)){
+        distToSource.put(node, Double.MAX_VALUE);
+        prevNodeInPath.put(node, null);
+      }
+    }
+
+    PriorityQueue<Node<T>> unvisitedNodes =
+        new PriorityQueue<Node<T>>( size(),
+            new Comparator<Node<T>>(){
+              public int compare(Node<T> a, Node<T> b){
+                double diff = distToSource.get(a) - distToSource.get(b);
+                if(diff < 0){
+                  return -1;
+                } else if (diff > 0){
+                  return 1;
+                }
+                return 0;
+              }
+            }
+        );
+
+    unvisitedNodes.offer(sourceNode);
+
+    while(!unvisitedNodes.isEmpty()){
+      Node<T> min = unvisitedNodes.poll();
+      //System.out.println("Visiting node: " + min.get());
+      if(min.equals(targetNode)){
+        break;
+      }
+
+      for(Node<T> neighbor : min.getNeighbors()){
+        double distance = distToSource.get(min) + min.getEdgeWeight(neighbor);
+        //System.out.printf("Neighbor %d distance to source is %.2f\n", neighbor.get(), distToSource.get(neighbor));
+        //System.out.printf("Distance to neighbor %d is %.2f\n",neighbor.get(),distance);
+        if(distance < distToSource.get(neighbor)){
+          distToSource.put(neighbor,distance);
+          prevNodeInPath.put(neighbor, min);
+          if(!unvisitedNodes.contains(neighbor)){
+            unvisitedNodes.offer(neighbor);
+          } else {
+            // update (decrease) the priority of neighbor. The only way to do this is to
+            // remove the element from the queue and re-add it so that the comparator which
+            // depends on distToSource is used (with the new value from distToSource) to add
+            // neighbor to the right place in the queue.
+            unvisitedNodes.remove(neighbor);
+            unvisitedNodes.offer(neighbor);
+          }
+        }
+      }
+    }
+
+    // build the list of nodes in the shortest path from source to target
+    LinkedList<Node<T>> path = new LinkedList<Node<T>>();
+    if(prevNodeInPath.get(targetNode) != null){
+      path.add(targetNode);
+    }
+    Node<T> nodeInPath = targetNode;
+    while(prevNodeInPath.get(nodeInPath) != null){
+      path.add(0,prevNodeInPath.get(nodeInPath));
+      nodeInPath = prevNodeInPath.get(nodeInPath);
+    }
+    return path;
+  }
+
+  /**
+  * Return the shortest path from source to target.
+  *
+  * This method implements Dijkstra's algorithm with a priority queue to find the shortest
+  * path between two vertices.
+  *
+  * @param source the source node to calculate the path from
+  * @param target the target node to calculate the path to
+  * @return a List containing the path from source to target, or an empty list if no path exists.
+  * @throws IllegalArgumentException if there are no nodes containing the source and target values.
+  */
+  public List<Node<T>> shortestPath(Node<T> source, Node<T> target){
+    return shortestPath(source.get(), target.get());
+  }
+
+  /**
   * Returns the density of the graph
   * @return the density of the graph
   * @since 0.3.0
@@ -541,17 +683,46 @@ public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
     return this.getNodes().iterator();
   }
 
-
-  @Override
   /**
   * @return a string representation of this graph in the form of an adjacency list.
   * @since 0.1.0
   */
+  @Override
   public String toString(){
     String str = "";
-    for(Node<T> node : this.adjacencyList.values()){
+    for(Node<T> node : this){
       str += node.toString() + "\n";// + " #neighbors: " + node.numNeighbors() + "\n";
     }
     return str;
+  }
+
+  @Override
+  public int hashCode(){
+    return getNodes().hashCode() + getEdges().hashCode();
+  }
+
+  /**
+  * Two graphs are equal if they both contains the same set of Nodes and Edges.
+  * @param obj the other graph
+  * @return true if both this and other are graphs which contain the same sets of Nodes and
+  *   Edges, false otherwise.
+  */
+  @Override
+  @SuppressWarnings("unchecked")
+  public boolean equals(Object obj){
+    if(this.getClass().isInstance(obj)){
+      Graph<T> other = this.getClass().cast(obj);
+
+      boolean ret = true;
+      // hash set's equals doesn't depend on order.
+      HashSet<Node<T>> theseNodes = new HashSet<Node<T>>(this.getNodes());
+      HashSet<Node<T>> otherNodes = new HashSet<Node<T>>(other.getNodes());
+      ret = ret && theseNodes.equals(otherNodes);
+      HashSet<Edge<T>> theseEdges = new HashSet<Edge<T>>(this.getEdges());
+      HashSet<Edge<T>> otherEdges = new HashSet<Edge<T>>(other.getEdges());
+      ret = ret && theseEdges.equals(otherEdges);
+      return ret;
+    }
+    return false;
   }
 }

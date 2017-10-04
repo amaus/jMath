@@ -1,7 +1,6 @@
 ## jMath
 
-This is a library for mathematical concepts that tend to come in useful
-when writing programs:
+This is a library for mathematical concepts that come in useful:
 
 * Linear Algebra
 * Graph Theory
@@ -65,6 +64,11 @@ This section will go into effect when a license is added.
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
+## Style Guide
+
+The project adheres to a [Java Style Guide](styleguide.md) from the
+[twitter commons project](https://github.com/twitter/commons/blob/master/src/java/com/twitter/common/styleguide.md).
+
 ## Development Workflow
 
 This project uses the [Gitflow Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows#gitflow-workflow).
@@ -81,7 +85,7 @@ You can generate the latest javadocs via:
 
 They will be located within the build/docs/javadoc directory in the project.
 
-Javadoc for the most recent minor release of the library can be found at [jmath.aaronpmaus.com](http://jmath.aaronpmaus.com).
+Javadoc for the most recent release of the library can be found at [jmath.aaronpmaus.com](http://jmath.aaronpmaus.com).
 
 ## History
 This project was started in June 2016.

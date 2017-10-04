@@ -161,18 +161,25 @@ public class Vector{
       throw new IllegalArgumentException("Vector::angle() "
           + buildIllegalArgumentExceptionString(other.getValues()));
     }
-    double angle = this.dotProduct(other) / (this.magnitude() * other.magnitude());
+    double angle = this.dotProduct(other) / Math.sqrt(this.magnitudeSquared() * other.magnitudeSquared());
     angle = Math.acos(angle);
     return Math.toDegrees(angle);
   }
 
   /**
-   * Returns the magnitude (aka length) of this Vector.
-   * @return the magnitude
+   * @return the magnitude of this vector
    * @since 0.1.0
   */
   public double magnitude(){
-    return Math.sqrt(this.dotProduct(this));
+    return Math.sqrt(magnitudeSquared());
+  }
+
+  /**
+  * @return the square of the magnitude of this vector
+  * @since 0.11.0
+  */
+  public double magnitudeSquared(){
+    return this.dotProduct(this);
   }
 
   /**
