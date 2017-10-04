@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Graph::shortestPath(source, target) that implements Dijkstra's algorithm
   to return a shortest path from source to target.
 - Graph::equals() and hashCode()
+- Vector::magnitudeSquared() for efficiency. Can use this to avoid a sqrt
+  operation where possible.
 ### Changed
 - Graph::getNodes() now returns a collection that won't change the graph if
   modified.
