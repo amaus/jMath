@@ -1,32 +1,36 @@
 package com.aaronpmaus.jMath.linearAlgebra;
 
+import com.aaronpmaus.jMath.transformations.Transformable;
+import com.aaronpmaus.jMath.transformations.Transformation;
+import com.aaronpmaus.jMath.transformations.TransformationMatrix;
+
 import java.lang.IllegalArgumentException;
 import java.math.BigDecimal;
 
 /**
- * This class represents a general set of cartesian coordinates in any number
- * of dimensions.
+ * A point in 3D space, Transformable.
  * @author  Aaron Maus aaron@aaronpmaus.com
- * @version 0.1.0
- * @since 0.1.0
+ * @version 0.12.0
+ * @since 0.12.0
  */
- public class CartesianCoordinates extends Vector{
+ public class Point3D extends Vector implements Transformable{
 
    /**
-   * @param coords The set of values that define this point. Can create a
-   *               point of any dimension.
+   * @param x the coordinate in the first dimension, x
+   * @param y the coordinate in the second dimension, y
+   * @param z the coordinate in the third dimension, z
    * @since 0.1.0
    */
-   public CartesianCoordinates(String... coords){
-     super(coords);
+   public Point3D(Double x, Double y, Double z){
+     super(x, y, z);
    }
 
    /**
    * The default constructor creates a point of 3 dimensions at (0,0,0).
    * @since 0.1.0
    */
-   public CartesianCoordinates(){
-     super("0.0", "0.0", "0.0");
+   public Point3D(){
+     super(0.0, 0.0, 0.0);
    }
 
    /**
@@ -59,4 +63,13 @@ import java.math.BigDecimal;
      return getValue(2);
    }
 
- }// end of class CartesianCoordinates
+   @Override
+   public void applyTransformation(TransformationMatrix t){
+     Vector homogeneous = new Vector(getX(), getY(), getZ(), BigDecimal.ONE);
+     Vector vec = t.applyTransformationTo(homogeneous);
+     this.setValue(0, vec.getValue(0));
+     this.setValue(1, vec.getValue(1));
+     this.setValue(2, vec.getValue(2));
+   }
+
+ }// end of class Point3D

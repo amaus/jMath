@@ -7,15 +7,22 @@ import java.math.MathContext;
 import java.text.DecimalFormat;
 
 /**
-* This class represents a 2-dimensional matrix.
+* A 2-dimensional matrix. From the public perspective (1), Matrices are immutable. All operations
+* return a new Matrix rather than modify itself. Matrices support addition, subtraction, and
+* multiplication by scalars and other matrices.
+*
+* (1) Only Matrix and subclasses can directly modify the values. This allows Points and Vectors to
+* be transformed in 3D space directly.
+* @see com.aaronpmaus.jMath.transformations.Transformation
+* @see com.aaronpmaus.jMath.transformations.Transformable
 * @author Aaron Maus aaron@aaronpmaus.com
-* @version 0.10.0
+* @version 0.12.0
 * @since 0.1.0
 */
 public class Matrix{
   private BigDecimal[][] matrix;
-  private final int numRows;
-  private final int numCols;
+  private int numRows;
+  private int numCols;
 
   /**
   * Construct a 2-dimensional Matrix holding the values in the 2D Array passed in.
@@ -26,6 +33,57 @@ public class Matrix{
   * @since 0.1.0
   */
   public Matrix(Double[][] matrix){
+    initializeMatrix(matrix);
+  }
+
+  /**
+  * Construct a 2-dimensional Matrix holding the values in the 2D Array passed in.
+  *
+  * @param matrix A 2-dimensional array holding the values for the matrix. It must not
+  * be null.
+  * @throws IllegalArgumentException if the matrix is null or not rectangular
+  * @since 0.1.0
+  */
+  public Matrix(BigDecimal[][] matrix){
+    initializeMatrix(matrix);
+  }
+
+  /**
+  * Construct a column vector from the values, a matrix with values.length num rows and 1 column.
+  * @param values the values to insert
+  */
+  protected Matrix(Double... values){
+    Double[][] matrix = new Double[values.length][1];
+    for(int i = 0; i < values.length; i++){
+      matrix[i][0] = values[i];
+    }
+
+    initializeMatrix(matrix);
+  }
+
+  /**
+  * Copy Constructor
+  * @param matrix a matrix to create a new copy of
+  * @since 0.12.0
+  */
+  public Matrix(Matrix matrix){
+    this(matrix.toArray());
+  }
+
+  /**
+  * Construct a column vector from the values, a matrix with values.length num rows and 1 column.
+  * @param values the values to insert
+  */
+  protected Matrix(BigDecimal[] values){
+    BigDecimal[][] matrix = new BigDecimal[values.length][1];
+    for(int i = 0; i < values.length; i++){
+      matrix[i][0] = values[i];
+    }
+
+    initializeMatrix(matrix);
+  }
+
+  private void initializeMatrix(Double[][] matrix){
     validateMatrixDimensions(matrix);
     this.numRows = matrix.length;
     this.numCols = matrix[0].length;
@@ -43,15 +101,7 @@ public class Matrix{
     }
   }
 
-  /**
-  * Construct a 2-dimensional Matrix holding the values in the 2D Array passed in.
-  *
-  * @param matrix A 2-dimensional array holding the values for the matrix. It must not
-  * be null.
-  * @throws IllegalArgumentException if the matrix is null or not rectangular
-  * @since 0.1.0
-  */
-  public Matrix(BigDecimal[][] matrix){
+  private void initializeMatrix(BigDecimal[][] matrix){
     validateMatrixDimensions(matrix);
     this.numRows = matrix.length;
     this.numCols = matrix[0].length;
@@ -61,8 +111,8 @@ public class Matrix{
       for(int j = 0; j < numCols; j++){
         if(matrix[i][j] == null){
           throw new IllegalArgumentException(
-              String.format("matrix[%d][%d] is null.",i,j)
-              + "The matrix must not contain any null values.");
+          String.format("matrix[%d][%d] is null.",i,j)
+          + "The matrix must not contain any null values.");
         }
         this.matrix[i][j] = matrix[i][j];
       }
@@ -71,9 +121,9 @@ public class Matrix{
 
   /**
   * Construct a 2D Matrix from a set of column vectors passed in.
-  *
-  * There must be atleast one column vector and all column vectors must have
-  * the same number of rows.
+  * <p>
+  * There must be atleast one column vector and all column vectors must have the same number of
+  * rows.
   *
   * @param colVectors the column vectors to build this matrix from
   * @throws IllegalArgumentException if the preconditions aren't met.
@@ -126,8 +176,17 @@ public class Matrix{
   * @since 0.1.0
   */
   public Matrix(){
-    this.numRows = 4;
-    this.numCols = 4;
+    this(4);
+  }
+
+  /**
+  * Construct an m by m identity matrix.
+  * @param m the square dimension of the Matrix
+  * @since 0.12.0
+  */
+  public Matrix(int m){
+    this.numRows = m;
+    this.numCols = m;
     this.matrix = new BigDecimal[numRows][numCols];
     for(int i = 0; i < numRows; i++){
       for(int j = 0; j < numCols; j++){
@@ -138,6 +197,28 @@ public class Matrix{
         }
       }
     }
+  }
+
+  /**
+  * Return the element from the matrix specified by row and col.
+  *
+  * @param row the row index. must be less than getNumRows().
+  * @param col the col index. Must be less than getNumCols().
+  * @return the element at the given indices.
+  * TODO(Aaron Maus): write a MatrixInvalidIndicesException and throw it if necessary
+  * @since 0.1.0
+  */
+  public BigDecimal getElement(int row, int col){
+    return this.matrix[row][col];
+  }
+
+  /**
+  * @param row the row index, must be in range [0,numRows()-1]
+  * @param col the col index, must be in range [0,numRows()-1]
+  * @param value the value to set at matrix[row][col]
+  */
+  protected void setElement(int row, int col, BigDecimal value){
+    this.matrix[row][col] = value;
   }
 
   private void validateMatrixDimensions(Number[][] matrix){
@@ -156,9 +237,8 @@ public class Matrix{
   }
 
   /**
-  * Returns the transpose of this Matrix.
-  * @return a new Matrix holding the transpose of this matrix.
-  * @since 0.1.0
+  * @return the transpose of this matrix.
+  * @since 0.11.1
   */
   public Matrix transpose(){
     BigDecimal[][] newMat = new BigDecimal[getNumCols()][getNumRows()];
@@ -167,6 +247,9 @@ public class Matrix{
         newMat[j][i] = this.getElement(i,j);
       }
     }
+    //this.matrix = newMat;
+    //this.numRows = this.matrix.length;
+    //this.numCols = this.matrix[0].length;
     return new Matrix(newMat);
   }
 
@@ -211,11 +294,11 @@ public class Matrix{
               (this.getElement(i,k).multiply(other.getElement(k,j))) );
         }
         newMat[i][j] = dotProduct;
-        // It seems more elegant to get the row and col vector and
-        // perform the dot product, but efficiency is key here.
-        // Avoid instantiating new objects and creating copies of
-        // data already in memory. Hence the logic above as opposed
-        // to below.
+
+        // It seems more elegant to get the row and col vector and perform the dot product, but
+        // efficiency is key here. Avoid instantiating new objects and creating copies of data
+        // already in memory. So we'll go through the rigamarole above instead of the simplicity
+        // below.
         //Vector aVec = getRowVector(this, i);
         //Vector bVec = getColVector(other, j);
         //newMat[i][j] = aVec.dotProduct(bVec);
@@ -235,8 +318,7 @@ public class Matrix{
     BigDecimal[][] newMat = new BigDecimal[getNumRows()][getNumCols()];
     for(int rowIndex = 0; rowIndex < getNumRows(); rowIndex++){
       for(int colIndex = 0; colIndex < getNumCols(); colIndex++){
-        newMat[rowIndex][colIndex] = this.getElement(rowIndex,colIndex)
-            .multiply(scalar);
+        newMat[rowIndex][colIndex] = this.getElement(rowIndex,colIndex).multiply(scalar);
       }
     }
     return new Matrix(newMat);
@@ -280,23 +362,10 @@ public class Matrix{
   }
 
   /**
-  * Return the element from the matrix specified by row and col.
-  *
-  * @param row the row index. must be less than getNumRows().
-  * @param col the col index. Must be less than getNumCols().
-  * @return the element at the given indices.
-  * TODO(Aaron Maus): write a MatrixInvalidIndicesException and throw it if necessary
-  * @since 0.1.0
-  */
-  public BigDecimal getElement(int row, int col){
-    return this.matrix[row][col];
-  }
-
-  /**
   * Return a 2-Dimensional array representing the matrix.
-  *
-  * The first dimension is rows and the second is columns.
-  * Modifying this array will not change the Matrix.
+  * <p>
+  * The first dimension is rows and the second is columns. Modifying this array will not change the
+  * Matrix.
   * @return the 2-D double array that represents this matrix
   * @since 0.1.0
   */
@@ -319,11 +388,20 @@ public class Matrix{
   * @since 0.1.0
   */
   public Vector getRowVector(int rowIndex){
+    return new Vector(getRowValues(rowIndex));
+  }
+
+  /**
+  * Return the values of a row of this Matrix
+  * @param rowIndex the rowIndex, starting from 0
+  * @return an array of BigDecimals, the values of this row
+  */
+  public BigDecimal[] getRowValues(int rowIndex){
     BigDecimal[] row = new BigDecimal[getNumCols()];
     for(int colIndex = 0; colIndex < getNumCols(); colIndex++){
       row[colIndex] = getElement(rowIndex,colIndex);
     }
-    return new Vector(row);
+    return row;
   }
 
   /**
@@ -335,11 +413,20 @@ public class Matrix{
   * @since 0.1.0
   */
   public Vector getColVector(int colIndex){
+    return new Vector(getColValues(colIndex));
+  }
+
+  /**
+  * Return the values of a column of this Matrix
+  * @param colIndex the colIndex, starting from 0
+  * @return an array of BigDecimals, the values of this column
+  */
+  public BigDecimal[] getColValues(int colIndex){
     BigDecimal[] col = new BigDecimal[getNumRows()];
     for(int rowIndex = 0; rowIndex < getNumRows(); rowIndex++){
       col[rowIndex] = getElement(rowIndex,colIndex);
     }
-    return new Vector(col);
+    return col;
   }
 
   /**

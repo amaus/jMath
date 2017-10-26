@@ -7,71 +7,36 @@ import java.math.MathContext;
 import java.text.DecimalFormat;
 
 /**
- * This class represents a general vector of any dimensions.
+ * A Vector can have any number of dimensions and supports addition, subtraction, multiplication
+ * by a scalar, dot product, and cross product (if the Vectors both have 3 dimensions).
  * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.10.0
+ * @version 0.12.0
  * @since 0.1.0
  */
-public class Vector{
-  private BigDecimal[] values;
-  private final int numDimensions;
+public class Vector extends Matrix{
+  private boolean isColVector;
 
   /**
-   * Construct a Vector containing the numeric values passed in as Strings.
-   *
-   * This is the preferred constuctor. It will build BigDecimals at a
-   * desired precision.
-   *
-   * @param vals the values to be added to this vector
-   * @since 0.1.0
-  */
-  public Vector(String... vals){
-    this.numDimensions = vals.length;
-    if(this.numDimensions == 0){
-      throw new IllegalArgumentException("Vector must contain atleast one value.");
-    }
-    this.values = new BigDecimal[vals.length];
-    int i = 0;
-    for(String val : vals){
-      this.values[i] = new BigDecimal(val, MathContext.DECIMAL128);
-      i++;
-    }
-  }
-
-  /**
-   * Construct a Vector containing the numeric values passed in as Doubles.
+   * Construct a Vector containing the values passed in as Doubles.
    *
    * @param vals the values to be added to this vector
    * @since 0.1.0
   */
   public Vector(Double... vals){
-    this.numDimensions = vals.length;
-    if(this.numDimensions == 0){
-      throw new IllegalArgumentException("Vector must contain atleast one value.");
-    }
-    this.values = new BigDecimal[vals.length];
-    int i = 0;
-    for(Double val : vals){
-      this.values[i] = new BigDecimal(val, MathContext.DECIMAL128);
-      i++;
-    }
+    super(vals);
+    this.isColVector = true;
   }
 
   /**
    * Construct a vector from a set of BigDecimals.
-   *
-   * It is preferred that one of the other constructors is used, but if you
-   * use this one, it is recommended that you build the BigDecimals using
-   * {@link java.math.MathContext#DECIMAL64}
-   *
+   * <p>
+   * It is recommended that you construct the BigDecimals using
+   * {@link java.math.MathContext#DECIMAL128}.
    * @param vals the BigDecimals to build the vector from
   */
   public Vector(BigDecimal... vals){
-    this.numDimensions = vals.length;
-    if(this.numDimensions == 0){
-      throw new IllegalArgumentException("Vector must contain atleast one value.");
-    }
-    this.values = vals;
+    super(vals);
+    this.isColVector = true;
   }
 
   /**
@@ -79,8 +44,83 @@ public class Vector{
    * @since 0.1.0
   */
   public Vector(){
-    this("0.0","0.0","0.0");
+    this(0.0,0.0,0.0);
   }
+
+  private Vector(BigDecimal[][] vals){
+    super(vals);
+    int numRows = vals.length;
+    int numCols = vals[0].length;
+    // Determine if this vector is a row or column vector based on the dimensions of vals.
+    // Note that by default, a Vector of a single value is a column vector.
+    if(numCols == 1) { // a single col, therefore a col vector
+      this.isColVector = true;
+    } else if(numRows == 1){ // a single row, therefore a row vector
+      this.isColVector = false;
+    } else { // if neither have a dimension of 1, then throw an IllegalArgumentException
+      throw new IllegalArgumentException("Vector must be initialized with either "
+          + "a single row or column");
+    }
+  }
+
+  /**
+  * @return true if this vector is a column vector, false if this vector is a row vector
+  * @since 0.12.0
+  */
+  public boolean isColVector(){
+    return this.isColVector;
+  }
+
+  /**
+  * Transpose this vector. If it was a column vector, it is now a row vector and vice versa.
+  * @since 0.12.0
+  */
+  public Vector transpose(){
+    if(isColVector){
+      // construct and return a row vector
+      return new Vector(buildRowMatrix(getValues()));
+    } else {
+      // construct and return a column vector
+      return new Vector(getValues());
+    }
+  }
+
+  /*
+  * Helper method for initializing a column Vector. From an array of values, build a 2D array where
+  * those values go down the first column.
+  */
+  private BigDecimal[][] buildRowMatrix(BigDecimal[] vals){
+    BigDecimal[][] matrix = new BigDecimal[1][vals.length];
+    for(int i = 0; i < vals.length; i++){
+      matrix[0][i] = vals[i];
+    }
+    return matrix;
+  }
+
+  /**
+   * Return the value of the vector at the given dimension.
+   * @param dimension The dimension of the coorinate to be returned. The first
+   *        value is at the 0th dimension.
+   * @param value The value of the vector at the given dimension.
+   * @throws IllegalArgumentException Thrown if dimension is {@code >= getNumDimensions()}.
+   * @since 0.10.0
+  */
+  protected void setValue(int dimension, BigDecimal value){
+    if(dimension >= 0 && dimension < getNumDimensions()){
+      if(isColVector){
+        setElement(dimension,0,value);
+      } else {
+        setElement(0,dimension,value);
+      }
+    } else {
+      throw new IllegalArgumentException("dimension must be less than the Num Dimensions\n"
+          + "of this point. The first coordinate is at the 0th\n"
+          + "dimension.\n"
+          + "Num Dimensions: " + getNumDimensions() + "\n"
+          + "Given Dimension: " + dimension);
+    }
+  }
+
 
   /**
    * Return the value of the vector at the given dimension.
@@ -92,7 +132,11 @@ public class Vector{
   */
   public BigDecimal getValue(int dimension){
     if(dimension >= 0 && dimension < getNumDimensions()){
-      return this.values[dimension];
+      if(isColVector){
+        return getElement(dimension,0);
+      } else {
+        return getElement(0,dimension);
+      }
     } else {
       throw new IllegalArgumentException("dimension must be less than the Num Dimensions\n"
           + "of this point. The first coordinate is at the 0th\n"
@@ -111,11 +155,11 @@ public class Vector{
    * @since 0.10.0
   */
   public BigDecimal[] getValues(){
-    final BigDecimal[] coordinates = new BigDecimal[getNumDimensions()];
-    for(int i = 0; i < getNumDimensions(); i++){
-      coordinates[i] = getValue(i);
+    if(isColVector){
+      return getColValues(0);
+    } else {
+      return getRowValues(0);
     }
-    return coordinates;
   }
 
   /**
@@ -124,7 +168,11 @@ public class Vector{
    * @since 0.9.0
   */
   public int getNumDimensions(){
-    return this.numDimensions;
+    if(isColVector){
+      return getNumRows();
+    } else {
+      return getNumCols();
+    }
   }
 
   /**
@@ -149,6 +197,29 @@ public class Vector{
   }
 
   /**
+  * Return the cross product of this vector and the other.
+  * <p>
+  * Both vectors must be three dimensional.
+  * @param other a Vector, must have 3 dimensions
+  * @return a three dimensional vector that is the cross product of this and other
+  */
+  public Vector crossProduct(Vector other){
+    if(getNumDimensions() != 3 || other.getNumDimensions() != 3){
+      throw new IllegalArgumentException("Vector::dotProduct() Both vectors must be 3D vectors.");
+    }
+    BigDecimal u1 = getValue(0);
+    BigDecimal u2 = getValue(1);
+    BigDecimal u3 = getValue(2);
+    BigDecimal v1 = other.getValue(0);
+    BigDecimal v2 = other.getValue(1);
+    BigDecimal v3 = other.getValue(2);
+    BigDecimal x = u2.multiply(v3).subtract(u3.multiply(v2));
+    BigDecimal y = u3.multiply(v1).subtract(u1.multiply(v3));
+    BigDecimal z = u1.multiply(v2).subtract(u2.multiply(v1));
+    return new Vector(x,y,z);
+  }
+
+  /**
    * Calcuates the angle (in degrees) between this vector and the other.
    * @param other the other vector to calculate the angle between
    * @return the angle in degrees
@@ -164,6 +235,13 @@ public class Vector{
     double angle = this.dotProduct(other) / Math.sqrt(this.magnitudeSquared() * other.magnitudeSquared());
     angle = Math.acos(angle);
     return Math.toDegrees(angle);
+  }
+
+  /**
+  * @return a unit vector pointing in this same direction as this vector
+  */
+  public Vector toUnitVector(){
+    return this.multiply(new BigDecimal(1.0/this.magnitude(), MathContext.DECIMAL128));
   }
 
   /**
@@ -200,7 +278,8 @@ public class Vector{
       ans = new Vector(vals);
       return ans;
     } else {
-      String exceptionString = "Vector::add - " + buildIllegalArgumentExceptionString(values);
+      String exceptionString = "Vector::add - "
+          + buildIllegalArgumentExceptionString(this.getValues());
       throw new IllegalArgumentException(exceptionString);
     }
   }
@@ -223,7 +302,8 @@ public class Vector{
       ans = new Vector(vals);
       return ans;
     } else {
-      String exceptionString = "Vector::subtract - " + buildIllegalArgumentExceptionString(values);
+      String exceptionString = "Vector::subtract - "
+          + buildIllegalArgumentExceptionString(this.getValues());
       throw new IllegalArgumentException(exceptionString);
     }
   }
@@ -249,8 +329,7 @@ public class Vector{
     for(int i = 0; i < this.getNumDimensions(); i++){
       vals[i] = this.getValue(i).multiply(scalar);
     }
-    ans = new Vector(vals);
-    return ans;
+    return new Vector(vals);
   }
 
   /**
@@ -258,13 +337,21 @@ public class Vector{
    * @return The String representation of the values.
    * @since 0.9.0
   */
-  public static String buildVectorString(BigDecimal[] values){
-    String str = "(";
-    for(int i = 0; i < values.length - 1; i++){
-      str += String.format("%s, ", new DecimalFormat("0.00").format(values[i]));
+  public String buildVectorString(BigDecimal[] values){
+    if(!isColVector()){
+      String str = "| ";
+      for(int i = 0; i < values.length - 1; i++){
+        str += String.format("%s, ", new DecimalFormat("0.00").format(values[i]));
+      }
+      str += String.format("%s |", new DecimalFormat("0.00").format(values[values.length-1]));
+      return str;
+    } else {
+      String str = "";
+      for(int i = 0; i < values.length; i++){
+        str += String.format("| %s |\n", new DecimalFormat("0.00").format(values[i]));
+      }
+      return str;
     }
-    str += String.format("%s)", new DecimalFormat("0.00").format(values[values.length-1]));
-    return str;
   }
 
   /**
@@ -294,21 +381,6 @@ public class Vector{
   }
 
   /**
-   * Returns the hash code for this vector.
-   *
-   * Relies on {@link java.util.Arrays#hashCode(Object[] a)} to
-   * calculate the hashCode.
-   *
-   * @see java.util.Arrays#hashCode(Object[] a)
-   * @see java.math.BigDecimal#hashCode()
-   * @since 0.10.0
-  */
-  @Override
-  public int hashCode(){
-    return Arrays.hashCode(this.getValues());
-  }
-
-  /**
    * Returns true if both Vectors contain the same values.
    *
    * @since 0.10.0
@@ -321,8 +393,8 @@ public class Vector{
         return false;
       }
       for(int i = 0; i < this.getNumDimensions(); i++){
-        BigDecimal num1 = this.getValue(i).setScale(15,BigDecimal.ROUND_HALF_EVEN);
-        BigDecimal num2 = other.getValue(i).setScale(15,BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal num1 = this.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal num2 = other.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
         if(!num1.equals(num2)){
           /*
           System.out.printf("%s\n",
@@ -354,12 +426,11 @@ public class Vector{
       return exceptionString;
   }
 
-  @Override
   /**
-   * An overridden implementation of Object.toString().
-   * @returnA String representation of this vector.
+   * @return a String representation of this vector in the form "(v0, v1, ..., vn)"
    * @since 0.1.0
   */
+  @Override
   public String toString(){
     return buildVectorString(getValues());
   }
