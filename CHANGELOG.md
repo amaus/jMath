@@ -19,6 +19,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
+## [0.12.0] - 2017-10-25
+### Added
+- Transformations
+  - Class TransformationMatrix
+    -  A transformation matrix that can be used to perform a 3D transformation
+  - Class Transformation
+    - Can be composed of Translations and Rotations
+  - Interface Transformable
+    - Allows subclasses to transform themselves via Transformations
+- Point3D: a point in 3D space, Transformable
+### Changed
+- Linear Algebra Class hierarchy
+  - Vector extends Matrix
+  - Point3D extends Vector
+### Removed
+- class CartesianCoordinates, use instead Point3D.
+
 ## [0.11.0] - 2017-10-04
 ### Added
 - Graph::shortestPath(source, target) that implements Dijkstra's algorithm
