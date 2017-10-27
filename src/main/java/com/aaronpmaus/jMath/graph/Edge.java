@@ -1,13 +1,26 @@
 package com.aaronpmaus.jMath.graph;
 
 /**
- * The Edge of a graph. Consists of two nodes (start and end) and the
- * weight of the edge between them. Represents a directed edge.
- * @author Aaron Maus aaron@aaronpmaus.com
- * @version 0.6.0
- * @since 0.1.0
+* The Edge of a graph. Consists of two nodes (start and end) and the weight of the edge between
+* them. Represents a directed edge.
+* <p>
+* Edges can be sorted. The natural ordering is ascending order by the ordering of the end points.
+* Ties between the start points are broken with the ending points.
+* <p>
+* EX: <br>
+* (1,2) <br>
+* (1,4) <br>
+* (1,5) <br>
+* (2,3) <br>
+* (2,4) <br>
+* (3,4) <br>
+* (3,5) <br>
+* (4,5) <br>
+* @version 0.12.0
+* @since 0.1.0
 */
-public class Edge<T extends Comparable<T>>{
+public class Edge<T extends Comparable<? super T>> implements Comparable<UndirectedEdge<T>>{
+
   private final Node<T> start;
   private final Node<T> end;
   private double weight;
@@ -65,6 +78,20 @@ public class Edge<T extends Comparable<T>>{
   @Override
   public String toString(){
     return String.format("(%s, %s)", getStart().get(), getEnd().get());
+  }
+
+  /**
+  * Order Edges by their endpoints. Ascending order, first by start point, then by
+  * end point if tied.
+  * @since 0.12.0
+  */
+  @Override
+  public int compareTo(UndirectedEdge<T> other) {
+    int comparison = this.getStart().get().compareTo(other.getStart().get());
+    if(comparison == 0) {
+      return this.getEnd().get().compareTo(other.getEnd().get());
+    }
+    return comparison;
   }
 
   /**

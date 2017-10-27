@@ -9,15 +9,13 @@ import java.util.Date;
 import java.util.Comparator;
 
 /**
-* A class for an UndirectedGraph. Extends Graph. A Graph is made of Nodes. Nodes
-* represent vertices and are wrapper for a generic Object. See the Node class for
-* more information. In this manner a graph can be built to represent anything.
+* An UndirectedGraph is a Graph where the edges have direction.
+* @see com.aaronpmaus.jMath.graph.Graph
 * @author Aaron Maus aaron@aaronpmaus.com
 * @version 0.8.0
 * @since 0.1.0
 */
-public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
-  public static long numRecursiveCalls = -1;
+public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   private static int maxPrintLevel = 0;
   private boolean verbose = false;
 
@@ -263,7 +261,9 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
     }
     //return edges;
     ArrayList<UndirectedEdge<T>> edgesSorted = new ArrayList<UndirectedEdge<T>>(edges);
-    Collections.sort(edgesSorted, new Comparator<UndirectedEdge<T>>() {
+    Collections.sort(edgesSorted);
+
+    /*new Comparator<UndirectedEdge<T>>() {
       public int compare(UndirectedEdge<T> e1, UndirectedEdge<T> e2) {
         int comparison = e1.getStart().get().compareTo(e2.getStart().get());
         if(comparison == 0) {
@@ -271,7 +271,7 @@ public class UndirectedGraph<T extends Comparable<T>> extends Graph<T>{
         }
         return comparison;
       }
-    });
+    });*/
     return edgesSorted;
   }
 

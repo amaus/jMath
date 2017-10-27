@@ -12,7 +12,7 @@ import java.util.HashMap;
 * INCOMPLETE - does not include UB max sat or ind set logic
 * @since 0.7.0
 */
-public class IncMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver<T> {
+public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliqueSolver<T> {
   private ArrayList<Node<T>> vertexOrdering;
   //private ArrayList<Integer> vertexUB;
   private HashMap<Node<T>, Integer> vertexUB;

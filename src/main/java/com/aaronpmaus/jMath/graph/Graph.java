@@ -12,19 +12,19 @@ import java.util.Comparator;
 
 /**
 * A Graph is a Directed Graph.
-*
-* A Graph is made of Nodes which represent vertices and are wrappers for a values.
-*
-* There is a strong relationship between the nodes and the graph and the values they wrap. A node is
-* defined by its value. Its edges may change, but as long as it contains the same value. it is the
+* <p>
+* A Graph is composed of Nodes which represent vertices and are wrappers for a values.
+* <p>
+* There is a strong relationship between the nodes of the graph and the values they wrap. A node is
+* defined by its value. Its edges may change, but as long as it contains the same value, it is the
 * same node. The values in the graph must be unique, that is, there can not be more than one node
-* that containing the same value.
+* containing the same value.
 *
 * @author Aaron Maus aaron@aaronpmaus.com
 * @version 0.8.0
 * @since 0.1.0
 */
-public class Graph<T extends Comparable<T>> implements Iterable<Node<T>>{
+public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>{
   private HashMap<T, Node<T>> adjacencyList;
   private int numEdges;
   private String graphFileName;

@@ -3,19 +3,18 @@ import java.util.Comparator;
 import java.util.ArrayList;
 
 /**
-* MaxIndSetComparator is a Comparator that allows nodes to be ordered
-* based on the size of their maximum independent sets.
+* MaxIndSetComparator is a Comparator that allows nodes to be ordered based on the size of their
+* maximum independent sets.
 * @author Aaron Maus aaron@aaronpmaus.com
 * @version 0.7.0
 * @since 0.7.0
 */
-public class MaxIndSetComparator<T extends Comparable<T>> implements Comparator<Node<T>> {
+public class MaxIndSetComparator<T extends Comparable<? super T>> implements Comparator<Node<T>> {
   private ArrayList<UndirectedGraph<T>> indSetPartition;
 
   /**
   * This constructor takes in an ArrayList of the Independent Sets.
-  * @param partition the list of Independent Sets in the IND Set partition
-  *                  of a graph
+  * @param partition the list of Independent Sets in the IND Set partition of a graph
   * @since 0.7.0
   */
   public MaxIndSetComparator(ArrayList<UndirectedGraph<T>> partition){
