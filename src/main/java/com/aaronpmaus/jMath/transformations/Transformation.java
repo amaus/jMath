@@ -174,6 +174,11 @@ public final class Transformation extends TransformationMatrix {
   * @param degrees an angle, in degrees
   */
   public void addRotationAboutAxis(Vector axis, double degrees){
+    if(axis.getNumDimensions() !=3){
+      throw new IllegalArgumentException(
+          "Transformation::addRotationAboutAxis(): axis must have 3 dimensions, has "
+          + axis.getNumDimensions());
+    }
     degrees = Math.toRadians(degrees);
     double cos = Math.cos(degrees);
     double sin = Math.sin(degrees);
@@ -201,6 +206,14 @@ public final class Transformation extends TransformationMatrix {
   * @param mobile the mobile vector, has three dimensions
   */
   public void addRotationOntoVector(Vector reference, Vector mobile){
+    if(reference.getNumDimensions() !=3 || mobile.getNumDimensions() != 3){
+      throw new IllegalArgumentException(
+          "Transformation::addRotationOntoVector(): reference and mobile must both have 3 dimensions"
+          + ", has "+ reference.getNumDimensions()
+          + " and " + mobile.getNumDimensions()
+          + " respectively");
+    }
+
     reference = reference.toUnitVector();
     mobile = mobile.toUnitVector();
     Vector cross = mobile.crossProduct(reference);
@@ -240,6 +253,11 @@ public final class Transformation extends TransformationMatrix {
   * @param vec a 3D vector, the amount to translate, (deltaX, deltaY, deltaZ)
   */
   public void addTranslation(Vector vec){
+    if(vec.getNumDimensions() !=3){
+      throw new IllegalArgumentException(
+          "Transformation::addTranslation(): vec must have 3 dimensions, has "
+          + vec.getNumDimensions());
+    }
     BigDecimal one = BigDecimal.ONE;
     BigDecimal zero = BigDecimal.ZERO;
     BigDecimal[][] mat = {{one,  zero, zero, vec.getValue(0)},
