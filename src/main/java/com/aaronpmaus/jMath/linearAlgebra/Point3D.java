@@ -9,6 +9,21 @@ import java.math.BigDecimal;
 
 /**
  * A point in 3D space, Transformable.
+ * <p>
+ * Creating a Point3D and Transforming it:
+ * <p>
+ * {@code Transformation t = new Transformation();} <br>
+ * {@code t.addRotationAboutX(90);}<br>
+ * {@code t.addTranslation(new Vector(0.0, 0.0, 41.0));}<br>
+ * <p>
+ * {@code Point3D point = new Point3D(0.0, 1.0, 0.0); // Point3D implements Transformable} <br>
+ * {@code point.applyTransformation(t)}<br>
+ * {@code System.out.println(point); // (0.00, 0.00, 42.00)} <br>
+ * <p>
+ * {@code // Undo the transformation by getting the inverse and applying it}<br>
+ * {@code Transformation inverse = t.inverse();} <br>
+ * {@code point.applyTransformation(inverse)}<br>
+ * {@code System.out.println(point); // (0.00, 1.00, 0.00)} <br>
  * @author  Aaron Maus aaron@aaronpmaus.com
  * @version 0.12.0
  * @since 0.12.0

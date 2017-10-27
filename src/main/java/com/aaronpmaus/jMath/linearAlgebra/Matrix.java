@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 * A 2-dimensional matrix. From the public perspective (1), Matrices are immutable. All operations
 * return a new Matrix rather than modify itself. Matrices support addition, subtraction, and
 * multiplication by scalars and other matrices.
-*
+* <p>
 * (1) Only Matrix and subclasses can directly modify the values. This allows Points and Vectors to
 * be transformed in 3D space directly.
 * @see com.aaronpmaus.jMath.transformations.Transformation
