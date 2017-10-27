@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
-## [0.12.0] - 2017-10-25
+## [0.12.0] - 2017-10-27
 ### Added
 - Transformations
   - Class TransformationMatrix
@@ -33,6 +33,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Linear Algebra Class hierarchy
   - Vector extends Matrix
   - Point3D extends Vector
+- Minor updates to documentation in graph package.
+- Edges are now Comparable
+- Updated type bounds on all Graph Classes to <T extends Comparable<? super T>>
+  from <T extends Comparable<T>> to admit types that inherit being Comparable
 ### Removed
 - class CartesianCoordinates, use instead Point3D.
 
