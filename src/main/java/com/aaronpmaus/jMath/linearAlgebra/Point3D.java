@@ -79,7 +79,7 @@ import java.math.BigDecimal;
    }
 
    @Override
-   public void applyTransformation(TransformationMatrix t){
+   public void applyTransformation(Transformation t){
      Vector homogeneous = new Vector(getX(), getY(), getZ(), BigDecimal.ONE);
      Vector vec = t.applyTransformationTo(homogeneous);
      this.setValue(0, vec.getValue(0));

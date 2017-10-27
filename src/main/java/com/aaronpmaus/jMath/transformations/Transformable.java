@@ -5,12 +5,12 @@ package com.aaronpmaus.jMath.transformations;
 * 3D space.
 * <p>
 * Any class that implements this interface must implement the
-* {@code applyTransformation(TransformationMatrix t)} method, applying the transformation
+* {@code applyTransformation(Transformation t)} method, applying the transformation
 * represented by the TransformationMatrix to itself.
 * <p>
 * Example Usage:
 * <p>
-* {@code Transformation t = new Transformation(); // extends TransformationMatrix} <br>
+* {@code Transformation t = new Transformation();} <br>
 * {@code t.addRotationAboutX(90);}<br>
 * {@code t.addTranslation(new Vector(0.0, 0.0, 41.0));}<br>
 * <p>
@@ -28,8 +28,8 @@ public interface Transformable{
   /**
   * Apply the TransformationMatrix to this object.
   * <p>
-  * @param t the TransformationMatrix to apply to this Transformable
+  * @param t the Transformation to apply to this Transformable
   * @see com.aaronpmaus.jMath.transformations.Transformation
   */
-  void applyTransformation(TransformationMatrix t);
+  void applyTransformation(Transformation t);
 }

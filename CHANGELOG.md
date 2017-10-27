@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
+## [0.12.1] - 2017-10-27
+### Changed
+- Transformable::applyTransformation() now requires an argument of a
+  Transformation instead of a TransformationMatrix.
+
 ## [0.12.0] - 2017-10-27
 ### Added
 - Transformations
