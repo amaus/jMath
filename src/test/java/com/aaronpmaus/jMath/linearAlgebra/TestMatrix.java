@@ -45,11 +45,12 @@ public class TestMatrix{
     zerosTwo = new Matrix(4, 4, new BigDecimal("0.0", MathContext.DECIMAL64));
     ones = new Matrix(4, 4, new BigDecimal("1.0", MathContext.DECIMAL64));
     twos = new Matrix(4, 4, new BigDecimal("2.0", MathContext.DECIMAL64));
-    columnVec = new Matrix(new Vector("1.0","2.0","3.0"));
-    rowVec = new Matrix(new Vector("4.0","5.0","6.0")).transpose();
-    colTimesRow = new Matrix(new Vector("4.0","8.0","12.0"),
-        new Vector("5.0","10.0","15.0"),
-        new Vector("6.0","12.0","18.0"));
+    columnVec = new Matrix(1.0,2.0,3.0);
+    rowVec = new Matrix(4.0,5.0,6.0);
+    rowVec = rowVec.transpose();
+    colTimesRow = new Matrix(new Vector(4.0,8.0,12.0),
+        new Vector(5.0,10.0,15.0),
+        new Vector(6.0,12.0,18.0));
     identity = new Matrix();
   }
 
@@ -114,6 +115,19 @@ public class TestMatrix{
     Matrix leftHandSide = a.multiply( b.add(c) );
     Matrix rightHandSide = ( a.multiply(b) ).add( a.multiply(c) );
     assertTrue(leftHandSide.equals(rightHandSide));
+  }
+
+  @Test
+  public void testTranspose(){
+    Double[][] mat = {{1.0, 2.0},
+                      {3.0, 4.0},
+                      {5.0, 6.0}};
+    Matrix matrix = new Matrix(mat);
+    matrix = matrix.transpose();
+    Double[][] transposed = {{1.0, 3.0, 5.0},
+                             {2.0, 4.0, 6.0}};
+    Matrix expected = new Matrix(transposed);
+    assertEquals(matrix, expected);
   }
 
   private Matrix generateMatrix(int numRows, int numCols, int seed){

@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 
 /**
-* A class with static methods to read in graphs from files with difference formats
+* This class provides statix methods to read and write graphs to and from DIMACS files.
 * @author Aaron Maus aaron@aaronpmaus.com
 * @version 0.10.0
 * @since 0.1.0
@@ -18,7 +18,6 @@ public class GraphIO{
 
   /**
   * Read in and build and UndirectedGraph{@literal <Integer>}from a DIMACS file.
-  *
   * @param inputStream the InputStream to read from
   * @param graphFileName the filename of the graph
   * @return the UndirectedGraph{@literal <Integer>} from that file

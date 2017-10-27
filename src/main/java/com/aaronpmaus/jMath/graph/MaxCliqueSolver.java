@@ -3,19 +3,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
-* This is the top of an inheritance hierarch for various max clique Algorithms.
-* It specifies that a subclass must implement findMaxClique(UndirectedGraph g).
-* Given that implementation, it provides methods to get a clique covering,
-* find a min vertex covering, find the max independent set, and get an
-* independent set partition.
-* Subclasses include MausMaxCliqueSolver which uses Aaron Maus' algorithm,
-* IncMaxCliqueSolver - an implementation of Li et al. 2013 algorithm,
-* and IncMaxCliqueAdapter - a wrapper for Li et al. c source code.
-* @author Aaron Maus aaron@aaronpmaus.com
+* This is the top of an inheritance hierarch for various max clique Algorithms. It specifies that a
+* subclass must implement findMaxClique(UndirectedGraph g). Given that implementation, it provides
+* methods to get a clique covering, find a min vertex covering, find the max independent set, and
+* get an independent set partition.
+* <p>
+* Subclasses include MausMaxCliqueSolver which uses Aaron Maus' algorithm, IncMaxCliqueSolver - an
+* implementation of Li et al. 2013 algorithm, and IncMaxCliqueAdapter - a wrapper for Li et al. c
+* source code.
 * @version 0.7.0
 * @since 0.7.0
 */
-public abstract class MaxCliqueSolver<T extends Comparable<T>>{
+public abstract class MaxCliqueSolver<T extends Comparable<? super T>>{
 
   /**
   * Finds the maximum clique in g

@@ -12,12 +12,9 @@ import java.util.HashMap;
 import java.util.Date;
 
 /**
-* A class that uses IncMaxCliqueSolver from
-* Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
-* Li, Fang, Xu 2013
-* to find the maximum clique in UndirectedGraphs. Credit to the authors for
-* the c source used by this program.
-* @author Aaron Maus aaron@aaronpmaus.com
+* A class that uses IncMaxCliqueSolver from Combining MaxSAT Reasoning and Incremental Upper Bound
+* for the Maximum Clique Problem Li, Fang, Xu 2013 to find the maximum clique in UndirectedGraphs.
+* Credit to the authors for the c source used by this program.
 * @version 0.7.0
 * @since 0.7.0
 */

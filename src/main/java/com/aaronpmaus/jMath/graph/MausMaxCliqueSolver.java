@@ -6,13 +6,15 @@ import java.util.Date;
 
 /**
 * A class to find and return maximum cliques of Undirected Graphs.
+* <p>
 * IncMaxCliqueAdapter is a much faster implementation.
+* <p>
 * This implementation is my own for the Max Clique Problem
 * @author Aaron Maus aaron@aaronpmaus.com
 * @version 0.7.0
 * @since 0.7.0
 */
-public class MausMaxCliqueSolver<T extends Comparable<T>> extends MaxCliqueSolver<T> {
+public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliqueSolver<T> {
   public static long numRecursiveCalls = -1;
   private static int maxPrintLevel = 0;
   private boolean verbose = false;

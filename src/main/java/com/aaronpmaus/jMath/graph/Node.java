@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.lang.ClassCastException;
 
 /**
-* A Node for a graph. A Node represents a vertex and is a wrapper
-* for an object. In addition to its object, it also has Edges
-* to other nodes.
-* The Object can be anything, and the generic type allows for
-* there to be a graph of any type of Object.
+* A Node for a graph. A Node represents a vertex and is a wrapper for an object. In addition to its
+* object, it also has Edges to other nodes.
+* <p>
+* The Object can be anything, and the generic type allows for graphs to be constructed containing
+* any type of Object, as long as it is comparable.
 * @author Aaron Maus aaron@aaronpmaus.com
 * @version 0.11.0
 * @since 0.1.0
 */
-public class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
+public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>>{
   private T obj;
   // the key is the node at the end of the edge
   private LinkedHashMap<Node<T>, Edge<T>> neighbors;

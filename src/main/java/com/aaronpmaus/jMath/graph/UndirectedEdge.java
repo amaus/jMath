@@ -1,22 +1,10 @@
 package com.aaronpmaus.jMath.graph;
 
 /**
-* An undirected edge of a graph. Consists of the two end points of the
-* edge and the weight of the edge between them.
-* <P>
-* At this point 0.1.5,
-* UndirectedEdges are used for getting the Edges of an UndirectedGraph
-* which is only called when writing out a DIMACS format file. The
-* advantage is that an UndirectedEdge overrides equals so that two
-* edges are equal if the end points are the same (in either order).
-* This allows a set of edges to be built since, at this point, an
-* "undirected edge" is represented as two directed edges, one for
-* each direction.
-* @author Aaron Maus aaron@aaronpmaus.com
-* @version 0.6.0
+* An UndirectedEdge is an edge where the order of the end points does not matter.
 * @since 0.6.0
 */
-public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
+public class UndirectedEdge<T extends Comparable<? super T>> extends Edge<T> {
 
   /**
   * Constructs an UndirectedEdge for a graph with a default weight of 1.0
@@ -49,9 +37,8 @@ public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
   }
 
   /**
-  * Returns the hashCode for this edge. The hashCode for an edge
-  * is the concatenation of the hashCodes of nodes of it's end
-  * points
+  * Return the hashCode for this edge. The hashCode for an edge is the multiplication of the
+  * hashCodes of nodes of it's end points
   * @return an int representing the hashCode of this edge
   * @since 0.6.0
   */
@@ -70,9 +57,8 @@ public class UndirectedEdge<T extends Comparable<T>> extends Edge<T>{
   @Override
   @SuppressWarnings("unchecked")
   public boolean equals(Object obj){
-    UndirectedEdge<T> other;
-    if(this.getClass().isInstance(obj)){
-      other = this.getClass().cast(obj);
+    if(obj instanceof UndirectedEdge){
+      UndirectedEdge<T> other  = (UndirectedEdge<T>) obj;
       if(getStart().equals(other.getStart())
       && getEnd().equals(other.getEnd())){
         return true;
