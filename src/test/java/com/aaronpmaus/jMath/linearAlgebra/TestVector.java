@@ -187,8 +187,10 @@ public class TestVector{
   public void testTranspose(){
     Vector vec = new Vector(0.0, 1.0, 2.0);
     assertTrue(vec.isColVector());
+    assertTrue(vec.getNumDimensions() == 3);
 
     Vector transposed = vec.transpose();
     assertFalse(transposed.isColVector());
+    assertTrue(transposed.getNumDimensions() == 3);
   }
 }
