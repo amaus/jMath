@@ -58,7 +58,6 @@ public class FindClique {
       } else {
         System.out.println("There are no cliques of size " + k);
       }
-      System.out.println(UndirectedGraph.numRecursiveCalls + " RECURSIVE CALLS MADE.");
     } catch (FileNotFoundException e){
       System.out.println(filename + " not found. input proper filename or check file");
     }
