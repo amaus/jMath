@@ -196,28 +196,6 @@ public class Vector extends Matrix{
     return product;
   }
 
-  /**
-  * Return the cross product of this vector and the other.
-  * <p>
-  * Both vectors must be three dimensional.
-  * @param other a Vector, must have 3 dimensions
-  * @return a three dimensional vector that is the cross product of this and other
-  */
-  public Vector crossProduct(Vector other){
-    if(getNumDimensions() != 3 || other.getNumDimensions() != 3){
-      throw new IllegalArgumentException("Vector::dotProduct() Both vectors must be 3D vectors.");
-    }
-    BigDecimal u1 = getValue(0);
-    BigDecimal u2 = getValue(1);
-    BigDecimal u3 = getValue(2);
-    BigDecimal v1 = other.getValue(0);
-    BigDecimal v2 = other.getValue(1);
-    BigDecimal v3 = other.getValue(2);
-    BigDecimal x = u2.multiply(v3).subtract(u3.multiply(v2));
-    BigDecimal y = u3.multiply(v1).subtract(u1.multiply(v3));
-    BigDecimal z = u1.multiply(v2).subtract(u2.multiply(v1));
-    return new Vector(x,y,z);
-  }
 
   /**
    * Calcuates the angle (in degrees) between this vector and the other.
@@ -324,7 +302,6 @@ public class Vector extends Matrix{
    * @see java.math.BigDecimal
   */
   public Vector multiply(BigDecimal scalar){
-    Vector ans = null;
     BigDecimal[] vals = new BigDecimal[this.getNumDimensions()];
     for(int i = 0; i < this.getNumDimensions(); i++){
       vals[i] = this.getValue(i).multiply(scalar);

@@ -1,6 +1,6 @@
 package com.aaronpmaus.jMath.transformations;
 
-import com.aaronpmaus.jMath.linearAlgebra.Vector;
+import com.aaronpmaus.jMath.linearAlgebra.Vector3D;
 import com.aaronpmaus.jMath.linearAlgebra.Matrix;
 
 import java.math.BigDecimal;
@@ -54,7 +54,7 @@ import java.util.Collection;
 * {@code System.out.println(point); // (0.00, 1.00, 0.00)} <br>
 */
 public final class Transformation extends TransformationMatrix {
-  private static final Vector ZERO = new Vector(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+  private static final Vector3D ZERO = new Vector3D(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
   private static final Matrix IDENTITY = new Matrix(4);
   private LinkedList<TransformationMatrix> history;
 
@@ -168,23 +168,19 @@ public final class Transformation extends TransformationMatrix {
   }
 
   /**
-  * Include in this Transformation a rotation about any arbitrary axis. This rotation obeys the
-  * right hand rule.
-  * @param axis the vector to rotate about, a unit vector
+  * Include in this Transformation a rotation about an axis. This axis is a vector pointing from
+  * the origin in the direction of vec. This rotation obeys the right hand rule.
+  * @param vec the vector to rotate about, a unit vector
   * @param degrees an angle, in degrees
   */
-  public void addRotationAboutAxis(Vector axis, double degrees){
-    if(axis.getNumDimensions() !=3){
-      throw new IllegalArgumentException(
-          "Transformation::addRotationAboutAxis(): axis must have 3 dimensions, has "
-          + axis.getNumDimensions());
-    }
+  public void addRotationAboutAxis(Vector3D vec, double degrees){
+    vec = vec.toUnitVector();
     degrees = Math.toRadians(degrees);
     double cos = Math.cos(degrees);
     double sin = Math.sin(degrees);
-    double x = axis.getValue(0).doubleValue();
-    double y = axis.getValue(1).doubleValue();
-    double z = axis.getValue(2).doubleValue();
+    double x = vec.getValue(0).doubleValue();
+    double y = vec.getValue(1).doubleValue();
+    double z = vec.getValue(2).doubleValue();
     double oneMinusCos = 1 - cos;
     double xy = x*y;
     double xz = x*z;
@@ -200,12 +196,27 @@ public final class Transformation extends TransformationMatrix {
   }
 
   /**
+  * Include in this Transformation a rotation about an axis. This axis is a vector pointing from
+  * start to end. This rotation obeys the right hand rule.
+  * @param start the start point of the axis to rotate about
+  * @param end the end point of the axis to rotate about
+  * @param degrees an angle, in degrees
+  */
+  public void addRotationAboutAxis(Vector3D start, Vector3D end, double degrees){
+    Transformation composedRotation = new Transformation();
+    composedRotation.addTranslation(start.multiply(BigDecimal.ONE.negate()));
+    composedRotation.addRotationAboutAxis(end, degrees);
+    composedRotation.addTranslation(start);
+    addTransformation(composedRotation);
+  }
+
+  /**
   * Include in this Transformation a Transformation representing a rotation from the mobile vector
   * onto the reference vector.
   * @param reference the reference vector, has three dimensions
   * @param mobile the mobile vector, has three dimensions
   */
-  public void addRotationOntoVector(Vector reference, Vector mobile){
+  public void addRotationOntoVector(Vector3D reference, Vector3D mobile){
     if(reference.getNumDimensions() !=3 || mobile.getNumDimensions() != 3){
       throw new IllegalArgumentException(
           "Transformation::addRotationOntoVector(): reference and mobile must both have 3 dimensions"
@@ -216,7 +227,7 @@ public final class Transformation extends TransformationMatrix {
 
     reference = reference.toUnitVector();
     mobile = mobile.toUnitVector();
-    Vector cross = mobile.crossProduct(reference);
+    Vector3D cross = mobile.crossProduct(reference);
     double cosineOfAngle = mobile.dotProduct(reference);
     // if the cross product is zero, the two vectors are already aligned, return the IDENTITY
     if(cross.equals(ZERO)){
@@ -252,7 +263,7 @@ public final class Transformation extends TransformationMatrix {
   * Include in this Transformation a translation specified by the given Vector.
   * @param vec a 3D vector, the amount to translate, (deltaX, deltaY, deltaZ)
   */
-  public void addTranslation(Vector vec){
+  public void addTranslation(Vector3D vec){
     if(vec.getNumDimensions() !=3){
       throw new IllegalArgumentException(
           "Transformation::addTranslation(): vec must have 3 dimensions, has "
