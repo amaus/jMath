@@ -41,10 +41,10 @@ public class TestMatrix{
 
   @Before
   public void setup(){
-    zeros = new Matrix(4, 4, new BigDecimal("0.0", MathContext.DECIMAL64));
-    zerosTwo = new Matrix(4, 4, new BigDecimal("0.0", MathContext.DECIMAL64));
-    ones = new Matrix(4, 4, new BigDecimal("1.0", MathContext.DECIMAL64));
-    twos = new Matrix(4, 4, new BigDecimal("2.0", MathContext.DECIMAL64));
+    zeros = new Matrix(4, 4, 0.0); //new BigDecimal("0.0", MathContext.DECIMAL64));
+    zerosTwo = new Matrix(4, 4, 0.0); //new BigDecimal("0.0", MathContext.DECIMAL64));
+    ones = new Matrix(4, 4, 1.0); //new BigDecimal("1.0", MathContext.DECIMAL64));
+    twos = new Matrix(4, 4, 2.0); //new BigDecimal("2.0", MathContext.DECIMAL64));
     columnVec = new Matrix(1.0,2.0,3.0);
     rowVec = new Matrix(4.0,5.0,6.0);
     rowVec = rowVec.transpose();

@@ -73,7 +73,7 @@ import java.math.MathContext;
    * @return The 0th coordinate of this Vector.
    * @since 0.1.0
    */
-   public BigDecimal getX(){
+   public Double getX(){
      return getValue(0);
    }
 
@@ -83,7 +83,7 @@ import java.math.MathContext;
    * @return The 1th coordinate of this Vector.
    * @since 0.1.0
    */
-   public BigDecimal getY(){
+   public Double getY(){
      return getValue(1);
    }
 
@@ -93,7 +93,7 @@ import java.math.MathContext;
    * @return The 2th coordinate of this Vector.
    * @since 0.1.0
    */
-   public BigDecimal getZ(){
+   public Double getZ(){
      return getValue(2);
    }
 
@@ -106,15 +106,15 @@ import java.math.MathContext;
    * @since 0.12.2
    */
    public Vector3D crossProduct(Vector3D other){
-     BigDecimal u1 = getX();
-     BigDecimal u2 = getY();
-     BigDecimal u3 = getZ();
-     BigDecimal v1 = other.getX();
-     BigDecimal v2 = other.getY();
-     BigDecimal v3 = other.getZ();
-     BigDecimal x = u2.multiply(v3).subtract(u3.multiply(v2));
-     BigDecimal y = u3.multiply(v1).subtract(u1.multiply(v3));
-     BigDecimal z = u1.multiply(v2).subtract(u2.multiply(v1));
+     Double u1 = getX();
+     Double u2 = getY();
+     Double u3 = getZ();
+     Double v1 = other.getX();
+     Double v2 = other.getY();
+     Double v3 = other.getZ();
+     Double x = (u2 * v3) - (u3 * v2);
+     Double y = (u3 * v1) - (u1 * v3);
+     Double z = (u1 * v2) - (u2 * v1);
      return new Vector3D(x,y,z);
    }
 
@@ -126,9 +126,9 @@ import java.math.MathContext;
     * @since 0.12.2
    */
    public Vector3D add(Vector3D other){
-     BigDecimal x = this.getX().add(other.getX());
-     BigDecimal y = this.getY().add(other.getY());
-     BigDecimal z = this.getZ().add(other.getZ());
+     Double x = this.getX() + other.getX();
+     Double y = this.getY() + other.getY();
+     Double z = this.getZ() + other.getZ();
      return new Vector3D(x,y,z);
    }
 
@@ -140,9 +140,9 @@ import java.math.MathContext;
     * @since 0.12.2
    */
    public Vector3D subtract(Vector3D other){
-     BigDecimal x = this.getX().subtract(other.getX());
-     BigDecimal y = this.getY().subtract(other.getY());
-     BigDecimal z = this.getZ().subtract(other.getZ());
+     Double x = this.getX() - other.getX();
+     Double y = this.getY() - other.getY();
+     Double z = this.getZ() - other.getZ();
      return new Vector3D(x,y,z);
    }
 
@@ -161,10 +161,10 @@ import java.math.MathContext;
     * @since 0.12.2
     * @see java.math.BigDecimal
    */
-   public Vector3D multiply(BigDecimal scalar){
-     BigDecimal x = this.getX().multiply(scalar);
-     BigDecimal y = this.getY().multiply(scalar);
-     BigDecimal z = this.getZ().multiply(scalar);
+   public Vector3D multiply(double scalar){
+     Double x = this.getX() * scalar;
+     Double y = this.getY() * scalar;
+     Double z = this.getZ() * scalar;
      return new Vector3D(x,y,z);
    }
 
@@ -172,14 +172,12 @@ import java.math.MathContext;
    * @return a unit vector pointing in this same direction as this vector
    */
    public Vector3D toUnitVector(){
-     return this.multiply(new BigDecimal(1.0/this.magnitude(), MathContext.DECIMAL128));
+     return this.multiply(1.0/this.magnitude());
    }
 
    @Override
    public void applyTransformation(Transformation t){
-     System.out.println("Vector3D::applyTransformation()");
      Vector3D vec = t.applyTransformationTo(this);
-     System.out.println("Vector3D::applyTransformation(), Transformation apply complete.");
      this.setValue(0, vec.getValue(0));
      this.setValue(1, vec.getValue(1));
      this.setValue(2, vec.getValue(2));

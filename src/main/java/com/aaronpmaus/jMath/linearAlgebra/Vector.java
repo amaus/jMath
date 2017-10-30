@@ -47,7 +47,7 @@ public class Vector extends Matrix{
     this(0.0,0.0,0.0);
   }
 
-  private Vector(BigDecimal[][] vals){
+  private Vector(Double[][] vals){
     super(vals);
     int numRows = vals.length;
     int numCols = vals[0].length;
@@ -89,8 +89,8 @@ public class Vector extends Matrix{
   * Helper method for initializing a column Vector. From an array of values, build a 2D array where
   * those values go down the first column.
   */
-  private BigDecimal[][] buildRowMatrix(BigDecimal[] vals){
-    BigDecimal[][] matrix = new BigDecimal[1][vals.length];
+  private Double[][] buildRowMatrix(Double[] vals){
+    Double[][] matrix = new Double[1][vals.length];
     for(int i = 0; i < vals.length; i++){
       matrix[0][i] = vals[i];
     }
@@ -105,7 +105,7 @@ public class Vector extends Matrix{
    * @throws IllegalArgumentException Thrown if dimension is {@code >= getNumDimensions()}.
    * @since 0.10.0
   */
-  protected void setValue(int dimension, BigDecimal value){
+  protected void setValue(int dimension, double value){
     if(dimension >= 0 && dimension < getNumDimensions()){
       if(isColVector){
         setElement(dimension,0,value);
@@ -130,7 +130,7 @@ public class Vector extends Matrix{
    * @throws IllegalArgumentException Thrown if dimension is {@code >= getNumDimensions()}.
    * @since 0.10.0
   */
-  public BigDecimal getValue(int dimension){
+  public Double getValue(int dimension){
     if(dimension >= 0 && dimension < getNumDimensions()){
       if(isColVector){
         return getElement(dimension,0);
@@ -154,7 +154,7 @@ public class Vector extends Matrix{
    * affect the original Vector.
    * @since 0.10.0
   */
-  public BigDecimal[] getValues(){
+  public Double[] getValues(){
     if(isColVector){
       return getColValues(0);
     } else {
@@ -191,7 +191,7 @@ public class Vector extends Matrix{
 
     double product = 0.0;
     for(int i = 0; i < getNumDimensions(); i++){
-      product += getValue(i).multiply(other.getValue(i)).doubleValue();
+      product += getValue(i) * other.getValue(i);
     }
     return product;
   }
@@ -219,7 +219,7 @@ public class Vector extends Matrix{
   * @return a unit vector pointing in this same direction as this vector
   */
   public Vector toUnitVector(){
-    return this.multiply(new BigDecimal(1.0/this.magnitude(), MathContext.DECIMAL128));
+    return this.multiply(1.0/this.magnitude());
   }
 
   /**
@@ -249,9 +249,9 @@ public class Vector extends Matrix{
   public Vector add(Vector other){
     if(other.getNumDimensions() == getNumDimensions()){
       Vector ans = null;
-      BigDecimal[] vals = new BigDecimal[this.getNumDimensions()];
+      Double[] vals = new Double[this.getNumDimensions()];
       for(int i = 0; i < this.getNumDimensions(); i++){
-        vals[i] = this.getValue(i).add(other.getValue(i));
+        vals[i] = this.getValue(i) + other.getValue(i);
       }
       ans = new Vector(vals);
       return ans;
@@ -273,9 +273,9 @@ public class Vector extends Matrix{
   public Vector subtract(Vector other){
     if(other.getNumDimensions() == getNumDimensions()){
       Vector ans = null;
-      BigDecimal[] vals = new BigDecimal[this.getNumDimensions()];
+      Double[] vals = new Double[this.getNumDimensions()];
       for(int i = 0; i < this.getNumDimensions(); i++){
-        vals[i] = this.getValue(i).subtract(other.getValue(i));
+        vals[i] = this.getValue(i) - other.getValue(i);
       }
       ans = new Vector(vals);
       return ans;
@@ -301,10 +301,10 @@ public class Vector extends Matrix{
    * @since 0.10.0
    * @see java.math.BigDecimal
   */
-  public Vector multiply(BigDecimal scalar){
-    BigDecimal[] vals = new BigDecimal[this.getNumDimensions()];
+  public Vector multiply(double scalar){
+    Double[] vals = new Double[this.getNumDimensions()];
     for(int i = 0; i < this.getNumDimensions(); i++){
-      vals[i] = this.getValue(i).multiply(scalar);
+      vals[i] = this.getValue(i) * scalar;
     }
     return new Vector(vals);
   }
@@ -314,7 +314,7 @@ public class Vector extends Matrix{
    * @return The String representation of the values.
    * @since 0.9.0
   */
-  public String buildVectorString(BigDecimal[] values){
+  public String buildVectorString(Double[] values){
     if(!isColVector()){
       String str = "| ";
       for(int i = 0; i < values.length - 1; i++){
@@ -343,9 +343,7 @@ public class Vector extends Matrix{
     double distance = 0.0;
     if(otherVector.getNumDimensions() == getNumDimensions()){
       for(int i = 0; i < getNumDimensions(); i++){
-        distance += getValue(i).subtract(otherVector.getValue(i))
-            .pow(2)
-            .doubleValue();
+        distance += Math.pow(getValue(i) - otherVector.getValue(i), 2);
       }
       distance = Math.sqrt(distance);
     } else {
@@ -370,8 +368,10 @@ public class Vector extends Matrix{
         return false;
       }
       for(int i = 0; i < this.getNumDimensions(); i++){
-        BigDecimal num1 = this.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
-        BigDecimal num2 = other.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
+        //BigDecimal num1 = this.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
+        //BigDecimal num2 = other.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal num1 = new BigDecimal(this.getValue(i), MathContext.DECIMAL128).setScale(10,BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal num2 = new BigDecimal(other.getValue(i), MathContext.DECIMAL128).setScale(10,BigDecimal.ROUND_HALF_EVEN);
         if(!num1.equals(num2)){
           /*
           System.out.printf("%s\n",
@@ -395,7 +395,7 @@ public class Vector extends Matrix{
    *     do not match this.getNumDimensions().
    * @since 0.9.0
   */
-  protected String buildIllegalArgumentExceptionString(BigDecimal[] values){
+  protected String buildIllegalArgumentExceptionString(Double[] values){
       String exceptionString = "Must pass a vector with the correct number of dimensions. \n"
           + "Num Dimensions: " + getNumDimensions() + "\n"
           + "Requires " + getNumDimensions() + " arguments.\n"

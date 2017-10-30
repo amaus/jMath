@@ -56,12 +56,10 @@ public abstract class TransformationMatrix {
   * @return a new Vector, vec transformed. This Vector is returned as a column vector.
   */
   public Vector3D applyTransformationTo(Vector3D vec){
-    Vector homogeneous = new Vector(vec.getX(), vec.getY(), vec.getZ(), BigDecimal.ONE);
+    Vector homogeneous = new Vector(vec.getX(), vec.getY(), vec.getZ(), 1.0);
     Vector transformed;
     if(homogeneous.isColVector()){
-      System.out.println("  TransformationMatrix::applyTransformationTo(), about to multiply");
       transformed = getMatrix().multiply(homogeneous).getColVector(0);
-      System.out.println("  TransformationMatrix::applyTransformationTo(), multiplication FIN.");
     } else {
       homogeneous = homogeneous.transpose();
       transformed = getMatrix().multiply(homogeneous).getColVector(0);

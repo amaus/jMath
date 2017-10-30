@@ -103,14 +103,14 @@ public class TestVector{
 
   @Test
   public void testMultiply(){
-    Vector multiple = ones.multiply(new BigDecimal("3.14"));
+    Vector multiple = ones.multiply(3.14); //new BigDecimal("3.14"));
     assertFalse(ones.equals(multiple));
     assertTrue(multiple.equals(pi));
   }
 
   @Test
   public void testGetValue(){
-    BigDecimal piScalar = new BigDecimal(3.14, MathContext.DECIMAL128);
+    Double piScalar = 3.14; //new BigDecimal(3.14, MathContext.DECIMAL128);
     assertTrue(piScalar.equals(pi.getValue(0)));
     assertTrue(piScalar.equals(pi.getValue(1)));
     assertTrue(piScalar.equals(pi.getValue(2)));
@@ -143,7 +143,7 @@ public class TestVector{
     mag = four.magnitude();
     assertTrue(Math.abs(mag-5) < 0.001);
 
-    Vector negOne = x.multiply(new BigDecimal("-1.0"));
+    Vector negOne = x.multiply(-1.0); //new BigDecimal("-1.0"));
     mag = negOne.magnitude();
     assertTrue(Math.abs(mag-1) < 0.001);
   }

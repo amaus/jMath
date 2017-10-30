@@ -178,9 +178,9 @@ public final class Transformation extends TransformationMatrix {
     degrees = Math.toRadians(degrees);
     double cos = Math.cos(degrees);
     double sin = Math.sin(degrees);
-    double x = vec.getValue(0).doubleValue();
-    double y = vec.getValue(1).doubleValue();
-    double z = vec.getValue(2).doubleValue();
+    double x = vec.getValue(0);
+    double y = vec.getValue(1);
+    double z = vec.getValue(2);
     double oneMinusCos = 1 - cos;
     double xy = x*y;
     double xz = x*z;
@@ -204,7 +204,7 @@ public final class Transformation extends TransformationMatrix {
   */
   public void addRotationAboutAxis(Vector3D start, Vector3D end, double degrees){
     Transformation composedRotation = new Transformation();
-    composedRotation.addTranslation(start.multiply(BigDecimal.ONE.negate()));
+    composedRotation.addTranslation(start.multiply(-1.0));
     composedRotation.addRotationAboutAxis(end, degrees);
     composedRotation.addTranslation(start);
     addTransformation(composedRotation);
@@ -236,12 +236,12 @@ public final class Transformation extends TransformationMatrix {
     // if the cosine of the angle between them is -1.0, the vectors point in opposite directions,
     // return the negative IDENTITY
     if(Math.abs(cosineOfAngle + 1.0) < 0.000000000001){
-      addTransformation(new Rotation(IDENTITY.multiply(new BigDecimal(-1.0))));
+      addTransformation(new Rotation(IDENTITY.multiply(-1.0)));
     }
     // Otherwise, calculate the rotation matrix to rotate mobile onto reference
-    double v1 = cross.getValue(0).doubleValue();
-    double v2 = cross.getValue(1).doubleValue();
-    double v3 = cross.getValue(2).doubleValue();
+    double v1 = cross.getValue(0);
+    double v2 = cross.getValue(1);
+    double v3 = cross.getValue(2);
     double onePlusCos = cosineOfAngle + 1.0;
     double v1v2 = (v1*v2)/onePlusCos;
     double v1v3 = (v1*v3)/onePlusCos;
@@ -271,10 +271,10 @@ public final class Transformation extends TransformationMatrix {
     }
     BigDecimal one = BigDecimal.ONE;
     BigDecimal zero = BigDecimal.ZERO;
-    BigDecimal[][] mat = {{one,  zero, zero, vec.getValue(0)},
-                          {zero, one,  zero, vec.getValue(1)},
-                          {zero, zero, one,  vec.getValue(2)},
-                          {zero, zero, zero,   one }};
+    Double[][] mat = {{1.0, 0.0, 0.0,  vec.getValue(0)},
+                          {0.0, 1.0, 0.0,  vec.getValue(1)},
+                          {0.0, 0.0, 1.0,  vec.getValue(2)},
+                          {0.0, 0.0, 0.0,   1.0 }};
     addTransformation(new Translation(new Matrix(mat)));
   }
 
@@ -344,8 +344,8 @@ public final class Transformation extends TransformationMatrix {
     public Translation inverse(){
       // Create a copy of the matrix, negate the values. Return a new Translation containing it.
       Matrix mat = new Matrix(getMatrix());
-      mat = mat.multiply(BigDecimal.ONE.negate());
-      mat = mat.add(IDENTITY.multiply(new BigDecimal("2.0", MathContext.DECIMAL128)));
+      mat = mat.multiply(-1.0);
+      mat = mat.add(IDENTITY.multiply(2.0));
       return new Translation(mat);
     }
   }
