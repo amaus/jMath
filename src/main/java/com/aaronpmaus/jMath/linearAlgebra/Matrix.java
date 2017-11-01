@@ -37,18 +37,6 @@ public class Matrix{
   }
 
   /**
-  * Construct a 2-dimensional Matrix holding the values in the 2D Array passed in.
-  *
-  * @param matrix A 2-dimensional array holding the values for the matrix. It must not
-  * be null.
-  * @throws IllegalArgumentException if the matrix is null or not rectangular
-  * @since 0.1.0
-  */
-  public Matrix(BigDecimal[][] matrix){
-    initializeMatrix(matrix);
-  }
-
-  /**
   * Construct a column vector from the values, a matrix with values.length num rows and 1 column.
   * @param values the values to insert
   */
@@ -70,19 +58,6 @@ public class Matrix{
     this(matrix.toArray());
   }
 
-  /**
-  * Construct a column vector from the values, a matrix with values.length num rows and 1 column.
-  * @param values the values to insert
-  */
-  protected Matrix(BigDecimal[] values){
-    BigDecimal[][] matrix = new BigDecimal[values.length][1];
-    for(int i = 0; i < values.length; i++){
-      matrix[i][0] = values[i];
-    }
-
-    initializeMatrix(matrix);
-  }
-
   private void initializeMatrix(Double[][] matrix){
     validateMatrixDimensions(matrix);
     this.numRows = matrix.length;
@@ -96,25 +71,7 @@ public class Matrix{
           String.format("matrix[%d][%d] is null.",i,j)
           + "The matrix must not contain any null values.");
         }
-        this.matrix[i][j] = matrix[i][j]; //new BigDecimal(matrix[i][j], MathContext.DECIMAL128);
-      }
-    }
-  }
-
-  private void initializeMatrix(BigDecimal[][] matrix){
-    validateMatrixDimensions(matrix);
-    this.numRows = matrix.length;
-    this.numCols = matrix[0].length;
-
-    this.matrix = new Double[numRows][numCols];
-    for(int i = 0; i < numRows; i++){
-      for(int j = 0; j < numCols; j++){
-        if(matrix[i][j] == null){
-          throw new IllegalArgumentException(
-          String.format("matrix[%d][%d] is null.",i,j)
-          + "The matrix must not contain any null values.");
-        }
-        this.matrix[i][j] = matrix[i][j].doubleValue();
+        this.matrix[i][j] = matrix[i][j];
       }
     }
   }
@@ -393,7 +350,7 @@ public class Matrix{
   /**
   * Return the values of a row of this Matrix
   * @param rowIndex the rowIndex, starting from 0
-  * @return an array of BigDecimals, the values of this row
+  * @return an array of Doubles, the values of this row
   */
   public Double[] getRowValues(int rowIndex){
     Double[] row = new Double[getNumCols()];
@@ -418,7 +375,7 @@ public class Matrix{
   /**
   * Return the values of a column of this Matrix
   * @param colIndex the colIndex, starting from 0
-  * @return an array of BigDecimals, the values of this column
+  * @return an array of Doubles, the values of this column
   */
   public Double[] getColValues(int colIndex){
     Double[] col = new Double[getNumRows()];
@@ -446,10 +403,10 @@ public class Matrix{
   /**
   * Perform equality check by checking if all the values contained
   * in the two matrices are equal.
-  *
+  * <p>
   * Two values are equal if their values are the same out to 15
   * decimal places.
-  *
+  * <p>
   * {@inheritDoc}
   */
   @Override
@@ -465,8 +422,8 @@ public class Matrix{
       for(int i = 0; i < getNumRows(); i++){
         for(int j = 0; j < getNumCols(); j++){
           try{
-            BigDecimal num1 = new BigDecimal(this.getElement(i,j), MathContext.DECIMAL128).setScale(10,BigDecimal.ROUND_HALF_EVEN);
-            BigDecimal num2 = new BigDecimal(other.getElement(i,j), MathContext.DECIMAL128).setScale(10,BigDecimal.ROUND_HALF_EVEN);
+            BigDecimal num1 = getBigDecimal(this.getElement(i,j)); //new BigDecimal(this.getElement(i,j), MathContext.DECIMAL128).setScale(9,BigDecimal.ROUND_HALF_EVEN);
+            BigDecimal num2 = getBigDecimal(other.getElement(i,j)); //, MathContext.DECIMAL128).setScale(9,BigDecimal.ROUND_HALF_EVEN);
             if(! (num1.equals(num2))){
               //System.out.printf("%s\n",
               //    new DecimalFormat("0.0000000000000000000000000000000000000000").format(num1));
@@ -483,6 +440,22 @@ public class Matrix{
       return true;
     }
     return false;
+  }
+
+  private BigDecimal getBigDecimal(Double value){
+    String valueStr = String.format("%f", value);
+    String[] parts = valueStr.split("\\.");
+    // the scale is the number of digits to preserve to the right of the decimal.
+    // Double are precise to 15 digits, including to the left and right of the decimal.
+    // PI*10^6:    3  1  4  1  5  9  2 . 6  5  3  5  8  9  7  9  3
+    //             |  |  |  |  |  |  |   |  |  |  |  |  |  |  |  |
+    // digit       1  2  3  4  5  6  7   8  9  10 11 12 13 14 15 16
+    // only digits 1-15 are reliable. the 16th digit (3) may be inaccurate.
+    // use the 15th digit for rounding.
+    // create a BigDecimal with a scale of 8 with rounding mode ROUNDING_HALF_UP
+    // 7 = 14 - 7
+    int scale = 14 - parts[0].length();
+    return new BigDecimal(value, MathContext.DECIMAL128).setScale(scale, BigDecimal.ROUND_HALF_EVEN);
   }
 
   /**

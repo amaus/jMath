@@ -60,25 +60,29 @@ public class TestVector{
     assertTrue(zeros.equals(zerosTwo));
     assertFalse(zeros.equals(ones));
 
-    BigDecimal a = new BigDecimal("106838.81",MathContext.DECIMAL128);
-    BigDecimal b = new BigDecimal("263970.96",MathContext.DECIMAL128);
-    BigDecimal c = new BigDecimal("879.35",MathContext.DECIMAL128);
-    BigDecimal d = new BigDecimal("366790.80",MathContext.DECIMAL128);
-    BigDecimal total = new BigDecimal("0.0",MathContext.DECIMAL128);
-    total = total.add(a);
-    total = total.add(b);
-    total = total.add(c);
-    total = total.add(d);
+    Double a = new Double(106838.81);
+    Double b = new Double(263970.96);
+    Double c = new Double(879.35);
+    Double d = new Double(366790.80);
+    Double total = new Double(0.0);
+    total = total + a;
+    total = total + b;
+    total = total + c;
+    total = total + d;
 
     Vector v3 = new Vector(total);
     Vector v4 = new Vector(738479.92);
     assertTrue(v3.equals(v4));
 
-    Vector one = new Vector(new BigDecimal("0.1"));
-    Vector doubleOne = new Vector(new BigDecimal(0.1));
+    Vector one = new Vector(0.1);
+    Vector doubleOne = new Vector(0.1);
     //System.out.printf("%s\n",
     //    new DecimalFormat("0.0000000000000000000000000000000000000000").format(new BigDecimal(0.1)));
     assertTrue(one.equals(doubleOne));
+
+    Vector v5 = new Vector(3141592.653589793);
+    Vector v6 = new Vector(3141592.653589799);
+    assertEquals(v5,v6);
   }
 
   @Test
@@ -103,14 +107,14 @@ public class TestVector{
 
   @Test
   public void testMultiply(){
-    Vector multiple = ones.multiply(3.14); //new BigDecimal("3.14"));
+    Vector multiple = ones.multiply(3.14);
     assertFalse(ones.equals(multiple));
     assertTrue(multiple.equals(pi));
   }
 
   @Test
   public void testGetValue(){
-    Double piScalar = 3.14; //new BigDecimal(3.14, MathContext.DECIMAL128);
+    Double piScalar = 3.14;
     assertTrue(piScalar.equals(pi.getValue(0)));
     assertTrue(piScalar.equals(pi.getValue(1)));
     assertTrue(piScalar.equals(pi.getValue(2)));

@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 
 /**
  * A Vector can have any number of dimensions and supports addition, subtraction, multiplication
- * by a scalar, dot product, and cross product (if the Vectors both have 3 dimensions).
+ * by a scalar, and dot product.
  * @author Aaron Maus aaron@aaronpmaus.com
  * @version 0.12.0
  * @since 0.1.0
@@ -23,18 +23,6 @@ public class Vector extends Matrix{
    * @since 0.1.0
   */
   public Vector(Double... vals){
-    super(vals);
-    this.isColVector = true;
-  }
-
-  /**
-   * Construct a vector from a set of BigDecimals.
-   * <p>
-   * It is recommended that you construct the BigDecimals using
-   * {@link java.math.MathContext#DECIMAL128}.
-   * @param vals the BigDecimals to build the vector from
-  */
-  public Vector(BigDecimal... vals){
     super(vals);
     this.isColVector = true;
   }
@@ -290,16 +278,9 @@ public class Vector extends Matrix{
    * Multiply this Vector by a scalar and return a new vector containing the
    * result
    *
-   * When constructing a BigDecimal for this method, the preferred constructor
-   * is {@link java.math.BigDecimal#BigDecimal(String val)}. See
-   * {@link java.math.BigDecimal#BigDecimal(double val)} for the details
-   * on why using a double as the argument is unpredictable and using a
-   * String is preferred.
-   *
    * @param scalar the value to multiply this Vector by
    * @return a new Vector containg the result of the multiplication
    * @since 0.10.0
-   * @see java.math.BigDecimal
   */
   public Vector multiply(double scalar){
     Double[] vals = new Double[this.getNumDimensions()];
@@ -353,38 +334,6 @@ public class Vector extends Matrix{
       throw new IllegalArgumentException(exceptionString);
     }
     return distance;
-  }
-
-  /**
-   * Returns true if both Vectors contain the same values.
-   *
-   * @since 0.10.0
-  */
-  @Override
-  public boolean equals(Object obj){
-    if(obj instanceof Vector){
-      Vector other = (Vector)obj;
-      if(this.getNumDimensions() != other.getNumDimensions()){
-        return false;
-      }
-      for(int i = 0; i < this.getNumDimensions(); i++){
-        //BigDecimal num1 = this.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
-        //BigDecimal num2 = other.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
-        BigDecimal num1 = new BigDecimal(this.getValue(i), MathContext.DECIMAL128).setScale(10,BigDecimal.ROUND_HALF_EVEN);
-        BigDecimal num2 = new BigDecimal(other.getValue(i), MathContext.DECIMAL128).setScale(10,BigDecimal.ROUND_HALF_EVEN);
-        if(!num1.equals(num2)){
-          /*
-          System.out.printf("%s\n",
-              new DecimalFormat("0.0000000000000000000000000000000000000000").format(num1));
-          System.out.printf("%s\n",
-              new DecimalFormat("0.0000000000000000000000000000000000000000").format(num2));
-          */
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
   }
 
   /**

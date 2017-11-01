@@ -54,7 +54,7 @@ import java.util.Collection;
 * {@code System.out.println(point); // (0.00, 1.00, 0.00)} <br>
 */
 public final class Transformation extends TransformationMatrix {
-  private static final Vector3D ZERO = new Vector3D(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+  private static final Vector3D ZERO = new Vector3D(0.0, 0.0, 0.0);
   private static final Matrix IDENTITY = new Matrix(4);
   private LinkedList<TransformationMatrix> history;
 
@@ -199,13 +199,13 @@ public final class Transformation extends TransformationMatrix {
   * Include in this Transformation a rotation about an axis. This axis is a vector pointing from
   * start to end. This rotation obeys the right hand rule.
   * @param start the start point of the axis to rotate about
-  * @param end the end point of the axis to rotate about
+  * @param direction a vector pointing in the direction of the vector to rotate about
   * @param degrees an angle, in degrees
   */
-  public void addRotationAboutAxis(Vector3D start, Vector3D end, double degrees){
+  public void addRotationAboutAxis(Vector3D start, Vector3D direction, double degrees){
     Transformation composedRotation = new Transformation();
     composedRotation.addTranslation(start.multiply(-1.0));
-    composedRotation.addRotationAboutAxis(end, degrees);
+    composedRotation.addRotationAboutAxis(direction, degrees);
     composedRotation.addTranslation(start);
     addTransformation(composedRotation);
   }
@@ -217,14 +217,6 @@ public final class Transformation extends TransformationMatrix {
   * @param mobile the mobile vector, has three dimensions
   */
   public void addRotationOntoVector(Vector3D reference, Vector3D mobile){
-    if(reference.getNumDimensions() !=3 || mobile.getNumDimensions() != 3){
-      throw new IllegalArgumentException(
-          "Transformation::addRotationOntoVector(): reference and mobile must both have 3 dimensions"
-          + ", has "+ reference.getNumDimensions()
-          + " and " + mobile.getNumDimensions()
-          + " respectively");
-    }
-
     reference = reference.toUnitVector();
     mobile = mobile.toUnitVector();
     Vector3D cross = mobile.crossProduct(reference);

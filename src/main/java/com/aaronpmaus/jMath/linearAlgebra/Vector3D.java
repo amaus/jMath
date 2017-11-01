@@ -5,8 +5,6 @@ import com.aaronpmaus.jMath.transformations.Transformation;
 import com.aaronpmaus.jMath.transformations.TransformationMatrix;
 
 import java.lang.IllegalArgumentException;
-import java.math.BigDecimal;
-import java.math.MathContext;
 
 /**
  * A Vector in 3D space, Transformable.
@@ -38,16 +36,6 @@ import java.math.MathContext;
    * @since 0.1.0
    */
    public Vector3D(Double x, Double y, Double z){
-     super(x, y, z);
-   }
-
-   /**
-   * @param x the coordinate in the first dimension, x
-   * @param y the coordinate in the second dimension, y
-   * @param z the coordinate in the third dimension, z
-   * @since 0.1.0
-   */
-   public Vector3D(BigDecimal x, BigDecimal y, BigDecimal z){
      super(x, y, z);
    }
 
@@ -150,16 +138,9 @@ import java.math.MathContext;
     * Multiply this Vector3D by a scalar and return a new vector containing the
     * result
     *
-    * When constructing a BigDecimal for this method, the preferred constructor
-    * is {@link java.math.BigDecimal#BigDecimal(String val)}. See
-    * {@link java.math.BigDecimal#BigDecimal(double val)} for the details
-    * on why using a double as the argument is unpredictable and using a
-    * String is preferred.
-    *
     * @param scalar the value to multiply this Vector by
     * @return a new Vector3D containg the result of the multiplication
     * @since 0.12.2
-    * @see java.math.BigDecimal
    */
    public Vector3D multiply(double scalar){
      Double x = this.getX() * scalar;
