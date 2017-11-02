@@ -33,7 +33,6 @@ import java.lang.IllegalArgumentException;
    * @param x the coordinate in the first dimension, x
    * @param y the coordinate in the second dimension, y
    * @param z the coordinate in the third dimension, z
-   * @since 0.1.0
    */
    public Vector3D(Double x, Double y, Double z){
      super(x, y, z);
@@ -49,7 +48,6 @@ import java.lang.IllegalArgumentException;
 
    /**
    * The default constructor creates a Vector of 3 dimensions at (0,0,0).
-   * @since 0.1.0
    */
    public Vector3D(){
      super(0.0, 0.0, 0.0);
@@ -59,7 +57,6 @@ import java.lang.IllegalArgumentException;
    * By common convention, returns the 0th coordinate of this Vector. Useful
    * if the Vector is 3 dimensional.
    * @return The 0th coordinate of this Vector.
-   * @since 0.1.0
    */
    public Double getX(){
      return getValue(0);
@@ -69,7 +66,6 @@ import java.lang.IllegalArgumentException;
    * By common convention, returns the 1th coordinate of this Vector. Useful
    * if the Vector is 3 dimensional.
    * @return The 1th coordinate of this Vector.
-   * @since 0.1.0
    */
    public Double getY(){
      return getValue(1);
@@ -79,7 +75,6 @@ import java.lang.IllegalArgumentException;
    * By common convention, returns the 2th coordinate of this Vector. Useful
    * if the Vector is 3 dimensional.
    * @return The 2th coordinate of this Vector.
-   * @since 0.1.0
    */
    public Double getZ(){
      return getValue(2);
@@ -91,7 +86,6 @@ import java.lang.IllegalArgumentException;
    * Both vectors must be three dimensional.
    * @param other a Vector3D
    * @return a three dimensional vector that is the cross product of this and other
-   * @since 0.12.2
    */
    public Vector3D crossProduct(Vector3D other){
      Double u1 = getX();
@@ -111,7 +105,6 @@ import java.lang.IllegalArgumentException;
     *
     * @param other The other Vector to add to this one
     * @return a new Vector containg the result of the addition
-    * @since 0.12.2
    */
    public Vector3D add(Vector3D other){
      Double x = this.getX() + other.getX();
@@ -125,7 +118,6 @@ import java.lang.IllegalArgumentException;
     *
     * @param other The other Vector to subtract to this one
     * @return a new Vector containg the result of the subtraction
-    * @since 0.12.2
    */
    public Vector3D subtract(Vector3D other){
      Double x = this.getX() - other.getX();
@@ -140,7 +132,6 @@ import java.lang.IllegalArgumentException;
     *
     * @param scalar the value to multiply this Vector by
     * @return a new Vector3D containg the result of the multiplication
-    * @since 0.12.2
    */
    public Vector3D multiply(double scalar){
      Double x = this.getX() * scalar;
