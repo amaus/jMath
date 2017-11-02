@@ -24,8 +24,8 @@ import java.lang.IllegalArgumentException;
  * {@code vector.applyTransformation(inverse)}<br>
  * {@code System.out.println(vector); // (0.00, 1.00, 0.00)} <br>
  * @author  Aaron Maus aaron@aaronpmaus.com
- * @version 0.12.0
- * @since 0.12.0
+ * @version 0.12.2
+ * @since 0.12.2
  */
  public class Vector3D extends Vector implements Transformable{
 
