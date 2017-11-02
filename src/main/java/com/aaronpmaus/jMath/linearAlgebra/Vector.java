@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 
 /**
  * A Vector can have any number of dimensions and supports addition, subtraction, multiplication
- * by a scalar, dot product, and cross product (if the Vectors both have 3 dimensions).
+ * by a scalar, and dot product.
  * @author Aaron Maus aaron@aaronpmaus.com
  * @version 0.12.0
  * @since 0.1.0
@@ -28,18 +28,6 @@ public class Vector extends Matrix{
   }
 
   /**
-   * Construct a vector from a set of BigDecimals.
-   * <p>
-   * It is recommended that you construct the BigDecimals using
-   * {@link java.math.MathContext#DECIMAL128}.
-   * @param vals the BigDecimals to build the vector from
-  */
-  public Vector(BigDecimal... vals){
-    super(vals);
-    this.isColVector = true;
-  }
-
-  /**
    * Construct a 3 dimensional vector at the origin.
    * @since 0.1.0
   */
@@ -47,7 +35,7 @@ public class Vector extends Matrix{
     this(0.0,0.0,0.0);
   }
 
-  private Vector(BigDecimal[][] vals){
+  private Vector(Double[][] vals){
     super(vals);
     int numRows = vals.length;
     int numCols = vals[0].length;
@@ -89,8 +77,8 @@ public class Vector extends Matrix{
   * Helper method for initializing a column Vector. From an array of values, build a 2D array where
   * those values go down the first column.
   */
-  private BigDecimal[][] buildRowMatrix(BigDecimal[] vals){
-    BigDecimal[][] matrix = new BigDecimal[1][vals.length];
+  private Double[][] buildRowMatrix(Double[] vals){
+    Double[][] matrix = new Double[1][vals.length];
     for(int i = 0; i < vals.length; i++){
       matrix[0][i] = vals[i];
     }
@@ -105,7 +93,7 @@ public class Vector extends Matrix{
    * @throws IllegalArgumentException Thrown if dimension is {@code >= getNumDimensions()}.
    * @since 0.10.0
   */
-  protected void setValue(int dimension, BigDecimal value){
+  protected void setValue(int dimension, double value){
     if(dimension >= 0 && dimension < getNumDimensions()){
       if(isColVector){
         setElement(dimension,0,value);
@@ -130,7 +118,7 @@ public class Vector extends Matrix{
    * @throws IllegalArgumentException Thrown if dimension is {@code >= getNumDimensions()}.
    * @since 0.10.0
   */
-  public BigDecimal getValue(int dimension){
+  public Double getValue(int dimension){
     if(dimension >= 0 && dimension < getNumDimensions()){
       if(isColVector){
         return getElement(dimension,0);
@@ -154,7 +142,7 @@ public class Vector extends Matrix{
    * affect the original Vector.
    * @since 0.10.0
   */
-  public BigDecimal[] getValues(){
+  public Double[] getValues(){
     if(isColVector){
       return getColValues(0);
     } else {
@@ -191,33 +179,11 @@ public class Vector extends Matrix{
 
     double product = 0.0;
     for(int i = 0; i < getNumDimensions(); i++){
-      product += getValue(i).multiply(other.getValue(i)).doubleValue();
+      product += getValue(i) * other.getValue(i);
     }
     return product;
   }
 
-  /**
-  * Return the cross product of this vector and the other.
-  * <p>
-  * Both vectors must be three dimensional.
-  * @param other a Vector, must have 3 dimensions
-  * @return a three dimensional vector that is the cross product of this and other
-  */
-  public Vector crossProduct(Vector other){
-    if(getNumDimensions() != 3 || other.getNumDimensions() != 3){
-      throw new IllegalArgumentException("Vector::dotProduct() Both vectors must be 3D vectors.");
-    }
-    BigDecimal u1 = getValue(0);
-    BigDecimal u2 = getValue(1);
-    BigDecimal u3 = getValue(2);
-    BigDecimal v1 = other.getValue(0);
-    BigDecimal v2 = other.getValue(1);
-    BigDecimal v3 = other.getValue(2);
-    BigDecimal x = u2.multiply(v3).subtract(u3.multiply(v2));
-    BigDecimal y = u3.multiply(v1).subtract(u1.multiply(v3));
-    BigDecimal z = u1.multiply(v2).subtract(u2.multiply(v1));
-    return new Vector(x,y,z);
-  }
 
   /**
    * Calcuates the angle (in degrees) between this vector and the other.
@@ -241,7 +207,7 @@ public class Vector extends Matrix{
   * @return a unit vector pointing in this same direction as this vector
   */
   public Vector toUnitVector(){
-    return this.multiply(new BigDecimal(1.0/this.magnitude(), MathContext.DECIMAL128));
+    return this.multiply(1.0/this.magnitude());
   }
 
   /**
@@ -271,9 +237,9 @@ public class Vector extends Matrix{
   public Vector add(Vector other){
     if(other.getNumDimensions() == getNumDimensions()){
       Vector ans = null;
-      BigDecimal[] vals = new BigDecimal[this.getNumDimensions()];
+      Double[] vals = new Double[this.getNumDimensions()];
       for(int i = 0; i < this.getNumDimensions(); i++){
-        vals[i] = this.getValue(i).add(other.getValue(i));
+        vals[i] = this.getValue(i) + other.getValue(i);
       }
       ans = new Vector(vals);
       return ans;
@@ -295,9 +261,9 @@ public class Vector extends Matrix{
   public Vector subtract(Vector other){
     if(other.getNumDimensions() == getNumDimensions()){
       Vector ans = null;
-      BigDecimal[] vals = new BigDecimal[this.getNumDimensions()];
+      Double[] vals = new Double[this.getNumDimensions()];
       for(int i = 0; i < this.getNumDimensions(); i++){
-        vals[i] = this.getValue(i).subtract(other.getValue(i));
+        vals[i] = this.getValue(i) - other.getValue(i);
       }
       ans = new Vector(vals);
       return ans;
@@ -312,22 +278,14 @@ public class Vector extends Matrix{
    * Multiply this Vector by a scalar and return a new vector containing the
    * result
    *
-   * When constructing a BigDecimal for this method, the preferred constructor
-   * is {@link java.math.BigDecimal#BigDecimal(String val)}. See
-   * {@link java.math.BigDecimal#BigDecimal(double val)} for the details
-   * on why using a double as the argument is unpredictable and using a
-   * String is preferred.
-   *
    * @param scalar the value to multiply this Vector by
    * @return a new Vector containg the result of the multiplication
    * @since 0.10.0
-   * @see java.math.BigDecimal
   */
-  public Vector multiply(BigDecimal scalar){
-    Vector ans = null;
-    BigDecimal[] vals = new BigDecimal[this.getNumDimensions()];
+  public Vector multiply(double scalar){
+    Double[] vals = new Double[this.getNumDimensions()];
     for(int i = 0; i < this.getNumDimensions(); i++){
-      vals[i] = this.getValue(i).multiply(scalar);
+      vals[i] = this.getValue(i) * scalar;
     }
     return new Vector(vals);
   }
@@ -337,7 +295,7 @@ public class Vector extends Matrix{
    * @return The String representation of the values.
    * @since 0.9.0
   */
-  public String buildVectorString(BigDecimal[] values){
+  public String buildVectorString(Double[] values){
     if(!isColVector()){
       String str = "| ";
       for(int i = 0; i < values.length - 1; i++){
@@ -366,9 +324,7 @@ public class Vector extends Matrix{
     double distance = 0.0;
     if(otherVector.getNumDimensions() == getNumDimensions()){
       for(int i = 0; i < getNumDimensions(); i++){
-        distance += getValue(i).subtract(otherVector.getValue(i))
-            .pow(2)
-            .doubleValue();
+        distance += Math.pow(getValue(i) - otherVector.getValue(i), 2);
       }
       distance = Math.sqrt(distance);
     } else {
@@ -381,36 +337,6 @@ public class Vector extends Matrix{
   }
 
   /**
-   * Returns true if both Vectors contain the same values.
-   *
-   * @since 0.10.0
-  */
-  @Override
-  public boolean equals(Object obj){
-    if(obj instanceof Vector){
-      Vector other = (Vector)obj;
-      if(this.getNumDimensions() != other.getNumDimensions()){
-        return false;
-      }
-      for(int i = 0; i < this.getNumDimensions(); i++){
-        BigDecimal num1 = this.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
-        BigDecimal num2 = other.getValue(i).setScale(10,BigDecimal.ROUND_HALF_EVEN);
-        if(!num1.equals(num2)){
-          /*
-          System.out.printf("%s\n",
-              new DecimalFormat("0.0000000000000000000000000000000000000000").format(num1));
-          System.out.printf("%s\n",
-              new DecimalFormat("0.0000000000000000000000000000000000000000").format(num2));
-          */
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
-  }
-
-  /**
    * This is a helper method to be used when a vector passed in to another
    * method do not have the same dimension at this point.
    * @param values The values that were passed into the other method.
@@ -418,7 +344,7 @@ public class Vector extends Matrix{
    *     do not match this.getNumDimensions().
    * @since 0.9.0
   */
-  protected String buildIllegalArgumentExceptionString(BigDecimal[] values){
+  protected String buildIllegalArgumentExceptionString(Double[] values){
       String exceptionString = "Must pass a vector with the correct number of dimensions. \n"
           + "Num Dimensions: " + getNumDimensions() + "\n"
           + "Requires " + getNumDimensions() + " arguments.\n"

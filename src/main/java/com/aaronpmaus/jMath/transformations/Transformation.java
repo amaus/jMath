@@ -1,6 +1,6 @@
 package com.aaronpmaus.jMath.transformations;
 
-import com.aaronpmaus.jMath.linearAlgebra.Vector;
+import com.aaronpmaus.jMath.linearAlgebra.Vector3D;
 import com.aaronpmaus.jMath.linearAlgebra.Matrix;
 
 import java.math.BigDecimal;
@@ -54,7 +54,7 @@ import java.util.Collection;
 * {@code System.out.println(point); // (0.00, 1.00, 0.00)} <br>
 */
 public final class Transformation extends TransformationMatrix {
-  private static final Vector ZERO = new Vector(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+  private static final Vector3D ZERO = new Vector3D(0.0, 0.0, 0.0);
   private static final Matrix IDENTITY = new Matrix(4);
   private LinkedList<TransformationMatrix> history;
 
@@ -168,23 +168,19 @@ public final class Transformation extends TransformationMatrix {
   }
 
   /**
-  * Include in this Transformation a rotation about any arbitrary axis. This rotation obeys the
-  * right hand rule.
-  * @param axis the vector to rotate about, a unit vector
+  * Include in this Transformation a rotation about an axis. This axis is a vector pointing from
+  * the origin in the direction of vec. This rotation obeys the right hand rule.
+  * @param vec the vector to rotate about, a unit vector
   * @param degrees an angle, in degrees
   */
-  public void addRotationAboutAxis(Vector axis, double degrees){
-    if(axis.getNumDimensions() !=3){
-      throw new IllegalArgumentException(
-          "Transformation::addRotationAboutAxis(): axis must have 3 dimensions, has "
-          + axis.getNumDimensions());
-    }
+  public void addRotationAboutAxis(Vector3D vec, double degrees){
+    vec = vec.toUnitVector();
     degrees = Math.toRadians(degrees);
     double cos = Math.cos(degrees);
     double sin = Math.sin(degrees);
-    double x = axis.getValue(0).doubleValue();
-    double y = axis.getValue(1).doubleValue();
-    double z = axis.getValue(2).doubleValue();
+    double x = vec.getValue(0);
+    double y = vec.getValue(1);
+    double z = vec.getValue(2);
     double oneMinusCos = 1 - cos;
     double xy = x*y;
     double xz = x*z;
@@ -200,23 +196,30 @@ public final class Transformation extends TransformationMatrix {
   }
 
   /**
+  * Include in this Transformation a rotation about an axis. This axis is a vector pointing from
+  * start to end. This rotation obeys the right hand rule.
+  * @param start the start point of the axis to rotate about
+  * @param direction a vector pointing in the direction of the vector to rotate about
+  * @param degrees an angle, in degrees
+  */
+  public void addRotationAboutAxis(Vector3D start, Vector3D direction, double degrees){
+    Transformation composedRotation = new Transformation();
+    composedRotation.addTranslation(start.multiply(-1.0));
+    composedRotation.addRotationAboutAxis(direction, degrees);
+    composedRotation.addTranslation(start);
+    addTransformation(composedRotation);
+  }
+
+  /**
   * Include in this Transformation a Transformation representing a rotation from the mobile vector
   * onto the reference vector.
   * @param reference the reference vector, has three dimensions
   * @param mobile the mobile vector, has three dimensions
   */
-  public void addRotationOntoVector(Vector reference, Vector mobile){
-    if(reference.getNumDimensions() !=3 || mobile.getNumDimensions() != 3){
-      throw new IllegalArgumentException(
-          "Transformation::addRotationOntoVector(): reference and mobile must both have 3 dimensions"
-          + ", has "+ reference.getNumDimensions()
-          + " and " + mobile.getNumDimensions()
-          + " respectively");
-    }
-
+  public void addRotationOntoVector(Vector3D reference, Vector3D mobile){
     reference = reference.toUnitVector();
     mobile = mobile.toUnitVector();
-    Vector cross = mobile.crossProduct(reference);
+    Vector3D cross = mobile.crossProduct(reference);
     double cosineOfAngle = mobile.dotProduct(reference);
     // if the cross product is zero, the two vectors are already aligned, return the IDENTITY
     if(cross.equals(ZERO)){
@@ -225,12 +228,12 @@ public final class Transformation extends TransformationMatrix {
     // if the cosine of the angle between them is -1.0, the vectors point in opposite directions,
     // return the negative IDENTITY
     if(Math.abs(cosineOfAngle + 1.0) < 0.000000000001){
-      addTransformation(new Rotation(IDENTITY.multiply(new BigDecimal(-1.0))));
+      addTransformation(new Rotation(IDENTITY.multiply(-1.0)));
     }
     // Otherwise, calculate the rotation matrix to rotate mobile onto reference
-    double v1 = cross.getValue(0).doubleValue();
-    double v2 = cross.getValue(1).doubleValue();
-    double v3 = cross.getValue(2).doubleValue();
+    double v1 = cross.getValue(0);
+    double v2 = cross.getValue(1);
+    double v3 = cross.getValue(2);
     double onePlusCos = cosineOfAngle + 1.0;
     double v1v2 = (v1*v2)/onePlusCos;
     double v1v3 = (v1*v3)/onePlusCos;
@@ -252,7 +255,7 @@ public final class Transformation extends TransformationMatrix {
   * Include in this Transformation a translation specified by the given Vector.
   * @param vec a 3D vector, the amount to translate, (deltaX, deltaY, deltaZ)
   */
-  public void addTranslation(Vector vec){
+  public void addTranslation(Vector3D vec){
     if(vec.getNumDimensions() !=3){
       throw new IllegalArgumentException(
           "Transformation::addTranslation(): vec must have 3 dimensions, has "
@@ -260,10 +263,10 @@ public final class Transformation extends TransformationMatrix {
     }
     BigDecimal one = BigDecimal.ONE;
     BigDecimal zero = BigDecimal.ZERO;
-    BigDecimal[][] mat = {{one,  zero, zero, vec.getValue(0)},
-                          {zero, one,  zero, vec.getValue(1)},
-                          {zero, zero, one,  vec.getValue(2)},
-                          {zero, zero, zero,   one }};
+    Double[][] mat = {{1.0, 0.0, 0.0,  vec.getValue(0)},
+                          {0.0, 1.0, 0.0,  vec.getValue(1)},
+                          {0.0, 0.0, 1.0,  vec.getValue(2)},
+                          {0.0, 0.0, 0.0,   1.0 }};
     addTransformation(new Translation(new Matrix(mat)));
   }
 
@@ -333,8 +336,8 @@ public final class Transformation extends TransformationMatrix {
     public Translation inverse(){
       // Create a copy of the matrix, negate the values. Return a new Translation containing it.
       Matrix mat = new Matrix(getMatrix());
-      mat = mat.multiply(BigDecimal.ONE.negate());
-      mat = mat.add(IDENTITY.multiply(new BigDecimal("2.0", MathContext.DECIMAL128)));
+      mat = mat.multiply(-1.0);
+      mat = mat.add(IDENTITY.multiply(2.0));
       return new Translation(mat);
     }
   }

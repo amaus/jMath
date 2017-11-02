@@ -2,6 +2,9 @@ package com.aaronpmaus.jMath.transformations;
 
 import com.aaronpmaus.jMath.linearAlgebra.Matrix;
 import com.aaronpmaus.jMath.linearAlgebra.Vector;
+import com.aaronpmaus.jMath.linearAlgebra.Vector3D;
+
+import java.math.BigDecimal;
 
 /**
 * A TransformationMatrix is an augmented matrix that can applied to a vector to transform that
@@ -52,15 +55,16 @@ public abstract class TransformationMatrix {
   *   last is the homogeneous coordinate.
   * @return a new Vector, vec transformed. This Vector is returned as a column vector.
   */
-  public Vector applyTransformationTo(Vector vec){
+  public Vector3D applyTransformationTo(Vector3D vec){
+    Vector homogeneous = new Vector(vec.getX(), vec.getY(), vec.getZ(), 1.0);
     Vector transformed;
-    if(vec.isColVector()){
-      transformed = getMatrix().multiply(vec).getColVector(0);
+    if(homogeneous.isColVector()){
+      transformed = getMatrix().multiply(homogeneous).getColVector(0);
     } else {
-      vec = vec.transpose();
-      transformed = getMatrix().multiply(vec).getColVector(0);
+      homogeneous = homogeneous.transpose();
+      transformed = getMatrix().multiply(homogeneous).getColVector(0);
     }
-    return transformed;
+    return new Vector3D(transformed.getValue(0), transformed.getValue(1), transformed.getValue(2));
   }
 
   /**

@@ -20,7 +20,7 @@ import java.text.DecimalFormat;
 * @since 0.1.0
 */
 public class Matrix{
-  private BigDecimal[][] matrix;
+  private Double[][] matrix;
   private int numRows;
   private int numCols;
 
@@ -33,18 +33,6 @@ public class Matrix{
   * @since 0.1.0
   */
   public Matrix(Double[][] matrix){
-    initializeMatrix(matrix);
-  }
-
-  /**
-  * Construct a 2-dimensional Matrix holding the values in the 2D Array passed in.
-  *
-  * @param matrix A 2-dimensional array holding the values for the matrix. It must not
-  * be null.
-  * @throws IllegalArgumentException if the matrix is null or not rectangular
-  * @since 0.1.0
-  */
-  public Matrix(BigDecimal[][] matrix){
     initializeMatrix(matrix);
   }
 
@@ -70,43 +58,12 @@ public class Matrix{
     this(matrix.toArray());
   }
 
-  /**
-  * Construct a column vector from the values, a matrix with values.length num rows and 1 column.
-  * @param values the values to insert
-  */
-  protected Matrix(BigDecimal[] values){
-    BigDecimal[][] matrix = new BigDecimal[values.length][1];
-    for(int i = 0; i < values.length; i++){
-      matrix[i][0] = values[i];
-    }
-
-    initializeMatrix(matrix);
-  }
-
   private void initializeMatrix(Double[][] matrix){
     validateMatrixDimensions(matrix);
     this.numRows = matrix.length;
     this.numCols = matrix[0].length;
 
-    this.matrix = new BigDecimal[numRows][numCols];
-    for(int i = 0; i < numRows; i++){
-      for(int j = 0; j < numCols; j++){
-        if(matrix[i][j] == null){
-          throw new IllegalArgumentException(
-          String.format("matrix[%d][%d] is null.",i,j)
-          + "The matrix must not contain any null values.");
-        }
-        this.matrix[i][j] = new BigDecimal(matrix[i][j], MathContext.DECIMAL128);
-      }
-    }
-  }
-
-  private void initializeMatrix(BigDecimal[][] matrix){
-    validateMatrixDimensions(matrix);
-    this.numRows = matrix.length;
-    this.numCols = matrix[0].length;
-
-    this.matrix = new BigDecimal[numRows][numCols];
+    this.matrix = new Double[numRows][numCols];
     for(int i = 0; i < numRows; i++){
       for(int j = 0; j < numCols; j++){
         if(matrix[i][j] == null){
@@ -142,7 +99,7 @@ public class Matrix{
         throw new IllegalArgumentException("All Vectors must have the same number of rows.");
       }
     }
-    this.matrix = new BigDecimal[this.numRows][this.numCols];
+    this.matrix = new Double[this.numRows][this.numCols];
     for(int row = 0; row < this.numRows; row++){
       for(int col = 0; col < this.numCols; col++){
         this.matrix[row][col] = colVectors[col].getValue(row);
@@ -155,14 +112,14 @@ public class Matrix{
   * @param numCols the number of rows
   * @param fillValue the value to fill the matrix with
   */
-  public Matrix(int numRows, int numCols, BigDecimal fillValue){
+  public Matrix(int numRows, int numCols, double fillValue){
     if(numRows == 0 || numCols == 0){
       throw new IllegalArgumentException("The matrix must have rows and cols.");
     }
 
     this.numRows = numRows;
     this.numCols = numCols;
-    this.matrix = new BigDecimal[numRows][numCols];
+    this.matrix = new Double[numRows][numCols];
     for(int i = 0; i < numRows; i++){
       for(int j = 0; j < numCols; j++){
         this.matrix[i][j] = fillValue;
@@ -187,13 +144,13 @@ public class Matrix{
   public Matrix(int m){
     this.numRows = m;
     this.numCols = m;
-    this.matrix = new BigDecimal[numRows][numCols];
+    this.matrix = new Double[numRows][numCols];
     for(int i = 0; i < numRows; i++){
       for(int j = 0; j < numCols; j++){
         if(i == j){
-          this.matrix[i][j] = new BigDecimal("1.0", MathContext.DECIMAL128);
+          this.matrix[i][j] = 1.0;
         } else {
-          this.matrix[i][j] = new BigDecimal("0.0", MathContext.DECIMAL128);
+          this.matrix[i][j] = 0.0;
         }
       }
     }
@@ -208,7 +165,7 @@ public class Matrix{
   * TODO(Aaron Maus): write a MatrixInvalidIndicesException and throw it if necessary
   * @since 0.1.0
   */
-  public BigDecimal getElement(int row, int col){
+  public Double getElement(int row, int col){
     return this.matrix[row][col];
   }
 
@@ -217,7 +174,7 @@ public class Matrix{
   * @param col the col index, must be in range [0,numRows()-1]
   * @param value the value to set at matrix[row][col]
   */
-  protected void setElement(int row, int col, BigDecimal value){
+  protected void setElement(int row, int col, double value){
     this.matrix[row][col] = value;
   }
 
@@ -241,7 +198,7 @@ public class Matrix{
   * @since 0.11.1
   */
   public Matrix transpose(){
-    BigDecimal[][] newMat = new BigDecimal[getNumCols()][getNumRows()];
+    Double[][] newMat = new Double[getNumCols()][getNumRows()];
     for(int i = 0; i < getNumRows(); i++){
       for(int j = 0; j < getNumCols(); j++){
         newMat[j][i] = this.getElement(i,j);
@@ -285,13 +242,12 @@ public class Matrix{
       + " must equals other.getNumRows()");
     }
 
-    BigDecimal[][] newMat = new BigDecimal[getNumRows()][other.getNumCols()];
+    Double[][] newMat = new Double[getNumRows()][other.getNumCols()];
     for(int i = 0; i < getNumRows(); i++){
       for(int j = 0; j < other.getNumCols(); j++){
-        BigDecimal dotProduct = new BigDecimal("0.0", MathContext.DECIMAL128);
+        double dotProduct = 0.0;
         for(int k = 0; k < getNumCols(); k++){
-          dotProduct = dotProduct.add(
-              (this.getElement(i,k).multiply(other.getElement(k,j))) );
+          dotProduct += this.getElement(i,k) * other.getElement(k,j);
         }
         newMat[i][j] = dotProduct;
 
@@ -314,11 +270,11 @@ public class Matrix{
   * @return  a new Matrix of the same dimensions with the multiplied values.
   * @since 0.1.0
   */
-  public Matrix multiply(BigDecimal scalar){
-    BigDecimal[][] newMat = new BigDecimal[getNumRows()][getNumCols()];
+  public Matrix multiply(double scalar){
+    Double[][] newMat = new Double[getNumRows()][getNumCols()];
     for(int rowIndex = 0; rowIndex < getNumRows(); rowIndex++){
       for(int colIndex = 0; colIndex < getNumCols(); colIndex++){
-        newMat[rowIndex][colIndex] = this.getElement(rowIndex,colIndex).multiply(scalar);
+        newMat[rowIndex][colIndex] = this.getElement(rowIndex,colIndex) * scalar;
       }
     }
     return new Matrix(newMat);
@@ -337,11 +293,11 @@ public class Matrix{
       throw new IllegalArgumentException("Matrix::add(Matrix other), "
       + "other must have same dimensions as this");
     }
-    BigDecimal[][] newMat = new BigDecimal[getNumRows()][getNumCols()];
+    Double[][] newMat = new Double[getNumRows()][getNumCols()];
     for(int rowIndex = 0; rowIndex < getNumRows(); rowIndex++){
       for(int colIndex = 0; colIndex < getNumCols(); colIndex++){
         newMat[rowIndex][colIndex] = this.getElement(rowIndex,colIndex)
-            .add(other.getElement(rowIndex,colIndex));
+            + other.getElement(rowIndex,colIndex);
       }
     }
     return new Matrix(newMat);
@@ -357,7 +313,7 @@ public class Matrix{
   * @since 0.5.0
   */
   public Matrix subtract(Matrix other) throws IllegalArgumentException{
-    Matrix negativeOther = other.multiply(new BigDecimal("-1.0", MathContext.DECIMAL128));
+    Matrix negativeOther = other.multiply(-1.0);
     return add(negativeOther);
   }
 
@@ -369,8 +325,8 @@ public class Matrix{
   * @return the 2-D double array that represents this matrix
   * @since 0.1.0
   */
-  public BigDecimal[][] toArray(){
-    BigDecimal[][] ret = new BigDecimal[getNumRows()][getNumCols()];
+  public Double[][] toArray(){
+    Double[][] ret = new Double[getNumRows()][getNumCols()];
     for(int i = 0; i < getNumRows(); i++){
       for(int j = 0; j < getNumCols(); j++){
         ret[i][j] = getElement(i,j);
@@ -394,10 +350,10 @@ public class Matrix{
   /**
   * Return the values of a row of this Matrix
   * @param rowIndex the rowIndex, starting from 0
-  * @return an array of BigDecimals, the values of this row
+  * @return an array of Doubles, the values of this row
   */
-  public BigDecimal[] getRowValues(int rowIndex){
-    BigDecimal[] row = new BigDecimal[getNumCols()];
+  public Double[] getRowValues(int rowIndex){
+    Double[] row = new Double[getNumCols()];
     for(int colIndex = 0; colIndex < getNumCols(); colIndex++){
       row[colIndex] = getElement(rowIndex,colIndex);
     }
@@ -419,10 +375,10 @@ public class Matrix{
   /**
   * Return the values of a column of this Matrix
   * @param colIndex the colIndex, starting from 0
-  * @return an array of BigDecimals, the values of this column
+  * @return an array of Doubles, the values of this column
   */
-  public BigDecimal[] getColValues(int colIndex){
-    BigDecimal[] col = new BigDecimal[getNumRows()];
+  public Double[] getColValues(int colIndex){
+    Double[] col = new Double[getNumRows()];
     for(int rowIndex = 0; rowIndex < getNumRows(); rowIndex++){
       col[rowIndex] = getElement(rowIndex,colIndex);
     }
@@ -447,10 +403,10 @@ public class Matrix{
   /**
   * Perform equality check by checking if all the values contained
   * in the two matrices are equal.
-  *
+  * <p>
   * Two values are equal if their values are the same out to 15
   * decimal places.
-  *
+  * <p>
   * {@inheritDoc}
   */
   @Override
@@ -466,8 +422,8 @@ public class Matrix{
       for(int i = 0; i < getNumRows(); i++){
         for(int j = 0; j < getNumCols(); j++){
           try{
-            BigDecimal num1 = this.getElement(i,j).setScale(15,BigDecimal.ROUND_HALF_EVEN);
-            BigDecimal num2 = other.getElement(i,j).setScale(15,BigDecimal.ROUND_HALF_EVEN);
+            BigDecimal num1 = getBigDecimal(this.getElement(i,j)); //new BigDecimal(this.getElement(i,j), MathContext.DECIMAL128).setScale(9,BigDecimal.ROUND_HALF_EVEN);
+            BigDecimal num2 = getBigDecimal(other.getElement(i,j)); //, MathContext.DECIMAL128).setScale(9,BigDecimal.ROUND_HALF_EVEN);
             if(! (num1.equals(num2))){
               //System.out.printf("%s\n",
               //    new DecimalFormat("0.0000000000000000000000000000000000000000").format(num1));
@@ -484,6 +440,22 @@ public class Matrix{
       return true;
     }
     return false;
+  }
+
+  private BigDecimal getBigDecimal(Double value){
+    String valueStr = String.format("%f", value);
+    String[] parts = valueStr.split("\\.");
+    // the scale is the number of digits to preserve to the right of the decimal.
+    // Double are precise to 15 digits, including to the left and right of the decimal.
+    // PI*10^6:    3  1  4  1  5  9  2 . 6  5  3  5  8  9  7  9  3
+    //             |  |  |  |  |  |  |   |  |  |  |  |  |  |  |  |
+    // digit       1  2  3  4  5  6  7   8  9  10 11 12 13 14 15 16
+    // only digits 1-15 are reliable. the 16th digit (3) may be inaccurate.
+    // use the 15th digit for rounding.
+    // create a BigDecimal with a scale of 8 with rounding mode ROUNDING_HALF_UP
+    // 7 = 14 - 7
+    int scale = 14 - parts[0].length();
+    return new BigDecimal(value, MathContext.DECIMAL128).setScale(scale, BigDecimal.ROUND_HALF_EVEN);
   }
 
   /**

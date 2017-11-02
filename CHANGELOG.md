@@ -19,6 +19,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
+## [0.12.2] - 2017-11-02
+### Added
+- Overloaded methods in Vector3D to return Vector3Ds for the vector operations.
+### Changed
+- Change underlying numerical representation on the linearAlgebra package
+  classes from BigDecimal to Double.
+- Point3D to Vector3D: semantically better when writing transformations code.
+- Moved crossProduct from Vector to Vector3D
+### Fixed
+- Speed issues with Transformation. The accuracy of BigDecimals is appealing,
+  but they are far too slow for the number of calculations this library can
+  be called upon to perform.
+  - Matrix, Vector, and Vector3D have all been changed so that their underlying
+    values are stored in Doubles.
+
 ## [0.12.1] - 2017-10-27
 ### Changed
 - Transformable::applyTransformation() now requires an argument of a
