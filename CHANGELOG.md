@@ -19,10 +19,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
-## [0.12.2] -
+## [0.12.2] - 2017-11-02
 ### Added
 - Overloaded methods in Vector3D to return Vector3Ds for the vector operations.
 ### Changed
+- Change underlying numerical representation on the linearAlgebra package
+  classes from BigDecimal to Double.
 - Point3D to Vector3D: semantically better when writing transformations code.
 - Moved crossProduct from Vector to Vector3D
 ### Fixed
