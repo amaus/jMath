@@ -147,6 +147,53 @@ import java.lang.IllegalArgumentException;
      return this.multiply(1.0/this.magnitude());
    }
 
+   /**
+   * Calculate the dihedral angle between 2 planes defined by the points ABC, and BCD respectively.
+   * A, B, C, and D must all be distinct points.
+   * @param a a point in the plane ABC
+   * @param b a point in both planes ABC and BCD
+   * @param c a point in both planes ABC and BCD
+   * @param d a point in the plane BCD
+   * @return the angle between the two planes, in degrees
+   */
+   public static double calculateDihedralAngle(Vector3D a, Vector3D b, Vector3D c, Vector3D d){
+     // Calculate Normal of ABC plane
+    Vector3D norm1 = (a.subtract(b).crossProduct(c.subtract(b)));
+    // Calculate Normal of BCD plane
+    Vector3D norm2 = (b.subtract(c).crossProduct(d.subtract(c)));
+    double angle = norm1.angle(norm2);
+    
+    // if the dot product of 2 vectors is positive, then the angle between them is between [0,90) or
+    // (270,360]. If negative, the angle is between (90,270). Use this fact to determine if the
+    // dihedral angle should be negative or positive.
+
+    // One way to think about this is that we want to know if C->D falls to the left or right of the
+    // B->A vector. Take the ABC plane. If we orient that plane so that B is at the origin, A falls
+    // on the positive Y-axis, and the plane coincides with the X=0 plane, then norms fall on the
+    // X-axis. Take the norm that falls on the negative X-axis. If the dot product of that norm and
+    // the C->D vector is positive, then C->D points to the left of the ABC plane, that is, it falls
+    // to the left of the B->A vector. Otherwise, C->D points to the right from the ABC plane, or
+    // falls to the right of the B->A vector.
+    double signTest = norm1.dotProduct(d.subtract(c));
+    // if the angle is exactly 90, the dot product is 0 and it is ambiquous which side of the
+    // ABC plane vector C->D falls. In this case, take the angle between the ABC norm and the
+    // C->D vector. If the angle is 0, they are codirectional and C->D falls to the left of B->A.
+    // Otherwise, the angle is 180 and C->D falls to the right of B->A.
+    if(Math.abs(angle - 90.0) < 0.0000000001){
+      double norm1_CD_angle = norm1.angle(d.subtract(c));
+      if(Math.abs(norm1_CD_angle - 180.0) < 0.0000000001){
+        angle *= -1.0;
+      }
+      return angle;
+    }
+    //System.out.println("sign test: " + signTest);
+    if(signTest < 0){
+      angle *= -1.0;
+    }
+    return angle;
+
+   }
+
    @Override
    public void applyTransformation(Transformation t){
      Vector3D vec = t.applyTransformationTo(this);
