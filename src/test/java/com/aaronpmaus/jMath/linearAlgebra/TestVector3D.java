@@ -61,7 +61,7 @@ public class TestVector3D{
     d = new Vector3D(1.0, 0.0, -1.0);
     angle = Vector3D.calculateDihedralAngle(a,b,c,d);
     expected = -90.0;
-    System.out.println(angle);
+    //System.out.println(angle);
     assertTrue(Math.abs(angle - expected) < 0.0001);
   }
 }

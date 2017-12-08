@@ -203,9 +203,9 @@ public class Vector extends Matrix{
     // slightly less than or greater than -1 or +1 respectively. In either case, Math.acos() returns
     // NaN. Check if cos(angle) is -1 or +1 within tolerance and return either 180 or 0 depending
     // on which.
-    if(Math.abs(angle - -1.0) < 0.0000000001){
+    if(Math.abs(angle - -1.0) < 0.000000001){
       return 180.0;
-    } else if(Math.abs(angle - 1.0) < 0.0000000001){
+    } else if(Math.abs(angle - 1.0) < 0.000000001){
       return 0.0;
     } else {
       angle = Math.acos(angle);
