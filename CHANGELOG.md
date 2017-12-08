@@ -20,10 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [None]
 
 ## [0.12.3] - 2017-12-08
-### Fixed
-- Bug in Vector3D::calculateDihedralAngle(). It was returning the wrong value
-  if the angle was 90. This has been fixed. It has also been modified for
-  consistency, if the angle is 180, it will return 180 instead of -180.
+### Added
+- method calculateDihedralAngle() in Vector3D and junit test for it as well.
 
 ## [0.12.2] - 2017-11-02
 ### Added
