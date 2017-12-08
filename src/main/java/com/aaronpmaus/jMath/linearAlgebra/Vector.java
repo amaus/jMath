@@ -199,7 +199,17 @@ public class Vector extends Matrix{
           + buildIllegalArgumentExceptionString(other.getValues()));
     }
     double angle = this.dotProduct(other) / Math.sqrt(this.magnitudeSquared() * other.magnitudeSquared());
-    angle = Math.acos(angle);
+    // special cases if the cos(angle) is -1 or +1. Due to double precision, the value could be
+    // slightly less than or greater than -1 or +1 respectively. In either case, Math.acos() returns
+    // NaN. Check if cos(angle) is -1 or +1 within tolerance and return either 180 or 0 depending
+    // on which.
+    if(Math.abs(angle - -1.0) < 0.000000001){
+      return 180.0;
+    } else if(Math.abs(angle - 1.0) < 0.000000001){
+      return 0.0;
+    } else {
+      angle = Math.acos(angle);
+    }
     return Math.toDegrees(angle);
   }
 

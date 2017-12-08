@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
+## [0.12.3] - 2017-12-08
+### Added
+- method calculateDihedralAngle() in Vector3D and junit test for it as well.
+
 ## [0.12.2] - 2017-11-02
 ### Added
 - Overloaded methods in Vector3D to return Vector3Ds for the vector operations.
