@@ -9,6 +9,7 @@ import java.util.PriorityQueue;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Comparator;
+import java.util.Stack;
 
 /**
 * A Graph is a Directed Graph.
@@ -664,6 +665,34 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   */
   public List<Node<T>> shortestPath(Node<T> source, Node<T> target){
     return shortestPath(source.get(), target.get());
+  }
+
+  /**
+  * Return a list a list of the elements in this graph as traversed by a Depth First Search.
+  * @param source the starting point for the Depth First Search
+  * @return a list containing the elements as traversed by DFS
+  * @throws NoSuchElementException if source is not in the graph
+  * @since 0.13.0
+  */
+  public List<T> depthFirstSearch(T source){
+    if(!contains(source)){
+      throw new NoSuchElementException(String.format("source is not in graph."));
+    }
+    Stack<Node<T>> stack = new Stack<Node<T>>();
+    HashSet<Node<T>> visited = new HashSet<Node<T>>();
+    LinkedList<T> list = new LinkedList<T>();
+    stack.push(getNode(source));
+    while(!stack.empty()){
+      Node<T> node = stack.pop();
+      if(!visited.contains(node)){
+        visited.add(node);
+        list.add(node.get());
+        for(Node<T> neighbor : node.getNeighbors()){
+          stack.push(neighbor);
+        }
+      }
+    }
+    return list;
   }
 
   /**
