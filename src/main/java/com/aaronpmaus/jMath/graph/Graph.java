@@ -363,6 +363,15 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
+  * Add an element to the graph. Only adds the element if it is not already in the graph.
+  * @param e the element to add to the graph.
+  * @since 0.13.0
+  */
+  public void addNode(T e){
+    addNode(new Node<T>(e));
+  }
+
+  /**
   * Returns the node from the graph that holds the given object.
   * @param obj the object of the node to be retrieved
   * @return the node with that object or null if it is not in the graph.

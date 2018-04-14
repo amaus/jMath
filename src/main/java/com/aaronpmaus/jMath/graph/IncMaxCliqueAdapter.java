@@ -28,6 +28,9 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
     // create a deep copy of the graph so that the client's Object is not
     // modified
     graph = new UndirectedGraph<Integer>(graph);
+    if(graph.size() <= 1){
+      return graph;
+    }
     HashMap<Integer, Integer> nodeIDMapping = new HashMap<Integer, Integer>();
     int nodeID = 1;
     for(Node<Integer> n : graph.getNodes()){

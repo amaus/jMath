@@ -56,6 +56,24 @@ public class TestCliqueAlgorithms {
     verifyClique(clique);
   }
 
+  @Test
+  public void testIncMaxCliqueAdapterOnGraphOfSizeOne(){
+    UndirectedGraph<Integer> graph = new UndirectedGraph<Integer>();
+    graph.addNode(new Integer(1));
+    cliqueTool = new IncMaxCliqueAdapter();
+    UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(graph);
+    assertTrue(clique.size() == 1);
+    assertTrue(clique.contains(1));
+  }
+
+  @Test
+  public void testIncMaxCliqueAdapterOnEmptyGraph(){
+    UndirectedGraph<Integer> graph = new UndirectedGraph<Integer>();
+    cliqueTool = new IncMaxCliqueAdapter();
+    UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(graph);
+    assertTrue(clique.size() == 0);
+  }
+
   private void verifyClique(UndirectedGraph<Integer> clique){
     assertTrue(clique.contains(4));
     assertTrue(clique.contains(5));
