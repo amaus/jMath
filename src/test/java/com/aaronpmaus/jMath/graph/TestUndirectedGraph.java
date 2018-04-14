@@ -416,4 +416,32 @@ public class TestUndirectedGraph{
     path = graph.shortestPath(n1,n8);
     assertEquals(0, path.size());
   }
+
+  @Test
+  public void testDepthFirstSearch(){
+    UndirectedGraph<String> graph = new UndirectedGraph<String>();
+    graph.addEdge("A","B");
+    graph.addEdge("A","C");
+    graph.addEdge("A","E");
+    graph.addEdge("B","D");
+    graph.addEdge("B","F");
+    graph.addEdge("C","G");
+    graph.addEdge("F","E");
+
+    List<String> traversal = graph.depthFirstSearch("A");
+    assertEquals(traversal.size(), 7);
+    for(String e : traversal){
+      System.out.println(e);
+    }
+    // There are multiple correct traversals for the example graph.
+    // this is one of them. The one traversed depends on the order
+    // that a node's neighbors are returned when visiting it.
+    assertEquals(traversal.get(0), "A");
+    assertEquals(traversal.get(1), "E");
+    assertEquals(traversal.get(2), "F");
+    assertEquals(traversal.get(3), "B");
+    assertEquals(traversal.get(4), "D");
+    assertEquals(traversal.get(5), "C");
+    assertEquals(traversal.get(6), "G");
+  }
 }

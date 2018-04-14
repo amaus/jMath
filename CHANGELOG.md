@@ -19,6 +19,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
+## [0.13.0]
+### Added
+- Add Depth First Search to Graph and junit test to UndirectedGraph tester
+### Fixed
+- Bug in IncMaxClique Adapter - can now correctly handle boundary cases of
+  graphs of size one or zero
+  - includes junit tests to verify this behavior
+
 ## [0.12.3] - 2017-12-08
 ### Added
 - method calculateDihedralAngle() in Vector3D and junit test for it as well.
