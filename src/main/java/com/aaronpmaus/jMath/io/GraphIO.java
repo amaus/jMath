@@ -1,4 +1,5 @@
-package com.aaronpmaus.jMath.graph;
+package com.aaronpmaus.jMath.io;
+
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -8,8 +9,12 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.FileInputStream;
 
+import com.aaronpmaus.jMath.graph.UndirectedGraph;
+import com.aaronpmaus.jMath.graph.Node;
+import com.aaronpmaus.jMath.graph.Edge;
+
 /**
-* This class provides statix methods to read and write graphs to and from DIMACS files.
+* This class provides static methods to read and write graphs to and from DIMACS files.
 * @author Aaron Maus aaron@aaronpmaus.com
 * @version 0.10.0
 * @since 0.1.0

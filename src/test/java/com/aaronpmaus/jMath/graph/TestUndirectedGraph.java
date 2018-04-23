@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 
 import com.aaronpmaus.jMath.graph.*;
+import com.aaronpmaus.jMath.io.GraphIO;
 
 import java.util.Collection;
 import java.util.ArrayList;
