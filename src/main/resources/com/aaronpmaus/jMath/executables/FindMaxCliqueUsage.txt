@@ -1,0 +1,27 @@
+Usage: FindMaxClique [<options>] <graph fname>
+
+  FindMaxClique takes the file name of a DIMACS file specifying a graph
+  and solves and prints the MAX CLIQUE in that graph. The user can
+  specify which algorithm to use.
+
+  The inc-adapter algorithm is an adapter to Li, Fang, and Xu's
+  Incremental Max Clique program (Combining MaxSAT Reasoning and
+  Incremental Upper Bound for the Maximum Clique Problem, 2013 IEEE
+  International Conference on Tools  with Artificial Intelligence). The
+  inc-solver algorithm is this library's implementation of that
+  algorithm. This implementation is in progress. The maus algorithm is
+  an original algorithm for this library. It is not as efficient the
+  Incremental Max Clique algorithms.
+
+  options :
+      -h
+          Display the usage file.
+      --graph
+          The file name of a DIMACS file containing the graph to find
+          a MAX CLIQUE in.
+      --inc-adapter
+          Use the IncMaxCliqueAdapter to find the max clique
+      --inc-solver
+          Use the IncMaxCliqueSolver to find the max clique
+      --maus
+          Use the MausMaxCliqueSolver to find the max clique
