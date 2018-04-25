@@ -439,11 +439,11 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     UndirectedGraph<T> clique = findClique(new UndirectedGraph<T>(complement),k,1);
     UndirectedGraph<T> independentSet = null;
     if(clique != null){
-      ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(clique.size());
-      for(Node<T> node : clique.getNodes()){
-        nodes.add(graph.getNode(node.get()));
-      }
-      independentSet = new UndirectedGraph<T>(nodes);
+      //ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(clique.size());
+      //for(Node<T> node : clique.getNodes()){
+        //nodes.add(graph.getNode(node.get()));
+      //}
+      independentSet = graph.subset(clique.getElements()); //new UndirectedGraph<T>(nodes);
     }
     return independentSet;
   }
@@ -461,11 +461,11 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     UndirectedGraph<T> independentSet = findIndependentSetViaClique(graph, graph.size() - k);
     UndirectedGraph<T> vertexCover = null;
     if(independentSet != null){
-      Collection<Node<T>> nodes = graph.getNodes();
-      for(Node<T> independentSetNode : independentSet.getNodes()){
-        nodes.remove(independentSetNode);
+      Collection<T> cliqueElements = graph.getElements();
+      for(T independentSetElement : independentSet.getElements()){
+        cliqueElements.remove(independentSetElement);
       }
-      vertexCover = new UndirectedGraph<T>(nodes);
+      vertexCover = graph.subset(cliqueElements); //new UndirectedGraph<T>(nodes);
     }
     return vertexCover;
   }

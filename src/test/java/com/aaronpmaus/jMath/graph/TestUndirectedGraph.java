@@ -143,22 +143,6 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testGetNeighborhoodNodes(){
-    Collection<Node<Integer>> neighborhood = example.getNeighborhoodNodes(4);
-    assertEquals(6,neighborhood.size());
-    ArrayList<Integer> values = new ArrayList<Integer>();
-    for(Node<Integer> n : neighborhood){
-      values.add(n.get());
-    }
-    assertTrue(values.contains(1));
-    assertTrue(values.contains(3));
-    assertTrue(values.contains(4));
-    assertTrue(values.contains(5));
-    assertTrue(values.contains(6));
-    assertTrue(values.contains(7));
-  }
-
-  @Test
   public void testGetNeighborhood(){
     UndirectedGraph<Integer> neighborhood = example.getNeighborhood(example.getNode(4));
     assertEquals(6,neighborhood.size());

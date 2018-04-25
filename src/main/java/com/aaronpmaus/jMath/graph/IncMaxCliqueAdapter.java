@@ -106,18 +106,18 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
       System.out.println("Running IncMaxClique process IO has failed");
       e.printStackTrace();
     }
-    ArrayList<Node<Integer>> nodes = new ArrayList<Node<Integer>>();
+    ArrayList<Integer> ids = new ArrayList<Integer>();
     //System.out.println("PRINTING OUT GRAPH");
     //System.out.println(g);
     for(String nodeID : clique.split(" ")) {
-      Node<Integer> node = g.getNode(new Integer(nodeID));
-      if(node == null) {
+      Integer id = new Integer(nodeID);
+      if(id == null) {
         System.out.println("Trying to add null to list of nodes in clique");
         System.out.println("NodeNum: " + new Integer(nodeID));
         System.out.println("nodeID: " + nodeID);
       }
-      nodes.add(node);
+      ids.add(id);
     }
-    return new UndirectedGraph<Integer>(nodes);
+    return g.subset(ids);//new UndirectedGraph<Integer>(nodes);
   }
 }

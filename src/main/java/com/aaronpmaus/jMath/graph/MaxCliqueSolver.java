@@ -43,14 +43,14 @@ public abstract class MaxCliqueSolver<T extends Comparable<? super T>>{
       } else {
         clique = findMaxClique(theGraph);
       }
-      ArrayList<Node<T>> nodesFromOrigGraph = new ArrayList<Node<T>>();
+      ArrayList<T> nodesFromOrigGraph = new ArrayList<T>(clique.size());
       for(Node<T> node : clique.getNodes()){
         // need to pass in a code from the original graph, not
         // one from the clique
         theGraph.removeNode(theGraph.getNode(node.get()));
-        nodesFromOrigGraph.add(g.getNode(node.get()));
+        nodesFromOrigGraph.add(node.get());
       }
-      theCovering.add(new UndirectedGraph<T>(nodesFromOrigGraph));
+      theCovering.add(g.subset(nodesFromOrigGraph));
     } while(theGraph.size() > 0);
     return theCovering;
   }
@@ -65,11 +65,11 @@ public abstract class MaxCliqueSolver<T extends Comparable<? super T>>{
   */
   public UndirectedGraph<T> findMinVertexCoverViaClique(UndirectedGraph<T> graph){
     UndirectedGraph<T> independentSet = findMaxIndependentSetViaClique(graph);
-    Collection<Node<T>> nodes = graph.getNodes();
-    for(Node<T> independentSetNode : independentSet.getNodes()){
+    Collection<T> nodes = graph.getElements();
+    for(T independentSetNode : independentSet.getElements()){
       nodes.remove(independentSetNode);
     }
-    return new UndirectedGraph<T>(nodes);
+    return graph.subset(nodes);
   }
 
   /**
@@ -85,11 +85,11 @@ public abstract class MaxCliqueSolver<T extends Comparable<? super T>>{
     UndirectedGraph<T> clique = findMaxClique(complement);
     UndirectedGraph<T> independentSet = null;
     if(clique != null){
-      ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(clique.size());
-      for(Node<T> node : clique.getNodes()){
-        nodes.add(graph.getNode(node.get()));
+      ArrayList<T> nodes = new ArrayList<T>(clique.size());
+      for(T node : clique.getElements()){
+        nodes.add(node);
       }
-      independentSet = new UndirectedGraph<T>(nodes);
+      independentSet = graph.subset(nodes);
     }
     return independentSet;
   }
@@ -110,14 +110,14 @@ public abstract class MaxCliqueSolver<T extends Comparable<? super T>>{
     UndirectedGraph<T> theGraph = new UndirectedGraph<T>(g);
     do {
       UndirectedGraph<T> independentSet = findMaxIndependentSetViaClique(theGraph);
-      ArrayList<Node<T>> nodesFromOrigGraph = new ArrayList<Node<T>>();
+      ArrayList<T> nodesFromOrigGraph = new ArrayList<T>();
       for(Node<T> node : independentSet.getNodes()){
         // need to pass in a code from the original graph, not
         // one from the clique
         theGraph.removeNode(theGraph.getNode(node.get()));
-        nodesFromOrigGraph.add(g.getNode(node.get()));
+        nodesFromOrigGraph.add(node.get());
       }
-      independentSetPartition.add(new UndirectedGraph<T>(nodesFromOrigGraph));
+      independentSetPartition.add(g.subset(nodesFromOrigGraph));
     } while(theGraph.size() > 0);
     return independentSetPartition;
   }

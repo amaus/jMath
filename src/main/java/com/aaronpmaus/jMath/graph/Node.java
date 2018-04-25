@@ -1,6 +1,8 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.LinkedHashMap;
 import java.util.Collection;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.ArrayList;
 import java.lang.ClassCastException;
 
@@ -107,7 +109,6 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
 
   /**
   * Return the Edge from this node to neighbor
-  *
   * @param neighbor a node that is connected to this node by an edge
   * @return the Edge between this and neighbor
   * @throws IllegalArgumentException if neighbor is not a neighbor
@@ -131,21 +132,19 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
 
   /**
   * Return the neighbors of this node.
-  *
+  * <p>
   * Any changes to the collection (such as adding or removing nodes) will not affect this node.
   * Any changes to the nodes in the collection however will affect the graph.
-  *
-  * @return a {@code Collection<Node<T>>} of all nodes that are connected
+  * @return a {@code List<Node<T>>} of all nodes that are connected
   *         to this node by an edge
   * @since 0.11.0
   */
   public Collection<Node<T>> getNeighbors(){
-    return new ArrayList<Node<T>>(neighbors.keySet());
+    return new LinkedList<Node<T>>(neighbors.keySet());
   }
 
   /**
   * Return the weight of the edge to the neighbor.
-  *
   * @param neighbor a node that is connected to this node by an edge
   * @return the weight of the edge
   * @throws IllegalArgumentException if neighbor is not a neighbor
@@ -159,12 +158,12 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   }
 
   /**
-  * Get ArrayList of Node and all its neighbors
-  * @return the ArrayList&lt;Node&lt;T&gt;&gt; containing this node
-  *         and all of its neighbors.
+  * Get a list of this Node and all its neighbors
+  * @return the {@literal List<Node<T>>} containing this node and all of its neighbors.
+  * @version 0.14.0
   * @since 0.2.0
   */
-  public ArrayList<Node<T>> getNodeAndNeighbors(){
+  public List<Node<T>> getNodeAndNeighbors(){
     ArrayList<Node<T>> list = new ArrayList<Node<T>>(numNeighbors()+1);
     list.add(this);
     for(Node<T> node : getNeighbors()){

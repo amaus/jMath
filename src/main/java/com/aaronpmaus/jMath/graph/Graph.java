@@ -72,13 +72,13 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * A constructor that takes a Collection of nodes and builds a graph out
+  * A constructor that takes a Collection of nodes and builds a graph out of them
   * of them
   * @param nodes the nodes to be in the graph
   * @version 0.7.0
   * @since 0.2.0
   */
-  public Graph(Collection<Node<T>> nodes){
+  protected Graph(Collection<Node<T>> nodes){
     nodes = getDeepCopyNodes(nodes);
     this.adjacencyList = new HashMap<T, Node<T>>((int)((nodes.size())/0.75)+1);
     this.numEdges = 0;
@@ -106,6 +106,17 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
+  * Return the subset of the Graph containing the vertices with the elements provided.
+  * @param elements a Collection of the elements specifying the subset
+  * @return an UndirectedGraph containing every vertex containing one of the elements and all the
+  * edges between these vertices.
+  * @since 0.14.0
+  */
+  private Graph<T> subset(List<Node<T>> nodes){
+    return new Graph<T>(nodes);
+  }
+
+  /**
   * Sets the filename for the graph. This is the name
   * to be used when writing out to file. When a graph
   * is created by reading in from a
@@ -129,70 +140,6 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * Return a deep copy of the neighborhood from this Graph of the Node that is
-  * passed in.
-  *
-  * The collection includes that node, all its neighbors, and all edges
-  * where both end points of the edge are in this list of nodes.
-  *
-  * @param root the root node of the neighborhood. The neighborhood is this node
-  *             and all its neighbors
-  * @return a collection of Nodes. This is a deep copy of the nodes and edges
-  *         in the neighborhood
-  * @since 0.3.0
-  */
-  protected Collection<Node<T>> getNeighborhoodNodes(T root){
-    if(!contains(root)){
-      throw new NoSuchElementException("Can not get neighborhood of node requested, not in graph.");
-    }
-    Collection<Node<T>> originalNodes = this.getNode(root).getNodeAndNeighbors();
-    return getDeepCopyNodes(originalNodes);
-  }
-
-  /**
-  * Return a deep copy of the neighborhood from this Graph of the Node that is
-  * passed in.
-  *
-  * The collection includes that node, all its neighbors, and all edges
-  * where both end points of the edge are in this list of nodes.
-  *
-  * @param root the root node of the neighborhood. The neighborhood is this node
-  *             and all its neighbors
-  * @return a collection of Nodes. This is a deep copy of the nodes and edges
-  *         in the neighborhood
-  * @since 0.3.0
-  */
-  protected Collection<Node<T>> getNeighborhoodNodes(Node<T> root){
-    // in case the collection of nodes passed in was a deep copy of
-    // the nodes from this graph, use the actual node from this graph
-    return getNeighborhoodNodes(root.get());
-  }
-
-  /**
-  * Return a deep copy of the neighborhood from this Graph of the Collection of
-  * Nodes that are passed in. The Collection includes all the nodes passed in, all
-  * their neighbors, and all edges where both end points of the edge are in this list
-  * of nodes.
-  * @param nodes the Collection of nodes to get the neighborhood of.
-  * @return a Collection of Nodes. This is a deep copy of the nodes and edges
-  *         in the neighborhood
-  * @since 0.3.0
-  */
-  protected Collection<Node<T>> getNeighborhoodNodes(Collection<Node<T>> nodes){
-    // default load factor is 0.75. Create a HashSet large enough that it
-    // won't ever need to be enlarged.
-    HashSet<Node<T>> originalNodes = new HashSet<Node<T>>(this.size()*100/75+1);
-    for(Node<T> node : nodes){
-      if(!contains(node)){
-        throw new NoSuchElementException("Cannot get neighborhood of nodes requested, "
-          +"one of the nodes not in graph.");
-      }
-      originalNodes.addAll(this.getNode(node.get()).getNodeAndNeighbors());
-    }
-    return getDeepCopyNodes(originalNodes);
-  }
-
-  /**
   * Return the neighborhood from this Graph of the Node passed in.
   *
   * The Neighborhood consists of the node, all of its neighbors,
@@ -204,8 +151,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.1.0
   */
   public Graph<T> getNeighborhood(Node<T> root){
-    Collection<Node<T>> copyNodes = getNeighborhoodNodes(root);
-    return new Graph<T>(copyNodes);
+    return subset(root.getNodeAndNeighbors());
   }
 
   /**
@@ -220,8 +166,17 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.3.0
   */
   public Graph<T> getNeighborhood(Collection<Node<T>> nodes){
-    Collection<Node<T>> copyNodes = getNeighborhoodNodes(nodes);
-    return new Graph<T>(copyNodes);
+    // default load factor is 0.75. Create a HashSet large enough that it
+    // won't ever need to be enlarged.
+    HashSet<Node<T>> originalNodes = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
+    for(Node<T> node : nodes){
+      if(!contains(node)){
+        throw new NoSuchElementException("Cannot get neighborhood of nodes requested, "
+          +"one of the nodes not in graph.");
+      }
+      originalNodes.addAll(this.getNode(node.get()).getNodeAndNeighbors());
+    }
+    return new Graph<T>(originalNodes);
   }
 
   /**
@@ -236,8 +191,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.3.0
   */
   public Graph<T> getNeighbors(Node<T> node){
-    Collection<Node<T>> copyNodes = getDeepCopyNodes(node.getNeighbors());
-    return new Graph<T>(copyNodes);
+    return new Graph<T>(node.getNeighbors());
   }
 
   /**
@@ -347,7 +301,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
     }
     return elements;
   }
-  
+
   /**
   * Returns a set of all the edges in this Graph.
   *
@@ -356,8 +310,8 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   */
   public Collection<? extends Edge<T>> getEdges(){
     HashSet<Edge<T>> edges = new HashSet<Edge<T>>((int)(numEdges()/0.75) + 1);
-    for(Node<T> node : getNodes()){
-      for(Edge<T> e : node.getEdges()){
+    for(Node<T> node : this) {
+      for(Edge<T> e : node.getEdges()) {
         edges.add(e);
       }
     }
@@ -369,9 +323,9 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * returns a HashMap.
   */
   private HashMap<T,Node<T>> getCopyNodesNoEdges(){
-    Collection<Node<T>> originalNodes = getNodes();
-    HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((originalNodes.size()+1)/0.75+1));
-    for(Node<T> node : originalNodes){
+    //Collection<Node<T>> originalNodes = getNodes();
+    HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((this.size()+1)/0.75+1));
+    for(Node<T> node : this){
       Node<T> newNode = new Node<T>(node.get());
       copyNodes.put(node.get(), newNode);
     }
@@ -640,7 +594,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
     distToSource.put(sourceNode,0.0);
     prevNodeInPath.put(sourceNode,null);
 
-    for(Node<T> node : getNodes()){
+    for(Node<T> node : this) {
       if(!node.equals(sourceNode)){
         distToSource.put(node, Double.MAX_VALUE);
         prevNodeInPath.put(node, null);

@@ -4,10 +4,12 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 
 /**
 * An UndirectedGraph is a Graph where the edges have direction.
@@ -74,7 +76,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @param nodes the nodes to be in the graph
   * @since 0.2.0
   */
-  public UndirectedGraph(Collection<Node<T>> nodes){
+  private UndirectedGraph(Collection<Node<T>> nodes){
     super(nodes);
   }
 
@@ -96,6 +98,17 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
+  * Return the subset of the Graph containing the vertices with the elements provided.
+  * @param nodes a nodes of the elements specifying the subset
+  * @return an UndirectedGraph containing every vertex containing one of the elements and all the
+  * edges between these vertices.
+  * @since 0.14.0
+  */
+  private UndirectedGraph<T> subset(List<Node<T>> nodes){
+    return new UndirectedGraph<T>(nodes);
+  }
+
+  /**
   * Returns an UndirectedGraph of neighbors of the Node passed in.
   * The Neighbors Graph consists of the neighboring Nodes
   * and all the edges between all of these nodes.
@@ -105,9 +118,49 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.3.0
   */
   public UndirectedGraph<T> getNeighbors(Node<T> node){
-    return new UndirectedGraph<T>(super.getNeighbors(node));
+    return new UndirectedGraph<T>(node.getNeighbors());
   }
 
+  /**
+  * {@inheritDoc}
+  * @since 0.1.0
+  */
+  @Override
+  public UndirectedGraph<T> getNeighborhood(Node<T> root){
+    if(!contains(root)){
+      throw new NoSuchElementException(String.format("Root must be in graph, %s not in grpah",root));
+    }
+    return subset(root.getNodeAndNeighbors());
+  }
+
+  @Override
+  /**
+  * {@inheritDoc}
+  * @since 0.3.0
+  */
+  public UndirectedGraph<T> getNeighborhood(Collection<Node<T>> nodes){
+    // default load factor is 0.75. Create a HashSet large enough that it
+    // won't ever need to be enlarged.
+    HashSet<Node<T>> originalNodes = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
+    for(Node<T> node : nodes){
+      if(!contains(node)){
+        throw new NoSuchElementException("Cannot get neighborhood of nodes requested, "
+          +"one of the nodes not in graph.");
+      }
+      originalNodes.addAll(this.getNode(node.get()).getNodeAndNeighbors());
+    }
+    return new UndirectedGraph<T>(originalNodes);
+  }
+
+
+  @Override
+  /**
+  * {@inheritDoc}
+  * @since 0.3.0
+  */
+  public UndirectedGraph<T> getComplement(){
+    return new UndirectedGraph<T>(getComplementNodes());
+  }
   /**
   * Given a set of objects, check if the group of nodes containing those
   * objects form a clique in the graph.
@@ -198,40 +251,6 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
-  * {@inheritDoc}
-  * @since 0.1.0
-  */
-  @Override
-  public UndirectedGraph<T> getNeighborhood(Node<T> root){
-    Collection<Node<T>> copyNodes = getNeighborhoodNodes(root);
-    return new UndirectedGraph<T>(copyNodes);
-  }
-
-  @Override
-  /**
-  * {@inheritDoc}
-  * @since 0.3.0
-  */
-  public UndirectedGraph<T> getNeighborhood(Collection<Node<T>> nodes){
-    // getNeighborhoodNodes will use the nodes from THIS graph
-    // with the same objects as the nodes passed in. That way,
-    // if the nodes passed in are a deep copy, it will find
-    // the correct nodes in THIS graph.
-    Collection<Node<T>> copyNodes = getNeighborhoodNodes(nodes);
-    return new UndirectedGraph<T>(copyNodes);
-  }
-
-
-  @Override
-  /**
-  * {@inheritDoc}
-  * @since 0.3.0
-  */
-  public UndirectedGraph<T> getComplement(){
-    return new UndirectedGraph<T>(getComplementNodes());
-  }
-
-  /**
   * A method to return the degeneracy ordering of a graph
   * @return an ArrayList of Nodes representing the degeneracy ordering.
   *         the smallest vertex is at the 0th index
@@ -272,8 +291,8 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   */
   public Collection<? extends Edge<T>> getEdges(){
     HashSet<UndirectedEdge<T>> edges = new HashSet<UndirectedEdge<T>>((int)(numEdges()/0.75) + 1);
-    for(Node<T> node : getNodes()){
-      for(Edge<T> e : node.getEdges()){
+    for(Node<T> node : this) {
+      for(Edge<T> e : node.getEdges()) {
         edges.add(new UndirectedEdge<T>(e));
       }
     }
