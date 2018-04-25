@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Date;
 import java.util.Comparator;
 
@@ -75,6 +76,23 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   */
   public UndirectedGraph(Collection<Node<T>> nodes){
     super(nodes);
+  }
+
+  /**
+  * Return the subset of the Graph containing the vertices with the elements provided.
+  * @param elements a Collection of the elements specifying the subset
+  * @return an UndirectedGraph containing every vertex containing one of the elements and all the
+  * edges between these vertices.
+  * @since 0.14.0
+  */
+  public UndirectedGraph<T> subset(Collection<T> elements){
+    LinkedList<Node<T>> nodes = new LinkedList<Node<T>>();
+    for(T element : elements){
+      if(this.contains(element)) {
+        nodes.add(this.getNode(element));
+      }
+    }
+    return new UndirectedGraph<T>(nodes);
   }
 
   /**

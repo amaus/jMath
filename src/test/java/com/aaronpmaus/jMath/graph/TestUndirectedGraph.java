@@ -15,6 +15,7 @@ import com.aaronpmaus.jMath.io.GraphIO;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.io.InputStream;
 
@@ -46,7 +47,7 @@ public class TestUndirectedGraph{
   @Before
   public void setUp(){
     graph = new UndirectedGraph<Integer>();
-    String fileName = "example.dimacs";
+    String fileName = "example.dimacs"; // clique: 4 5 6 7
     InputStream stream = TestUndirectedGraph.class.getResourceAsStream(fileName);
     example = GraphIO.readFromDimacsFile(stream, fileName);
     one = example.getNode(1);
@@ -431,9 +432,9 @@ public class TestUndirectedGraph{
 
     List<String> traversal = graph.depthFirstSearch("A");
     assertEquals(traversal.size(), 7);
-    for(String e : traversal){
-      System.out.println(e);
-    }
+    //for(String e : traversal){
+      //System.out.println(e);
+    //}
     // There are multiple correct traversals for the example graph.
     // this is one of them. The one traversed depends on the order
     // that a node's neighbors are returned when visiting it.
@@ -444,5 +445,29 @@ public class TestUndirectedGraph{
     assertEquals(traversal.get(4), "D");
     assertEquals(traversal.get(5), "C");
     assertEquals(traversal.get(6), "G");
+  }
+
+  @Test
+  public void testSubset(){
+    LinkedList<Integer> list = new LinkedList<Integer>();
+    list.add(3);
+    list.add(4);
+    list.add(5);
+    list.add(6);
+    UndirectedGraph<Integer> subset = example.subset(list);
+    assertEquals(subset.size(), 4);
+    assertEquals(subset.numEdges(), 5);
+    assertTrue(subset.hasEdge(3,4));
+    assertTrue(subset.hasEdge(3,5));
+    assertTrue(subset.hasEdge(4,5));
+    assertTrue(subset.hasEdge(4,6));
+    assertTrue(subset.hasEdge(5,6));
+
+    assertFalse(subset.hasEdge(3,6));
+    assertFalse(subset.hasEdge(5,7));
+
+    assertFalse(subset.contains(1));
+    assertFalse(subset.contains(2));
+    assertFalse(subset.contains(7));
   }
 }

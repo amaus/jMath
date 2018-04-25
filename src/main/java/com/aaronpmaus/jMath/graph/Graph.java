@@ -89,6 +89,23 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
+  * Return the subset of the Graph containing the vertices with the elements provided.
+  * @param elements a Collection of the elements specifying the subset
+  * @return an UndirectedGraph containing every vertex containing one of the elements and all the
+  * edges between these vertices.
+  * @since 0.14.0
+  */
+  public Graph<T> subset(Collection<T> elements){
+    LinkedList<Node<T>> nodes = new LinkedList<Node<T>>();
+    for(T element : elements){
+      if(this.contains(element)) {
+        nodes.add(this.getNode(element));
+      }
+    }
+    return new Graph<T>(nodes);
+  }
+
+  /**
   * Sets the filename for the graph. This is the name
   * to be used when writing out to file. When a graph
   * is created by reading in from a
@@ -316,9 +333,21 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.1.0
   */
   public final List<Node<T>> getNodes(){
-    return new ArrayList<Node<T>>(this.adjacencyList.values());
+    return new LinkedList<Node<T>>(this.adjacencyList.values());
   }
 
+  /**
+  * @return all the elements in this Graph
+  * @since 0.14.0
+  */
+  public List<T> getElements(){
+    LinkedList<T> elements = new LinkedList<T>();
+    for(Node<T> node : this){
+      elements.add(node.get());
+    }
+    return elements;
+  }
+  
   /**
   * Returns a set of all the edges in this Graph.
   *
@@ -450,6 +479,21 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
       start.removeNeighbor(end);
       decrementNumEdges();
     }
+  }
+
+  /**
+  * @param start the vertex at the start of the edge
+  * @param end the vertex at the end of the edge
+  * @return true if there is an edge from start to end, false otherwise
+  * @since 0.14.0
+  */
+  public boolean hasEdge(T start, T end){
+    if(this.contains(start) && this.contains(end)){
+      if(this.getNode(start).hasNeighbor(this.getNode(end))){
+        return true;
+      }
+    }
+    return false;
   }
 
   private void incrementNumEdges(){
@@ -718,7 +762,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   */
   @Override
   public Iterator<Node<T>> iterator(){
-    return this.getNodes().iterator();
+    return this.adjacencyList.values().iterator();
   }
 
   /**
