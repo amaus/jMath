@@ -19,11 +19,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
-## [0.13.1]
+## [0.14.0]
 ### Added
 - Package io with:
   - CommandLineParser (new class)
   - GraphIO (moved from graph package)
+- method getElements() in Graph
 
 ## [0.13.0] - 2018-04-14
 ### Added

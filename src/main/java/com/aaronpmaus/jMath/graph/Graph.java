@@ -312,10 +312,10 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * @return a {@code Collection<Node<T>>} of the nodes
+  * @return a {@code List<Node<T>>} of the nodes
   * @since 0.1.0
   */
-  public final Collection<Node<T>> getNodes(){
+  public final List<Node<T>> getNodes(){
     return new ArrayList<Node<T>>(this.adjacencyList.values());
   }
 

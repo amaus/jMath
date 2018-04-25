@@ -1,5 +1,6 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Collections;
 import java.util.Collection;
@@ -107,6 +108,79 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   }
 
   /**
+  * This method is a heuristic to estimate the number of independent sets in a graph via a greedy
+  * graph coloring algorithm. The algorithm comes from Tomita et al. 2003 and 2010.
+  * @param g the graph a clique is being sought in
+  * @param cMaxSize the size of the largest clique found so far
+  * @param cSize the size of the clique under construction
+  */
+  private int indSetUB(UndirectedGraph<T> g, int cMaxSize, int cSize) {
+    //System.out.println("## Calculating indSetUB");
+    // get a list of nodes and sort them in descending order by degree
+    List<Node<T>> descendingDegreeNodes = g.getNodes();
+    Collections.sort(descendingDegreeNodes, Collections.reverseOrder());
+    int maxColorNumber = 0;
+    // initialize color sets
+    // The index of the outer ArrayList is k and the inner arraylists hold all the nodes that belong
+    // to that color k.
+    ArrayList<ArrayList<Node<T>>> colorSets = new ArrayList<ArrayList<Node<T>>>();
+    // initialize the first two color sets (k = 0,1)
+    colorSets.add(new ArrayList<Node<T>>());
+    colorSets.add(new ArrayList<Node<T>>());
+    for(Node<T> node : descendingDegreeNodes) {
+      int k = 0;
+      Collection<Node<T>> neighbors = node.getNeighbors();
+      // find the lowest k where neighbors and the set of nodes in colorSets[k] share no nodes
+      // in common
+      while(!Collections.disjoint(neighbors, colorSets.get(k))){
+        k++;
+      }
+      if(k > maxColorNumber) {
+        maxColorNumber = k;
+        // initialize and add the next color set
+        colorSets.add(new ArrayList<Node<T>>());
+      }
+      colorSets.get(k).add(node);
+
+      //System.out.printf("before re-number: %d\n", maxColorNumber);
+      // - Re-NUMBER starts -
+      int colorNumberThreshold = cMaxSize - cSize;
+      if(k > colorNumberThreshold && k == maxColorNumber) {
+        // re-number the vertices
+        reNumber(node, k, colorNumberThreshold, colorSets);
+        // if the highest number color set is empty after the re-numbering
+        if(colorSets.get(colorSets.size()-1).isEmpty()) {
+          // decrement the max color number
+          maxColorNumber--;
+        }
+      }
+      //System.out.printf("after re-number: %d\n", maxColorNumber);
+    }
+    // return the number of colors assigned
+    return maxColorNumber + 1;
+  }
+
+  private void reNumber(Node<T> node, int nodeColor, int colorThreshold,
+                        ArrayList<ArrayList<Node<T>>> colorSets) {
+
+    for(int k1 = 0; k1 < colorThreshold - 1; k1++){
+      ArrayList<Node<T>> intersection = intersection(colorSets.get(k1), node.getNeighbors());
+      if(intersection.size() == 1) {
+        Node<T> intersectedNode = intersection.get(0);
+        for(int k2 = k1 + 1; k2 < colorThreshold; k2++) {
+          if(Collections.disjoint(colorSets.get(k2), intersectedNode.getNeighbors())) {
+            colorSets.get(nodeColor).remove(node);
+            colorSets.get(k1).remove(intersectedNode);
+            colorSets.get(k1).add(node);
+            colorSets.get(k2).add(intersectedNode);
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  /**
   * @param g the UndirectedGraph to look for a max clique in
   * @param c the clique being built
   * @param gMax the max clique found so far
@@ -158,7 +232,9 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     //for(Node<T> node : vertexUB.keySet()){
     //System.out.println(node.get());
     //}
-    vertexUB.put(smallestVertex, Math.min(vertexUB.get(smallestVertex), incUB(smallestVertexIndex, g)));
+    vertexUB.put(smallestVertex, min(vertexUB.get(smallestVertex),
+                                     incUB(smallestVertexIndex, g),
+                                     indSetUB(g, cMax.size(), c.size())));
     //System.out.println("Updating UB for " + smallestVertex.get());
     //printUB();
 
@@ -349,4 +425,23 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
   }
 
+  private int min(int... nums){
+    int min = nums[0];
+    for(int num : nums){
+      if(num < min){
+        min = num;
+      }
+    }
+    return min;
+  }
+
+  private ArrayList<Node<T>> intersection(Collection<Node<T>> a, Collection<Node<T>> b){
+    ArrayList<Node<T>> intersection = new ArrayList<Node<T>>();
+    for(Node<T> node : a){
+      if(b.contains(node)){
+        intersection.add(node);
+      }
+    }
+    return intersection;
+  }
 }
