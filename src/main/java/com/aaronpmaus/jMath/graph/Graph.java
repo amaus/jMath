@@ -377,21 +377,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.8.0
   */
   public void addEdge(T start, T end){
-    addEdge(new Node<T>(start), new Node<T>(end));
-  }
-
-  /**
-  * Add an edge to the graph. Adds both nodes if they are not already in
-  * the graph. Then adds an edge from start to end.
-  * @param start the start node of the edge
-  * @param end the end node of the edge
-  * @since 0.1.0
-  */
-  public void addEdge(Node<T> start, Node<T> end){
-    addNode(start);
-    addNode(end);
-    getNode(start.get()).addNeighbor(getNode(end.get()));
-    incrementNumEdges();
+    addEdge(start, end, 1.0);
   }
 
   /**
@@ -404,22 +390,16 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.8.0
   */
   public void addEdge(T start, T end, double weight){
-    addEdge(new Node<T>(start), new Node<T>(end), weight);
-  }
-
-  /**
-  * Add an edge to the graph. Adds both nodes if they are not already in
-  * the graph. Then adds an edge from start to end.
-  * @param start the start node of the edge
-  * @param end the end node of the edge
-  * @param weight the weight of the edge
-  * @since 0.1.0
-  */
-  public void addEdge(Node<T> start, Node<T> end, double weight){
-    addNode(start);
-    addNode(end);
-    getNode(start.get()).addNeighbor(getNode(end.get()), weight);
-    incrementNumEdges();
+    if(!contains(start)) {
+      addNode(start);
+    }
+    if(!contains(end)) {
+      addNode(end);
+    }
+    if(!hasEdge(start, end)) {
+      getNode(start).addNeighbor(getNode(end), weight);
+      incrementNumEdges();
+    }
   }
 
   /**

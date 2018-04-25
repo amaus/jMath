@@ -303,7 +303,7 @@ public class TestUndirectedGraph{
 
   @Test
   public void testGetComplementNoEdgesBoundary(){
-    example.addEdge(four,two);
+    example.addEdge(4, 2);
 
     UndirectedGraph<Integer> complement = example.getComplement();
     one = complement.getNode(1);
@@ -377,16 +377,16 @@ public class TestUndirectedGraph{
     Node<Integer> n7 = new Node<Integer>(7);
     Node<Integer> n8 = new Node<Integer>(8);
     Node<Integer> n9 = new Node<Integer>(9);
-    graph.addEdge(n1,n2);
-    graph.addEdge(n2,n3);
-    graph.addEdge(n3,n7);
-    graph.addEdge(n1,n4);
-    graph.addEdge(n4,n5);
-    graph.addEdge(n5,n6);
-    graph.addEdge(n6,n7);
-    graph.addEdge(n8,n9);
-    assertTrue(n1.hasNeighbor(n2));
-    assertTrue(n2.hasNeighbor(n1));
+    graph.addEdge(1,2);
+    graph.addEdge(2,3);
+    graph.addEdge(3,7);
+    graph.addEdge(1,4);
+    graph.addEdge(4,5);
+    graph.addEdge(5,6);
+    graph.addEdge(6,7);
+    graph.addEdge(8,9);
+    assertTrue(graph.hasEdge(1, 2));
+    assertTrue(graph.hasEdge(2, 1));
     List<Node<Integer>> path = graph.shortestPath(n1,n2);
     assertEquals(2, path.size());
     assertEquals(n1, path.get(0));

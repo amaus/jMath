@@ -44,15 +44,15 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @param g the Graph to build from the UndirectedGraph
   * @since 0.1.0
   */
-  public UndirectedGraph(Graph<T> g){
+  public UndirectedGraph(Graph<T> g) {
     super(g);
-    for(Node<T> node : g.getNodes()){
-      for(Node<T> neighbor : node.getNeighbors()){
+    for(Node<T> node : g.getNodes()) {
+      for(Node<T> neighbor : node.getNeighbors()) {
         // We know there is an edge from node to neighbor,
         // but if there is not an edge from the neighbor to this
         // node, then add it.
-        if(!neighbor.hasNeighbor(node)){
-          super.addEdge(neighbor,node);
+        if(!neighbor.hasNeighbor(node)) {
+          super.addEdge(neighbor.get(), node.get());
         }
       }
     }
@@ -187,20 +187,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   */
   @Override
   public void addEdge(T start, T end){
-    this.addEdge(new Node<T>(start), new Node<T>(end));
-  }
-
-
-  /**
-  * Add an edge to this Undirected graph.
-  * @param n1 one of the end nodes of this edge
-  * @param n2 the other end node of this edge
-  * @since 0.1.0
-  */
-  @Override
-  public void addEdge(Node<T> n1, Node<T> n2){
-    super.addEdge(n1,n2);
-    super.addEdge(n2,n1);
+    super.addEdge(start, end);
   }
 
   /**
@@ -214,19 +201,8 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   */
   @Override
   public void addEdge(T start, T end, double weight){
-    this.addEdge(new Node<T>(start), new Node<T>(end), weight);
-  }
-
-  /**
-  * Add an edge to this Undirected graph.
-  * @param n1 one of the end nodes of this edge
-  * @param n2 the other end node of this edge
-  * @since 0.8.0
-  */
-  @Override
-  public void addEdge(Node<T> n1, Node<T> n2, double weight){
-    super.addEdge(n1,n2,weight);
-    super.addEdge(n2,n1,weight);
+    super.addEdge(start, end, weight);
+    super.addEdge(end, start, weight);
   }
 
   /**

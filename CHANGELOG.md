@@ -20,11 +20,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [None]
 
 ## [0.14.0]
+NOTE: Due to changes in Graph and UndirectedGraph, this version is not
+backwards compatible with 0.13.0 and before.
 ### Added
 - Package io with:
   - CommandLineParser (new class)
   - GraphIO (moved from graph package)
 - method getElements() in Graph
+### Changed
+- Major changes to Graph and UndirectedGraph. Restricting client access to
+  Nodes. A Graph should be viewed as a set of elements and the connections
+  between them.
+- Methods that require Nodes as parameters are being deprecated and removed in
+  favor of versions of those methods that take elements instead.
+  - addEdge() methods
 
 ## [0.13.0] - 2018-04-14
 ### Added

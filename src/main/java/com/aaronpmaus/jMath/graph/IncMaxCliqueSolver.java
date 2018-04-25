@@ -255,14 +255,14 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     // first create a new Node
     Node<T> v = new Node<T>(smallestVertex.get());
     // for every neighbor of the smallestVertex
+    cUnionSmallestVertex.addNode(v.get());
     for(Node<T> neighbor : neighbors){
       // if that neighbor is in c:
       if(cUnionSmallestVertex.contains(neighbor)){
         // add an edge to the union graph between smallestVertex and the neighbor
-        cUnionSmallestVertex.addEdge(v, cUnionSmallestVertex.getNode(neighbor.get()));
+        cUnionSmallestVertex.addEdge(v.get(), neighbor.get());
       }
     }
-    cUnionSmallestVertex.addNode(v);
     //System.out.println("neighbors of " + smallestVertex.get() + ":\n" + neighborsGraph);
     //System.out.println("cUnionSmallestVertex:\n" + cUnionSmallestVertex);
 

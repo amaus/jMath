@@ -51,12 +51,9 @@ public class GraphIO{
       // e for edge and a for arc. both can be used to indicate an edge in the graph
       if(tokens[0].equals("e") || tokens[0].equals("a")){
         if(tokens.length == 3){
-          graph.addEdge(new Node<Integer>(new Integer(tokens[1])),
-                        new Node<Integer>(new Integer(tokens[2])));
+          graph.addEdge(new Integer(tokens[1]), new Integer(tokens[2]));
         } else if (tokens.length == 4){
-          graph.addEdge(new Node<Integer>(new Integer(tokens[1])),
-                        new Node<Integer>(new Integer(tokens[2])),
-                        new Double(tokens[3]));
+          graph.addEdge(new Integer(tokens[1]), new Integer(tokens[2]), new Double(tokens[3]));
         }
       }
     }
