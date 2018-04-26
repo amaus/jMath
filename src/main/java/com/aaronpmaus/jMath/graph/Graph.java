@@ -126,7 +126,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * Return the neighborhood from this Graph of the Node passed in.
+  * Return a Graph of the neighborhood of the element passed in.
   * <p>
   * The Neighborhood consists of the node, all of its neighbors, and the set of edges that are
   * between all of these nodes.

@@ -115,7 +115,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
-  * Return a Graph of neighbors of the Node passed in.
+  * Return a Graph of neighbors of the element passed in.
   * <p>
   * The Neighbors Graph consists of the adjacent vertices and all the edges between these vertices.
   * @param element the element to get the neighbors of.
@@ -209,28 +209,30 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
-  * A method to return the degeneracy ordering of a graph
-  * @return an ArrayList of Nodes representing the degeneracy ordering.
-  *         the smallest vertex is at the 0th index
-  * @since 0.7.0
+  * A method to return the degeneracy ordering of a graph.
+  * <p>
+  * The degeneracy ordering is determined as follows: <br>
+  * Until the graph is empty: <br>
+  * add the vertex with the smallest degree to the ordering <br>
+  * remove that vertex from the graph<br>
+  * @return an ArrayList of elements representing the degeneracy ordering. The smallest vertex is at
+  * the 0th index
+  * @since 0.14.0
   */
-  public ArrayList<Node<T>> degeneracyOrdering( ){
-    ArrayList<Node<T>> vertexOrdering = new ArrayList<Node<T>>(this.size());
+  public ArrayList<T> degeneracyOrdering( ){
+    ArrayList<T> vertexOrdering = new ArrayList<T>(this.size());
     // Build the Degeneracy Vertex Ordering
     UndirectedGraph<T> temp = new UndirectedGraph<T>(this);
     while(temp.size() > 0){
       // get the node with the smallest degree in temp
-      T theSmallestNode = Collections.min(temp.getElements());
-      // get a reference to that node in the original graph
-      Node<T> theSmallestNodeOriginal = this.getNode(theSmallestNode);
+      Node<T> theSmallestVertex = Collections.min(temp.getNodes());
       // add the original node reference to vertexOrdering
-      vertexOrdering.add(theSmallestNodeOriginal);
+      vertexOrdering.add(theSmallestVertex.get());
       // remove the node from temp
-      temp.removeVertex(theSmallestNode);
+      temp.removeVertex(theSmallestVertex.get());
     }
     return vertexOrdering;
   }
-
 
   /**
   * {@inheritDoc}
