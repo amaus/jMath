@@ -151,7 +151,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           if(level <= maxPrintLevel){
             levelPrint(level, "case1 too few neighbors ("+node.numNeighbors()+") removing node: "+node.get());
           }
-          graph.removeNode(node);
+          graph.removeNode(node.get());
           removedNodes.add(node);
           if(graph.size() < k){
             if(level <= maxPrintLevel){
@@ -200,7 +200,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           if(level <= maxPrintLevel){
             levelPrint(level, "case2 isClique test failed removing node: "+node.get());
           }
-          graph.removeNode(node);
+          graph.removeNode(node.get());
           nodes.remove(node);
           continue;
         }
@@ -322,14 +322,14 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
             levelPrint(level,"case3 recursive call evaluated to null");
             levelPrint(level,"removing node: "+node.get() + " @ " +new Date());
           }
-          graph.removeNode(node);
+          graph.removeNode(node.get());
           nodes.remove(node);
 
           for(Node<T> nodeToRemove : nodesWithNeighborsOnlyInNeighborhood){
             if(level <= maxPrintLevel){
               levelPrint(level,"removing node: "+nodeToRemove.get() + " @ " +new Date());
             }
-            graph.removeNode(nodeToRemove);
+            graph.removeNode(nodeToRemove.get());
             nodes.remove(nodeToRemove);
           }
           continue;

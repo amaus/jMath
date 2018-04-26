@@ -213,11 +213,6 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.1.0
   */
   @Override
-  public void removeNode(Node<T> node){
-    removeNode(node.get());
-  }
-
-  @Override
   public void removeNode(T nodeValue){
     if(contains(nodeValue)){
       Node<T> node = this.getNode(nodeValue);
@@ -247,7 +242,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
       // add the original node reference to vertexOrdering
       vertexOrdering.add(theSmallestNodeOriginal);
       // remove the node from temp
-      temp.removeNode(theSmallestNodeTemp);
+      temp.removeNode(theSmallestNodeTemp.get());
     }
     return vertexOrdering;
   }

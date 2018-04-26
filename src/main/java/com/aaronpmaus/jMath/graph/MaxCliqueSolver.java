@@ -47,7 +47,7 @@ public abstract class MaxCliqueSolver<T extends Comparable<? super T>>{
       for(Node<T> node : clique.getNodes()){
         // need to pass in a code from the original graph, not
         // one from the clique
-        theGraph.removeNode(theGraph.getNode(node.get()));
+        theGraph.removeNode(node.get());
         nodesFromOrigGraph.add(node.get());
       }
       theCovering.add(g.subset(nodesFromOrigGraph));
@@ -114,7 +114,7 @@ public abstract class MaxCliqueSolver<T extends Comparable<? super T>>{
       for(Node<T> node : independentSet.getNodes()){
         // need to pass in a code from the original graph, not
         // one from the clique
-        theGraph.removeNode(theGraph.getNode(node.get()));
+        theGraph.removeNode(node.get());
         nodesFromOrigGraph.add(node.get());
       }
       independentSetPartition.add(g.subset(nodesFromOrigGraph));

@@ -208,7 +208,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
     int smallestVertexIndex = vertexOrdering.indexOf(smallestVertex);
     UndirectedGraph<T> gWithoutSmallestVertex = new UndirectedGraph<T>(g);
-    gWithoutSmallestVertex.removeNode(gWithoutSmallestVertex.getNode(smallestVertex.get()));
+    gWithoutSmallestVertex.removeNode(smallestVertex.get());
     if(numCalls < 100){
       //System.out.println("graph without smallest vertex");
       //System.out.println(gWithoutSmallestVertex);
@@ -259,7 +259,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     cUnionSmallestVertex.addNode(v.get());
     for(Node<T> neighbor : neighbors){
       // if that neighbor is in c:
-      if(cUnionSmallestVertex.contains(neighbor)){
+      if(cUnionSmallestVertex.contains(neighbor.get())){
         // add an edge to the union graph between smallestVertex and the neighbor
         cUnionSmallestVertex.addEdge(v.get(), neighbor.get());
       }
@@ -287,7 +287,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
 
   private Node<T> getSmallestVertex(UndirectedGraph<T> g){
     for(int i = 0; i < vertexOrdering.size(); i++){
-      if(g.contains(vertexOrdering.get(i))){
+      if(g.contains(vertexOrdering.get(i).get())){
         return g.getNode(vertexOrdering.get(i).get());
       }
     }
@@ -318,7 +318,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
         //throw new RuntimeException("VO debugging, QUIT VO Calls");
       }
       for(Node<T> n : indSetComplementNodes.getNodes()){
-        gComplement.removeNode(n);
+        gComplement.removeNode(n.get());
         indSetVertexOrder.remove(n);
       }
       indSets.add(g.subset(indSetComplementNodes.getElements()));
@@ -412,7 +412,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     private int getIndSetPartitionIndex(Node<T> n){
       for(int i = 0; i < indSetPartition.size(); i++){
         UndirectedGraph<T> g = indSetPartition.get(i);
-        if(g.contains(n)){
+        if(g.contains(n.get())){
           return i;
         }
       }

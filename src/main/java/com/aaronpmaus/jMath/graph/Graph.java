@@ -326,7 +326,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.1.0
   */
   private void addNode(Node<T> n){
-    if(!contains(n)){
+    if(!contains(n.get())){
       //System.out.println("Adding node: " + n.hashCode());
       adjacencyList.put(n.get() ,n);
       incrementNumEdges(n.numNeighbors());
@@ -397,7 +397,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.1.0
   */
   public void removeEdge(Node<T> start, Node<T> end){
-    if(contains(start)){
+    if(contains(start.get())){
       start.removeNeighbor(end);
       decrementNumEdges();
     }
@@ -458,17 +458,6 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * Check if a node is in the graph.
-  *
-  * @param node the node to check for
-  * @return true if the graph contains this node, false otherwise.
-  * @since 0.1.0
-  */
-  public boolean contains(Node<T> node){
-    return contains(node.get());
-  }
-
-  /**
   * Check if there is a vertec containing element in this graph.
   * @param element the element to check for.
   * @return true if one of the vertices in the graph contains element, false otherwise.
@@ -476,18 +465,6 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   */
   public boolean contains(T element){
     return adjacencyList.containsKey(element);
-  }
-
-  /**
-  * If this node is in the graph, remove it and all edges leading to or from it from the graph.
-  * If the node is not in the graph, do nothing.
-  *
-  * @param node the node to remove
-  * @version 0.2.0
-  * @since 0.1.0
-  */
-  public void removeNode(Node<T> node){
-    removeNode(node.get());
   }
 
   /**
