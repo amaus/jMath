@@ -83,7 +83,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
         if(verbose) System.out.println("##### Found a clique of size " + clique.size() +" #####");
         if(verbose) System.out.print(clique);
         String cliqueStr = "CLIQUE: ";
-        for(Node<T> node : clique.getNodes()){
+        for(Node<T> node : clique){
           cliqueStr += node.get() + " ";
         }
         if(verbose) System.out.println(cliqueStr);
@@ -182,7 +182,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           System.out.println("Searching neighborhood of node: " + node.get());
           System.out.println("Nodes in Graph");
           int i = 1;
-          for(Node<T> n : graph.getNodes()){
+          for(Node<T> n : graph){
             System.out.println(i + ": " + n.get());
             i++;
           }
@@ -219,7 +219,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           levelPrint(level, "# density of its neighborhood: " + neighborhood.density());
         }
         ArrayList<Node<T>> nodesWithNeighborsOnlyInNeighborhood = new ArrayList<Node<T>>();
-        for(Node<T> neighborhoodNode : neighborhood.getNodes()){
+        for(Node<T> neighborhoodNode : neighborhood){
           // if the number of neighbors of this node in the
           // graph is the same as the number of neighbors of this
           // node in the neighborhood, then remember this node.
@@ -245,13 +245,13 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
               System.out.println("looking at neighborhood of:\n"+node);
               int i = 0;
               System.out.println("Nodes in Graph");
-              for(Node<T> n : graph.getNodes()){
+              for(Node<T> n : graph){
                 System.out.println(i + ": " + n.get());
                 i++;
               }
               System.out.println("Nodes in Neighborhood");
               ArrayList<Integer> ns = new ArrayList<Integer>();
-              for(Node<T> n : neighborhood.getNodes()){
+              for(Node<T> n : neighborhood){
                 T obj = n.get();
                 if(obj instanceof Integer){
                   ns.add((Integer)obj);
@@ -372,7 +372,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     boolean cont = true;
     while(cont){
       int numPotentialMembers = 0;
-      for(Node<T> n : graph.getNodes()){
+      for(Node<T> n : graph){
         if(n.numNeighbors() + 1 >= k){
           numPotentialMembers++;
         }
@@ -399,7 +399,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   */
   public int maxPossibleCliqueNumDeep(UndirectedGraph<T> graph){
     int k = 0;
-    for(Node<T> node : graph.getNodes()){
+    for(Node<T> node : graph) {
       UndirectedGraph<T> neighborhood = graph.getNeighborhood(node.get());
       int maxEdges = Collections.max(neighborhood.getNodes()).numNeighbors();
       // if the node with the max edges has 3 edges, then those three
@@ -408,7 +408,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       boolean cont = true;
       while(cont){
         int numPotentialMembers = 0;
-        for(Node<T> n : neighborhood.getNodes()){
+        for(Node<T> n : neighborhood){
           if(n.numNeighbors() + 1 >= tempK){
             numPotentialMembers++;
           }
@@ -439,10 +439,6 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     UndirectedGraph<T> clique = findClique(new UndirectedGraph<T>(complement),k,1);
     UndirectedGraph<T> independentSet = null;
     if(clique != null){
-      //ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(clique.size());
-      //for(Node<T> node : clique.getNodes()){
-        //nodes.add(graph.getNode(node.get()));
-      //}
       independentSet = graph.subset(clique.getElements()); //new UndirectedGraph<T>(nodes);
     }
     return independentSet;

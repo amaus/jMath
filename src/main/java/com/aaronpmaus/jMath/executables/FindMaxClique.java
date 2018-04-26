@@ -130,7 +130,7 @@ public class FindMaxClique{
     if(clique != null){
       String cliqueStr = "";
       ArrayList<Integer> nodeNums = new ArrayList<Integer>();
-      for(Node<Integer> node : clique.getNodes()){
+      for(Node<Integer> node : clique){
         nodeNums.add(node.get());
       }
       Collections.sort(nodeNums);

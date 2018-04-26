@@ -52,15 +52,6 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
     //printUB();
     UndirectedGraph<T> clique = incMaxClique(g, new UndirectedGraph<T>(), new UndirectedGraph<T>());
-    //UndirectedGraph<T> cliqueInOriginal = new UndirectedGraph<T>();
-    //ArrayList<Node<T>> cliqueNodes = new ArrayList<Node<T>>();
-    //ArrayList<T> objs = new ArrayList<T>();
-    //for(Node<T> n : clique.getNodes()){
-      //cliqueInOriginal.addNode(originalGraph.getNode(n.get()));
-      //cliqueNodes.add(g.getNode(n.get()));
-      //objs.add(n.get());
-    //}
-    //clique = new UndirectedGraph<T>(cliqueInOriginal);
     clique = originalGraph.subset(clique.getElements());
     //System.out.println("is clique? " + g.isClique(clique));
     //System.out.println("is clique? " + g.checkIfClique(objs));
@@ -256,7 +247,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     // first create a new Node
     Node<T> v = new Node<T>(smallestVertex.get());
     // for every neighbor of the smallestVertex
-    cUnionSmallestVertex.addNode(v.get());
+    cUnionSmallestVertex.addVertex(v.get());
     for(Node<T> neighbor : neighbors){
       // if that neighbor is in c:
       if(cUnionSmallestVertex.contains(neighbor.get())){
@@ -317,7 +308,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
       if(numVOCalls == 100){
         //throw new RuntimeException("VO debugging, QUIT VO Calls");
       }
-      for(Node<T> n : indSetComplementNodes.getNodes()){
+      for(Node<T> n : indSetComplementNodes){
         gComplement.removeNode(n.get());
         indSetVertexOrder.remove(n);
       }

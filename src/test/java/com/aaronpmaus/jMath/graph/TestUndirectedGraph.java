@@ -125,7 +125,7 @@ public class TestUndirectedGraph{
   @Test
   public void testAddNode(){
     assertEquals(0,graph.size());
-    graph.addNode(1);
+    graph.addVertex(1);
     assertEquals(1,graph.size());
     //assertEquals(1,0);
   }
@@ -387,19 +387,19 @@ public class TestUndirectedGraph{
     graph.addEdge(8,9);
     assertTrue(graph.hasEdge(1, 2));
     assertTrue(graph.hasEdge(2, 1));
-    List<Node<Integer>> path = graph.shortestPath(n1,n2);
+    List<Integer> path = graph.shortestPath(1,2);
     assertEquals(2, path.size());
-    assertEquals(n1, path.get(0));
-    assertEquals(n2, path.get(1));
+    assertEquals(new Integer(1), path.get(0));
+    assertEquals(new Integer(2), path.get(1));
 
-    path = graph.shortestPath(n1,n7);
+    path = graph.shortestPath(1,7);
     assertEquals(4, path.size());
-    assertEquals(n1, path.get(0));
-    assertEquals(n2, path.get(1));
-    assertEquals(n3, path.get(2));
-    assertEquals(n7, path.get(3));
+    assertEquals(new Integer(1), path.get(0));
+    assertEquals(new Integer(2), path.get(1));
+    assertEquals(new Integer(3), path.get(2));
+    assertEquals(new Integer(7), path.get(3));
 
-    path = graph.shortestPath(n1,n8);
+    path = graph.shortestPath(1,8);
     assertEquals(0, path.size());
   }
 

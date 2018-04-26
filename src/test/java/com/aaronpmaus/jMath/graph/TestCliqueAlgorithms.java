@@ -60,7 +60,7 @@ public class TestCliqueAlgorithms {
   @Test
   public void testIncMaxCliqueAdapterOnGraphOfSizeOne(){
     UndirectedGraph<Integer> graph = new UndirectedGraph<Integer>();
-    graph.addNode(new Integer(1));
+    graph.addVertex(new Integer(1));
     cliqueTool = new IncMaxCliqueAdapter();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(graph);
     assertTrue(clique.size() == 1);

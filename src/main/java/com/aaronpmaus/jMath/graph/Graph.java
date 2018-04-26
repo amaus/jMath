@@ -274,7 +274,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return a {@code List<Node<T>>} of the nodes
   * @since 0.1.0
   */
-  public final List<Node<T>> getNodes(){
+  protected List<Node<T>> getNodes(){
     return new LinkedList<Node<T>>(this.adjacencyList.values());
   }
 
@@ -336,9 +336,9 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   /**
   * Add an element to the graph. Only adds the element if it is not already in the graph.
   * @param e the element to add to the graph.
-  * @since 0.13.0
+  * @since 0.14.0
   */
-  public void addNode(T e){
+  public void addVertex(T e){
     addNode(new Node<T>(e));
   }
 
@@ -349,7 +349,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.1.0
   * @throws IllegalArgumentException if there is no node containing obj.
   */
-  public Node<T> getNode(T element){
+  protected Node<T> getNode(T element){
     if(!this.adjacencyList.containsKey(element)){
       throw new NoSuchElementException(String.format("Node %s not in graph.", element));
     }
@@ -379,10 +379,10 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   */
   public void addEdge(T start, T end, double weight){
     if(!contains(start)) {
-      addNode(start);
+      addVertex(start);
     }
     if(!contains(end)) {
-      addNode(end);
+      addVertex(end);
     }
     if(!hasEdge(start, end)) {
       getNode(start).addNeighbor(getNode(end), weight);
@@ -396,9 +396,9 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @param end the node at the end of the edge
   * @since 0.1.0
   */
-  public void removeEdge(Node<T> start, Node<T> end){
-    if(contains(start.get())){
-      start.removeNeighbor(end);
+  public void removeEdge(T start, T end){
+    if(hasEdge(start, end)) {
+      getNode(start).removeNeighbor(getNode(end));
       decrementNumEdges();
     }
   }
@@ -470,59 +470,38 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   /**
   * If this node containing this value is in the graph, remove it and all edges leading to or from
   * it from the graph. If the node is not in the graph, do nothing.
-  *
-  * @param nodeValue the value of the node to remove
+  * @param element the element to remove
   * @since 0.11.0
   */
-  public void removeNode(T nodeValue){
-    if(contains(nodeValue)){
-      Node<T> node = this.getNode(nodeValue);
+  public void removeNode(T element){
+    if(contains(element)){
+      Node<T> node = this.getNode(element);
       // check all nodes in this graph to see if there is an edge from it to
       // this node
-      for(Node<T> n : this.adjacencyList.values()){
+      for(Node<T> n : this) {
         if(n.hasNeighbor(node)){
           // if there is an edge from a node to nodeToBeRemoved,
           // remove that edge from this graph.
-          this.removeEdge(n, node);
+          this.removeEdge(n.get(), node.get());
         }
       }
-      removeNodeFromAdjacencyList(node);
+      decrementNumEdges(node.numNeighbors());
+      this.adjacencyList.remove(node.get());
     }
-  }
-
-  // this is a hack so that the subclass
-  // can remove from the adjacency list. It only removes
-  // from the adjacency list. It does not remove any other
-  // edges from the graph
-  /**
-  * Removes this node from the graph. Does not remove edges leading to this node.
-  * This method is intended as a helper method for this class and subclasses. Do
-  * not call this method, rather call {@code removeNode(Node<T&> n)}, it will
-  * properly maintain all edges of the graph. This method does not guarantee that.
-  * I wish that java had an access modifier to restrict access to only subclasses.
-  * Also, I know this is not the best way of going about this. I'm still trying to
-  * figure out a better way. Any suggestions?
-  * @param n the node to remove.
-  * @since 0.2.0
-  */
-  protected void removeNodeFromAdjacencyList(Node<T> n){
-    this.adjacencyList.remove(n.get());
-    decrementNumEdges(n.numNeighbors());
   }
 
   /**
   * Return the shortest path from source to target.
-  *
+  * <p>
   * This method implements Dijkstra's algorithm with a priority queue to find the shortest
   * path between two vertices. The nodes that contain the source and target values are used
   * as the end points.
-  *
   * @param source the source to calculate the path from
   * @param target the target to calculate the path to
   * @return a List containing the path from source to target, or an empty list if no path exists.
   * @throws IllegalArgumentException if there are no nodes containing the source and target values.
   */
-  public List<Node<T>> shortestPath(T source, T target){
+  public List<T> shortestPath(T source, T target){
     Node<T> sourceNode = getNode(source);
     Node<T> targetNode = getNode(target);
 
@@ -591,31 +570,16 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
     }
 
     // build the list of nodes in the shortest path from source to target
-    LinkedList<Node<T>> path = new LinkedList<Node<T>>();
+    LinkedList<T> path = new LinkedList<T>();
     if(prevNodeInPath.get(targetNode) != null){
-      path.add(targetNode);
+      path.add(targetNode.get());
     }
     Node<T> nodeInPath = targetNode;
     while(prevNodeInPath.get(nodeInPath) != null){
-      path.add(0,prevNodeInPath.get(nodeInPath));
+      path.add(0,prevNodeInPath.get(nodeInPath).get());
       nodeInPath = prevNodeInPath.get(nodeInPath);
     }
     return path;
-  }
-
-  /**
-  * Return the shortest path from source to target.
-  *
-  * This method implements Dijkstra's algorithm with a priority queue to find the shortest
-  * path between two vertices.
-  *
-  * @param source the source node to calculate the path from
-  * @param target the target node to calculate the path to
-  * @return a List containing the path from source to target, or an empty list if no path exists.
-  * @throws IllegalArgumentException if there are no nodes containing the source and target values.
-  */
-  public List<Node<T>> shortestPath(Node<T> source, Node<T> target){
-    return shortestPath(source.get(), target.get());
   }
 
   /**

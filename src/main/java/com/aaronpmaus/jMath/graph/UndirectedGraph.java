@@ -52,7 +52,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   */
   public UndirectedGraph(Graph<T> g) {
     super(g);
-    for(Node<T> node : g.getNodes()) {
+    for(Node<T> node : g) {
       for(Node<T> neighbor : node.getNeighbors()) {
         // We know there is an edge from node to neighbor,
         // but if there is not an edge from the neighbor to this
@@ -209,22 +209,6 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
-  * {@inheritDoc}
-  * @since 0.1.0
-  */
-  @Override
-  public void removeNode(T nodeValue){
-    if(contains(nodeValue)){
-      Node<T> node = this.getNode(nodeValue);
-      // for ever neighbor of nodeToBeRemoved,
-      for(Node<T> neighbor : node.getNeighbors()){
-        super.removeEdge(neighbor, node);
-      }
-      removeNodeFromAdjacencyList(node);
-    }
-  }
-
-  /**
   * A method to return the degeneracy ordering of a graph
   * @return an ArrayList of Nodes representing the degeneracy ordering.
   *         the smallest vertex is at the 0th index
@@ -236,13 +220,13 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
     UndirectedGraph<T> temp = new UndirectedGraph<T>(this);
     while(temp.size() > 0){
       // get the node with the smallest degree in temp
-      Node<T> theSmallestNodeTemp = Collections.min(temp.getNodes());
+      T theSmallestNode = Collections.min(temp.getElements());
       // get a reference to that node in the original graph
-      Node<T> theSmallestNodeOriginal = this.getNode(theSmallestNodeTemp.get());
+      Node<T> theSmallestNodeOriginal = this.getNode(theSmallestNode);
       // add the original node reference to vertexOrdering
       vertexOrdering.add(theSmallestNodeOriginal);
       // remove the node from temp
-      temp.removeNode(theSmallestNodeTemp.get());
+      temp.removeNode(theSmallestNode);
     }
     return vertexOrdering;
   }
@@ -274,15 +258,6 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
     ArrayList<UndirectedEdge<T>> edgesSorted = new ArrayList<UndirectedEdge<T>>(edges);
     Collections.sort(edgesSorted);
 
-    /*new Comparator<UndirectedEdge<T>>() {
-      public int compare(UndirectedEdge<T> e1, UndirectedEdge<T> e2) {
-        int comparison = e1.getStart().get().compareTo(e2.getStart().get());
-        if(comparison == 0) {
-          return e1.getEnd().get().compareTo(e2.getEnd().get());
-        }
-        return comparison;
-      }
-    });*/
     return edgesSorted;
   }
 

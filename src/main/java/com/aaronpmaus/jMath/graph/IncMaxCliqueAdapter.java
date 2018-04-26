@@ -36,7 +36,7 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
     }
     HashMap<Integer, Integer> nodeIDMapping = new HashMap<Integer, Integer>();
     int nodeID = 1;
-    for(Node<Integer> n : graph.getNodes()){
+    for(Node<Integer> n : graph){
       nodeIDMapping.put(nodeID, n.get());
       n.set(nodeID);
       nodeID++;

@@ -52,7 +52,7 @@ public class FindClique {
       if(maxClique != null){
         // build a clique string containing the IDs of all the nodes in this clique
         String cliqueStr = "";
-        for(Node<Integer> node : maxClique.getNodes()){
+        for(Node<Integer> node : maxClique){
           cliqueStr += node.get() + " ";
         }
         System.out.println(cliqueStr);
