@@ -211,7 +211,7 @@ public class TestUndirectedGraph{
   @Test
   public void testGetNeighborhoodException(){
     Node<Integer> two = example.getNode(2);
-    example.removeNode(2);
+    example.removeVertex(2);
     exception.expect(NoSuchElementException.class);
     example.getNeighborhood(2);
   }
@@ -223,7 +223,7 @@ public class TestUndirectedGraph{
     ArrayList<Integer> list = new ArrayList<Integer>();
     list.add(1);
     list.add(2);
-    example.removeNode(2);
+    example.removeVertex(2);
     exception.expect(NoSuchElementException.class);
     example.getNeighborhood(list);
   }
@@ -328,8 +328,8 @@ public class TestUndirectedGraph{
 
   @Test
   public void testRemoveNode(){
-    example.removeNode(2);
-    example.removeNode(2);
+    example.removeVertex(2);
+    example.removeVertex(2);
 
     assertEquals(6, example.size());
     assertEquals(11, example.numEdges());

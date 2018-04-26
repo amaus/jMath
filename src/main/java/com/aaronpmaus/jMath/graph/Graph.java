@@ -27,7 +27,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
 
   /**
   * The default constructor for the graph, builds a graph with no verties. Vertices and edges can
-  * be added via addEdge() and addNode().
+  * be added via addEdge() and addVertex().
   * @version 0.7.0
   * @since 0.1.0
   */
@@ -63,7 +63,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
     this.adjacencyList = new HashMap<T, Node<T>>((int)((nodes.size())/0.75)+1);
     this.numEdges = 0;
     for(Node<T> node : nodes){
-      addNode(node);
+      addVertex(node);
     }
     this.graphFileName = g.getGraphFileName();
   }
@@ -80,7 +80,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
     this.adjacencyList = new HashMap<T, Node<T>>((int)((nodes.size())/0.75)+1);
     this.numEdges = 0;
     for(Node<T> node : nodes){
-      addNode(node);
+      addVertex(node);
     }
     this.graphFileName = "g.dimacs";
   }
@@ -262,7 +262,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * Return the number of Nodes in this graph
+  * Return the number of vertices in this graph
   * @return the number of Nodes in this graph
   * @since 0.1.0
   */
@@ -325,7 +325,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @param n the node to add to the graph.
   * @since 0.1.0
   */
-  private void addNode(Node<T> n){
+  private void addVertex(Node<T> n){
     if(!contains(n.get())){
       //System.out.println("Adding node: " + n.hashCode());
       adjacencyList.put(n.get() ,n);
@@ -339,11 +339,11 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.14.0
   */
   public void addVertex(T e){
-    addNode(new Node<T>(e));
+    addVertex(new Node<T>(e));
   }
 
   /**
-  * Returns the node from the graph that holds the given object.
+  * Returns the Node from the graph that holds the given object.
   * @param element the object of the node to be retrieved
   * @return the node with that object or null if it is not in the graph.
   * @since 0.1.0
@@ -468,12 +468,12 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * If this node containing this value is in the graph, remove it and all edges leading to or from
+  * If a vertex containing element is in the graph, remove it and all edges leading to or from
   * it from the graph. If the node is not in the graph, do nothing.
   * @param element the element to remove
   * @since 0.11.0
   */
-  public void removeNode(T element){
+  public void removeVertex(T element){
     if(contains(element)){
       Node<T> node = this.getNode(element);
       // check all nodes in this graph to see if there is an edge from it to

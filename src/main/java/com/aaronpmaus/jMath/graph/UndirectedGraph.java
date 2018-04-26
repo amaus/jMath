@@ -226,7 +226,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
       // add the original node reference to vertexOrdering
       vertexOrdering.add(theSmallestNodeOriginal);
       // remove the node from temp
-      temp.removeNode(theSmallestNode);
+      temp.removeVertex(theSmallestNode);
     }
     return vertexOrdering;
   }
