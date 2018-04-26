@@ -132,7 +132,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * between all of these nodes.
   * @param element The node to get the neighborhood around.
   * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
-  * @since 0.1.0
+  * @since 0.14.0
   */
   public Graph<T> getNeighborhood(T element){
     return subset(getNode(element).getNodeAndNeighbors());
@@ -323,7 +323,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   /**
   * Add a node to the graph. Only adds the node if it is not already in the graph.
   * @param n the node to add to the graph.
-  * @since 0.1.0
+  * @since 0.14.0
   */
   private void addVertex(Node<T> n){
     if(!contains(n.get())){
@@ -346,7 +346,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * Returns the Node from the graph that holds the given object.
   * @param element the object of the node to be retrieved
   * @return the node with that object or null if it is not in the graph.
-  * @since 0.1.0
+  * @since 0.14.0
   * @throws IllegalArgumentException if there is no node containing obj.
   */
   protected Node<T> getNode(T element){
@@ -394,7 +394,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * Remove an edge from the graph.
   * @param start the node at the start of the edge
   * @param end the node at the end of the edge
-  * @since 0.1.0
+  * @since 0.14.0
   */
   public void removeEdge(T start, T end){
     if(hasEdge(start, end)) {
@@ -461,7 +461,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * Check if there is a vertec containing element in this graph.
   * @param element the element to check for.
   * @return true if one of the vertices in the graph contains element, false otherwise.
-  * @since 0.1.0
+  * @since 0.14.0
   */
   public boolean contains(T element){
     return adjacencyList.containsKey(element);
@@ -471,7 +471,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * If a vertex containing element is in the graph, remove it and all edges leading to or from
   * it from the graph. If the node is not in the graph, do nothing.
   * @param element the element to remove
-  * @since 0.11.0
+  * @since 0.14.0
   */
   public void removeVertex(T element){
     if(contains(element)){

@@ -128,7 +128,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
 
   /**
   * {@inheritDoc}
-  * @since 0.1.0
+  * @since 0.14.0
   */
   @Override
   public UndirectedGraph<T> getNeighborhood(T element){
@@ -186,7 +186,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * an edge from start to end.
   * @param start the start object of the edge
   * @param end the end object of the edge
-  * @since 0.8.0
+  * @since 0.14.0
   */
   @Override
   public void addEdge(T start, T end){
@@ -200,7 +200,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @param start the start object of the edge
   * @param end the end object of the edge
   * @param weight, the weight of the edge
-  * @since 0.8.0
+  * @since 0.14.0
   */
   @Override
   public void addEdge(T start, T end, double weight){

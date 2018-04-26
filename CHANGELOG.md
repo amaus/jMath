@@ -31,9 +31,17 @@ backwards compatible with 0.13.0 and before.
 - Major changes to Graph and UndirectedGraph. Restricting client access to
   Nodes. A Graph should be viewed as a set of elements and the connections
   between them.
+- Changed usage of the word Node in method names and javadocs to Vertex. Vertex
+  is more intuitive for a Graph.
 - Methods that require Nodes as parameters are being deprecated and removed in
   favor of versions of those methods that take elements instead.
-  - addEdge() methods
+  - addEdge()
+  - removeEdge()
+  - addNode()
+  - removeNode()
+  - shortestPath()
+  - getNeighbors()
+  - getNeighborhood()
 
 ## [0.13.0] - 2018-04-14
 ### Added
