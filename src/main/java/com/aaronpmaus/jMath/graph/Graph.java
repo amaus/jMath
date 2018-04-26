@@ -128,10 +128,8 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * The filename to be used when writing the graph
-  * out to file. When a graph is created by reading
-  * from a dimacs file, this method will return
-  * the name of that file.
+  * The filename to be used when writing the graph out to file. When a graph is created by reading
+  * from a dimacs file, this method will return the name of that file.
   * @return the name of the file associated with this graph
   * @since 0.7.0
   */
@@ -141,28 +139,24 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
 
   /**
   * Return the neighborhood from this Graph of the Node passed in.
-  *
-  * The Neighborhood consists of the node, all of its neighbors,
-  * and the set of edges that are between all of these nodes.
-  *
-  * @param root The node to get the neighborhood around.
-  * @return a graph of the neighborhood. This is a deep copy of this subset
-  *         of the total graph.
+  * <p>
+  * The Neighborhood consists of the node, all of its neighbors, and the set of edges that are
+  * between all of these nodes.
+  * @param element The node to get the neighborhood around.
+  * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
   * @since 0.1.0
   */
-  public Graph<T> getNeighborhood(Node<T> root){
-    return subset(root.getNodeAndNeighbors());
+  public Graph<T> getNeighborhood(T element){
+    return subset(getNode(element).getNodeAndNeighbors());
   }
 
   /**
   * Return the neighborhood from this Graph of the collection of Nodes passed in.
-  *
-  * The Neighborhood consists of the Nodes, all their neighbors,
-  * and all the edges between all of these nodes.
-  *
+  * <p>
+  * The Neighborhood consists of the Nodes, all their neighbors, and all the edges between all of
+  * these nodes.
   * @param nodes the Nodes to get the neighborhood around.
-  * @return a graph of the neighborhood. This is a deep
-  *         copy of this subset of the total graph.
+  * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
   * @since 0.3.0
   */
   public Graph<T> getNeighborhood(Collection<Node<T>> nodes){
@@ -356,16 +350,16 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
 
   /**
   * Returns the node from the graph that holds the given object.
-  * @param obj the object of the node to be retrieved
+  * @param element the object of the node to be retrieved
   * @return the node with that object or null if it is not in the graph.
   * @since 0.1.0
   * @throws IllegalArgumentException if there is no node containing obj.
   */
-  public Node<T> getNode(T obj){
-    if(!this.adjacencyList.containsKey(obj)){
-      throw new IllegalArgumentException("Node holding obj not in graph.");
+  public Node<T> getNode(T element){
+    if(!this.adjacencyList.containsKey(element)){
+      throw new NoSuchElementException(String.format("Node %s not in graph.", element));
     }
-    return this.adjacencyList.get(obj);
+    return this.adjacencyList.get(element);
   }
 
   /**

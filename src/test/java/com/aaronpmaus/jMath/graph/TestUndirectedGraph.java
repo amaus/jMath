@@ -144,7 +144,7 @@ public class TestUndirectedGraph{
 
   @Test
   public void testGetNeighborhood(){
-    UndirectedGraph<Integer> neighborhood = example.getNeighborhood(example.getNode(4));
+    UndirectedGraph<Integer> neighborhood = example.getNeighborhood(4);
     assertEquals(6,neighborhood.size());
     ArrayList<Integer> values = new ArrayList<Integer>();
     for(Node<Integer> n : neighborhood){
@@ -213,7 +213,7 @@ public class TestUndirectedGraph{
     Node<Integer> two = example.getNode(2);
     example.removeNode(two);
     exception.expect(NoSuchElementException.class);
-    example.getNeighborhood(two);
+    example.getNeighborhood(2);
   }
 
   @Test

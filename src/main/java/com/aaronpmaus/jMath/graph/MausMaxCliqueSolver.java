@@ -176,7 +176,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       if(node.numNeighbors() == k-1){
         UndirectedGraph<T> neighborhood = null;
         try{
-          neighborhood = graph.getNeighborhood(node);
+          neighborhood = graph.getNeighborhood(node.get());
         } catch (NullPointerException e) {
           e.printStackTrace();
           System.out.println("Searching neighborhood of node: " + node.get());
@@ -211,7 +211,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       // call to keep searching.
       node = nodes.get(0); // the first node in the list is the node with the lowest # neighbors.
       if(node.numNeighbors() > k-1){
-        UndirectedGraph<T> neighborhood = graph.getNeighborhood(graph.getNode(node.get()));
+        UndirectedGraph<T> neighborhood = graph.getNeighborhood(node.get());
         if(level <= maxPrintLevel){
           levelPrint(level, "# looking for clique of size " + k);
           levelPrint(level, "# in node: "+node.get() +" 's neighborhood.");
@@ -400,7 +400,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   public int maxPossibleCliqueNumDeep(UndirectedGraph<T> graph){
     int k = 0;
     for(Node<T> node : graph.getNodes()){
-      UndirectedGraph<T> neighborhood = graph.getNeighborhood(node);
+      UndirectedGraph<T> neighborhood = graph.getNeighborhood(node.get());
       int maxEdges = Collections.max(neighborhood.getNodes()).numNeighbors();
       // if the node with the max edges has 3 edges, then those three
       // neighbors plus itself makes a subgraph of 4 nodes.

@@ -126,18 +126,15 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.1.0
   */
   @Override
-  public UndirectedGraph<T> getNeighborhood(Node<T> root){
-    if(!contains(root)){
-      throw new NoSuchElementException(String.format("Root must be in graph, %s not in grpah",root));
-    }
-    return subset(root.getNodeAndNeighbors());
+  public UndirectedGraph<T> getNeighborhood(T element){
+    return subset(getNode(element).getNodeAndNeighbors());
   }
 
-  @Override
   /**
   * {@inheritDoc}
   * @since 0.3.0
   */
+  @Override
   public UndirectedGraph<T> getNeighborhood(Collection<Node<T>> nodes){
     // default load factor is 0.75. Create a HashSet large enough that it
     // won't ever need to be enlarged.
@@ -152,29 +149,30 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
     return new UndirectedGraph<T>(originalNodes);
   }
 
-
-  @Override
   /**
   * {@inheritDoc}
   * @since 0.3.0
   */
+  @Override
   public UndirectedGraph<T> getComplement(){
     return new UndirectedGraph<T>(getComplementNodes());
   }
+
   /**
   * Given a set of objects, check if the group of nodes containing those
   * objects form a clique in the graph.
-  * @param objects the objects to check
+  * @param elements the elements to check
   * @return true if the nodes containing these objects are a clique. false otherwise
   * @since 0.7.0
   */
-  public boolean checkIfClique(Collection<T> objects){
-    ArrayList<Node<T>> nodesInClique = new ArrayList<Node<T>>(objects.size());
-    for(T obj : objects){
-      nodesInClique.add(getNode(obj));
-    }
-    UndirectedGraph<T> clique = new UndirectedGraph<T>(nodesInClique);
-    return clique.isClique( );
+  public boolean checkIfClique(Collection<T> elements){
+    //ArrayList<Node<T>> nodesInClique = new ArrayList<Node<T>>(elements.size());
+    //for(T element : elements){
+      //nodesInClique.add(getNode(element));
+    //}
+    //UndirectedGraph<T> clique = new UndirectedGraph<T>(nodesInClique);
+    //return clique.isClique( );
+    return this.subset(elements).isClique();
   }
 
   /**
