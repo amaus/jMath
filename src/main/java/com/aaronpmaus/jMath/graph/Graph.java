@@ -337,7 +337,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @param n the node to add to the graph.
   * @since 0.1.0
   */
-  public void addNode(Node<T> n){
+  private void addNode(Node<T> n){
     if(!contains(n)){
       //System.out.println("Adding node: " + n.hashCode());
       adjacencyList.put(n.get() ,n);

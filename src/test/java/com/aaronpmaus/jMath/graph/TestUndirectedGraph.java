@@ -125,7 +125,7 @@ public class TestUndirectedGraph{
   @Test
   public void testAddNode(){
     assertEquals(0,graph.size());
-    graph.addNode(new Node<Integer>(1));
+    graph.addNode(1);
     assertEquals(1,graph.size());
     //assertEquals(1,0);
   }

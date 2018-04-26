@@ -52,15 +52,16 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
     //printUB();
     UndirectedGraph<T> clique = incMaxClique(g, new UndirectedGraph<T>(), new UndirectedGraph<T>());
-    UndirectedGraph<T> cliqueInOriginal = new UndirectedGraph<T>();
+    //UndirectedGraph<T> cliqueInOriginal = new UndirectedGraph<T>();
     //ArrayList<Node<T>> cliqueNodes = new ArrayList<Node<T>>();
     //ArrayList<T> objs = new ArrayList<T>();
-    for(Node<T> n : clique.getNodes()){
-      cliqueInOriginal.addNode(originalGraph.getNode(n.get()));
+    //for(Node<T> n : clique.getNodes()){
+      //cliqueInOriginal.addNode(originalGraph.getNode(n.get()));
       //cliqueNodes.add(g.getNode(n.get()));
       //objs.add(n.get());
-    }
-    clique = new UndirectedGraph<T>(cliqueInOriginal);
+    //}
+    //clique = new UndirectedGraph<T>(cliqueInOriginal);
+    clique = originalGraph.subset(clique.getElements());
     //System.out.println("is clique? " + g.isClique(clique));
     //System.out.println("is clique? " + g.checkIfClique(objs));
     return clique;
@@ -316,20 +317,14 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
       if(numVOCalls == 100){
         //throw new RuntimeException("VO debugging, QUIT VO Calls");
       }
-      UndirectedGraph<T> indSet = new UndirectedGraph<T>();
       for(Node<T> n : indSetComplementNodes.getNodes()){
         gComplement.removeNode(n);
-        indSet.addNode(g.getNode(n.get()));
         indSetVertexOrder.remove(n);
       }
-      indSets.add(indSet);
+      indSets.add(g.subset(indSetComplementNodes.getElements()));
     }
     if(gComplement.size() > 0){
-      UndirectedGraph<T> indSet = new UndirectedGraph<T>();
-      for(Node<T> n : gComplement.getNodes()){
-        indSet.addNode(g.getNode(n.get()));
-      }
-      indSets.add(indSet);
+      indSets.add(g.subset(gComplement.getElements()));
     }
     return indSets;
   }
