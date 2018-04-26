@@ -12,7 +12,7 @@ import java.util.Comparator;
 * A class that implements IncMaxCliqueSolver from
 * Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
 * Li, Fang, Xu 2013
-* INCOMPLETE - does not include UB max sat or ind set logic
+* INCOMPLETE - does not include UB max sat
 * @since 0.7.0
 */
 public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliqueSolver<T> {
@@ -236,20 +236,19 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
     // save the vertexUB values of the neighbors of smallestVertex
     // first, get the set of neighbors
-    Collection<Node<T>> neighbors = g.getNode(smallestVertex).getNeighbors();
+    UndirectedGraph<T> neighborsGraph = g.getNeighbors(smallestVertex);
     // copy all the vertexUB values for the neighbors of smallestVertex
     HashMap<T, Integer> vertexUB_bkup = new HashMap<T, Integer>();
-    for(Node<T> neighbor : neighbors){
+    for(Node<T> neighbor : neighborsGraph){
       vertexUB_bkup.put(neighbor.get(), vertexUB.get(neighbor.get()));
     }
-    UndirectedGraph<T> neighborsGraph = g.getNeighbors(smallestVertex);
     UndirectedGraph<T> cUnionSmallestVertex = new UndirectedGraph<T>(c);
     // add in smallestVertex
     // first create a new Node
     Node<T> v = new Node<T>(smallestVertex);
     // for every neighbor of the smallestVertex
     cUnionSmallestVertex.addVertex(v.get());
-    for(Node<T> neighbor : neighbors){
+    for(Node<T> neighbor : neighborsGraph){
       // if that neighbor is in c:
       if(cUnionSmallestVertex.contains(neighbor.get())){
         // add an edge to the union graph between smallestVertex and the neighbor
@@ -264,7 +263,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     //System.out.println("second recursive call complete");
 
     // restore the saved vertexUB values
-    for(Node<T> neighbor : neighbors){
+    for(Node<T> neighbor : neighborsGraph){
       vertexUB.put(neighbor.get(), vertexUB_bkup.get(neighbor.get()));
     }
 
