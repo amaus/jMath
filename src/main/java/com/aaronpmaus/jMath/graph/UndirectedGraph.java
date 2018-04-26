@@ -12,10 +12,12 @@ import java.util.Comparator;
 import java.util.NoSuchElementException;
 
 /**
-* An UndirectedGraph is a Graph where the edges have direction.
+* An UndirectedGraph.
+* <p>
+* An UndirectedGraph is composed of elements which are the vertices and the edges between them. The
+* elements in the graph must be unique.
 * @see com.aaronpmaus.jMath.graph.Graph
-* @author Aaron Maus aaron@aaronpmaus.com
-* @version 0.8.0
+* @version 0.14.0
 * @since 0.1.0
 */
 public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
@@ -23,7 +25,8 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   private boolean verbose = false;
 
   /**
-  * A default constructor for the UndirectedGraph
+  * The default constructor for an UndirectedGraph, builds an UndirectedGraph with no verties.
+  * Vertices and edges can be added via addEdge() and addNode().
   * @since 0.1.0
   */
   public UndirectedGraph(){
@@ -31,16 +34,19 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
-  * Constructs an undirected graph given the number of nodes it needs to hold.
-  * @param numNodes the number of nodes the graph will hold.
+  * Constructs an empty graph, prepared to hold the specified number of vertices.
+  * @param numVertices the number of vertices the graph will hold.
   * @since 0.1.0
   */
-  public UndirectedGraph(int numNodes){
-    super(numNodes);
+  public UndirectedGraph(int numVertices){
+    super(numVertices);
   }
 
   /**
-  * Builds an UndirectedGraph from a Graph object.
+  * Constructs an UndirectedGraph from a Graph.
+  * <p>
+  * Returns a deep copy of all the vertices and edges in the Graph where all edges are now
+  * undirected. The elements within the vertices are not copied.
   * @param g the Graph to build from the UndirectedGraph
   * @since 0.1.0
   */
@@ -59,10 +65,10 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
-  * A copy constructor for an UndirectedGraph. Returns a deep copy of the
-  * UndirectedGraph passed in. The deep copy is of all the Nodes and Edges
-  * in the UndirectedGraph, but not of all the Objects that the Nodes
-  * contain.
+  * A copy constructor.
+  * <p>
+  * Returns a deep copy of the UndirectedGraph passed in. The deep copy is of all the vertices and
+  * edges in the UndirectedGraph, but not of the elements that the vertices contain.
   * @param g the UndirectedGraph to Copy
   * @since 0.2.0
   */
@@ -109,16 +115,15 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
-  * Returns an UndirectedGraph of neighbors of the Node passed in.
-  * The Neighbors Graph consists of the neighboring Nodes
-  * and all the edges between all of these nodes.
-  * @param node the Node to get the neighbors of.
-  * @return an UndirectedGraph of the neighbors. This is a deep
-  *         copy of this subset of the total graph.
-  * @since 0.3.0
+  * Return a Graph of neighbors of the Node passed in.
+  * <p>
+  * The Neighbors Graph consists of the adjacent vertices and all the edges between these vertices.
+  * @param element the element to get the neighbors of.
+  * @return a graph of the neighbors. This is a deep copy of this subset of the total graph.
+  * @since 0.14.0
   */
-  public UndirectedGraph<T> getNeighbors(Node<T> node){
-    return new UndirectedGraph<T>(node.getNeighbors());
+  public UndirectedGraph<T> getNeighbors(T element){
+    return subset(getNode(element).getNeighbors());
   }
 
   /**
@@ -132,21 +137,21 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
 
   /**
   * {@inheritDoc}
-  * @since 0.3.0
+  * @since 0.14.0
   */
   @Override
-  public UndirectedGraph<T> getNeighborhood(Collection<Node<T>> nodes){
+  public UndirectedGraph<T> getNeighborhood(Collection<T> elements){
     // default load factor is 0.75. Create a HashSet large enough that it
     // won't ever need to be enlarged.
-    HashSet<Node<T>> originalNodes = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
-    for(Node<T> node : nodes){
-      if(!contains(node)){
-        throw new NoSuchElementException("Cannot get neighborhood of nodes requested, "
-          +"one of the nodes not in graph.");
+    HashSet<Node<T>> neighborhoodElements = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
+    for(T element : elements){
+      if(!contains(element)){
+        throw new NoSuchElementException(String.format("Cannot get neighborhood of nodes, "
+          +"Node %s not in graph.", element));
       }
-      originalNodes.addAll(this.getNode(node.get()).getNodeAndNeighbors());
+      neighborhoodElements.addAll(this.getNode(element).getNodeAndNeighbors());
     }
-    return new UndirectedGraph<T>(originalNodes);
+    return new UndirectedGraph<T>(neighborhoodElements);
   }
 
   /**

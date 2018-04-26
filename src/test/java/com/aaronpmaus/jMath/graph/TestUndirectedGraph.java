@@ -220,10 +220,10 @@ public class TestUndirectedGraph{
   public void testGetNeighborhoodFromCollectionException(){
     Node<Integer> one = example.getNode(1);
     Node<Integer> two = example.getNode(2);
-    ArrayList<Node<Integer>> list = new ArrayList<Node<Integer>>();
-    list.add(one);
-    list.add(two);
-    example.removeNode(two);
+    ArrayList<Integer> list = new ArrayList<Integer>();
+    list.add(1);
+    list.add(2);
+    example.removeNode(2);
     exception.expect(NoSuchElementException.class);
     example.getNeighborhood(list);
   }

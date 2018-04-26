@@ -1,6 +1,7 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,15 +15,9 @@ import java.util.Stack;
 /**
 * A Graph is a Directed Graph.
 * <p>
-* A Graph is composed of Nodes which represent vertices and are wrappers for a values.
-* <p>
-* There is a strong relationship between the nodes of the graph and the values they wrap. A node is
-* defined by its value. Its edges may change, but as long as it contains the same value, it is the
-* same node. The values in the graph must be unique, that is, there can not be more than one node
-* containing the same value.
-*
-* @author Aaron Maus aaron@aaronpmaus.com
-* @version 0.8.0
+* A Graph is composed of elements which are the vertices and the edges between them. The elements in
+* the graph must be unique.
+* @version 0.14.0
 * @since 0.1.0
 */
 public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>{
@@ -31,7 +26,8 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   private String graphFileName;
 
   /**
-  * A default constructor for the graph.
+  * The default constructor for the graph, builds a graph with no verties. Vertices and edges can
+  * be added via addEdge() and addNode().
   * @version 0.7.0
   * @since 0.1.0
   */
@@ -42,21 +38,22 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * Constructs a graph given the number of nodes that will go in the graph.
-  * @param numNodes the number of nodes to go in the graph.
+  * Constructs an empty graph, prepared to hold the specified number of vertices.
+  * @param numVertices the number of vertices to go in the graph.
   * @version 0.7.0
   * @since 0.1.0
   */
-  public Graph(int numNodes){
-    this.adjacencyList = new HashMap<T, Node<T>>((int)((numNodes)/0.75)+1);
+  public Graph(int numVertices){
+    this.adjacencyList = new HashMap<T, Node<T>>((int)((numVertices)/0.75)+1);
     this.numEdges = 0;
     this.graphFileName = "g.dimacs";
   }
 
   /**
-  * A copy constructor for a Graph. Returns a deep copy of the Graph
-  * passed in. The deep copy is of all the Nodes and Edges in the Graph,
-  * but not of the Objects that the Nodes contains.
+  * A copy constructor.
+  * <p>
+  * Returns a deep copy of the Graph passed in. The deep copy is of all the vertices and edges in
+  * the Graph, but not of the elements that the vertices contain.
   * @param g the Graph to create a copy of
   * @version 0.7.0
   * @since 0.2.0
@@ -72,8 +69,8 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * A constructor that takes a Collection of nodes and builds a graph out of them
-  * of them
+  * Internal use one, a constructor that takes a Collection of Nodes (vertices) and builds a graph
+  * out of them of them,
   * @param nodes the nodes to be in the graph
   * @version 0.7.0
   * @since 0.2.0
@@ -117,6 +114,54 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
+  * Return a Graph of neighbors of the Node passed in.
+  * <p>
+  * The Neighbors Graph consists of the adjacent vertices and all the edges between these vertices.
+  * @param element the element to get the neighbors of.
+  * @return a graph of the neighbors. This is a deep copy of this subset of the total graph.
+  * @since 0.14.0
+  */
+  public Graph<T> getNeighbors(T element){
+    return subset(getNode(element).getNeighbors());
+  }
+
+  /**
+  * Return the neighborhood from this Graph of the Node passed in.
+  * <p>
+  * The Neighborhood consists of the node, all of its neighbors, and the set of edges that are
+  * between all of these nodes.
+  * @param element The node to get the neighborhood around.
+  * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
+  * @since 0.1.0
+  */
+  public Graph<T> getNeighborhood(T element){
+    return subset(getNode(element).getNodeAndNeighbors());
+  }
+
+  /**
+  * Return the neighborhood from this Graph of the collection of elements passed in.
+  * <p>
+  * The Neighborhood consists of those vertices, all their neighbors, and all the edges between
+  * these vertices.
+  * @param elements the elements of the Graph to get the neighborhood around.
+  * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
+  * @since 0.14.0
+  */
+  public Graph<T> getNeighborhood(Collection<T> elements){
+    // default load factor is 0.75. Create a HashSet large enough that it
+    // won't ever need to be enlarged.
+    HashSet<Node<T>> neighborhoodElements = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
+    for(T element : elements){
+      if(!contains(element)){
+        throw new NoSuchElementException(String.format("Cannot get neighborhood of nodes, "
+          +"Node %s not in graph.", element));
+      }
+      neighborhoodElements.addAll(this.getNode(element).getNodeAndNeighbors());
+    }
+    return new Graph<T>(neighborhoodElements);
+  }
+
+  /**
   * Sets the filename for the graph. This is the name
   * to be used when writing out to file. When a graph
   * is created by reading in from a
@@ -135,57 +180,6 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   */
   public String getGraphFileName(){
     return this.graphFileName;
-  }
-
-  /**
-  * Return the neighborhood from this Graph of the Node passed in.
-  * <p>
-  * The Neighborhood consists of the node, all of its neighbors, and the set of edges that are
-  * between all of these nodes.
-  * @param element The node to get the neighborhood around.
-  * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
-  * @since 0.1.0
-  */
-  public Graph<T> getNeighborhood(T element){
-    return subset(getNode(element).getNodeAndNeighbors());
-  }
-
-  /**
-  * Return the neighborhood from this Graph of the collection of Nodes passed in.
-  * <p>
-  * The Neighborhood consists of the Nodes, all their neighbors, and all the edges between all of
-  * these nodes.
-  * @param nodes the Nodes to get the neighborhood around.
-  * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
-  * @since 0.3.0
-  */
-  public Graph<T> getNeighborhood(Collection<Node<T>> nodes){
-    // default load factor is 0.75. Create a HashSet large enough that it
-    // won't ever need to be enlarged.
-    HashSet<Node<T>> originalNodes = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
-    for(Node<T> node : nodes){
-      if(!contains(node)){
-        throw new NoSuchElementException("Cannot get neighborhood of nodes requested, "
-          +"one of the nodes not in graph.");
-      }
-      originalNodes.addAll(this.getNode(node.get()).getNodeAndNeighbors());
-    }
-    return new Graph<T>(originalNodes);
-  }
-
-  /**
-  * Return a Graph of neighbors of the Node passed in.
-  *
-  * The Neighbors Graph consists of the neighboring Nodes
-  * and all the edges between all of these nodes.
-  *
-  * @param node the Node to get the neighbors of.
-  * @return a graph of the neighbors. This is a deep
-  *         copy of this subset of the total graph.
-  * @since 0.3.0
-  */
-  public Graph<T> getNeighbors(Node<T> node){
-    return new Graph<T>(node.getNeighbors());
   }
 
   /**
@@ -475,14 +469,13 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * Check if there is a node containing a particular value is in this graph.
-  *
-  * @param nodeValue the value to check for.
-  * @return true if one of the nodes in the graph contain the nodeValue, false otherwise.
+  * Check if there is a vertec containing element in this graph.
+  * @param element the element to check for.
+  * @return true if one of the vertices in the graph contains element, false otherwise.
   * @since 0.1.0
   */
-  public boolean contains(T nodeValue){
-    return adjacencyList.containsKey(nodeValue);
+  public boolean contains(T element){
+    return adjacencyList.containsKey(element);
   }
 
   /**

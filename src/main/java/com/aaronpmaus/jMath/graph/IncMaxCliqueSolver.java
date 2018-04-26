@@ -250,7 +250,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     for(Node<T> neighbor : neighbors){
       vertexUB_bkup.put(neighbor, vertexUB.get(neighbor));
     }
-    UndirectedGraph<T> neighborsGraph = g.getNeighbors(g.getNode(smallestVertex.get()));
+    UndirectedGraph<T> neighborsGraph = g.getNeighbors(smallestVertex.get());
     UndirectedGraph<T> cUnionSmallestVertex = new UndirectedGraph<T>(c);
     // add in smallestVertex
     // first create a new Node

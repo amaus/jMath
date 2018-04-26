@@ -133,13 +133,13 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   /**
   * Return the neighbors of this node.
   * <p>
-  * Any changes to the collection (such as adding or removing nodes) will not affect this node.
-  * Any changes to the nodes in the collection however will affect the graph.
+  * Any changes to the collection (such as adding or removing nodes) will not affect this Node.
+  * Any changes to the Nodes within the list however will affect the graph.
   * @return a {@code List<Node<T>>} of all nodes that are connected
   *         to this node by an edge
   * @since 0.11.0
   */
-  public Collection<Node<T>> getNeighbors(){
+  public List<Node<T>> getNeighbors(){
     return new LinkedList<Node<T>>(neighbors.keySet());
   }
 
