@@ -31,6 +31,13 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
     this.edges = new LinkedHashMap<Node<T>,Edge<T>>();
   }
 
+  protected Node(Node<T> other) {
+    this(other.get());
+    for(Node<T> neighbor : other.getNeighbors()) {
+      this.addNeighbor(neighbor, other.getEdgeWeight(neighbor));
+    }
+  }
+
   /**
   * @return the number of neighbors of this node.
   * @since 0.1.0
