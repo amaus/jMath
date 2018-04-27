@@ -12,7 +12,7 @@ import java.util.Date;
 * <p>
 * This implementation is my own for the Max Clique Problem
 * @author Aaron Maus aaron@aaronpmaus.com
-* @version 0.7.0
+* @version 0.14.0
 * @since 0.7.0
 */
 public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliqueSolver<T> {
@@ -65,6 +65,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     //if(verbose) System.out.println("Max Possible Clique Number: " + (high-1));
     //}
     int high = Math.min(maxPossibleCliqueNum(graph), indSetUB(graph)) + 1;
+    //int high = maxPossibleCliqueNum(graph) + 1;
     int low = 0;
     UndirectedGraph<T> clique = null;
     UndirectedGraph<T> maxClique = null;
@@ -273,8 +274,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           }
         }
         UndirectedGraph<T> clique = null;
-        //int maxPosCliqueNum = neighborhood.size();
-        /*if(neighborhood.density() > 0.70){
+        /*int maxPosCliqueNum = neighborhood.size();
+        if(neighborhood.density() > 0.70){
           //System.out.println("calculating max clique size in neighborhood");
           //ArrayList<UndirectedGraph<T>> indSets = IncMaxCliqueSolver.getIndependentSetPartition(neighborhood);
           ArrayList<UndirectedGraph<T>> indSets = getIndependentSetPartition(neighborhood);
@@ -282,7 +283,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           //System.out.println("max clique num by edges: " + maxPossibleCliqueNum(neighborhood));
           maxPosCliqueNum = indSets.size();
         } else {
-          maxPosCliqueNum = Math.min(maxPossibleCliqueNum(neighborhood), indSetUB(neighborhood));
+          //maxPosCliqueNum = Math.min(maxPossibleCliqueNum(neighborhood), indSetUB(neighborhood));
+          maxPosCliqueNum = maxPossibleCliqueNum(neighborhood);
         }*/
         int maxPosCliqueNum = Math.min(maxPossibleCliqueNum(neighborhood), indSetUB(neighborhood));
         if(maxPosCliqueNum < k){
