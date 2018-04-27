@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Comparator;
@@ -143,7 +144,8 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   public UndirectedGraph<T> getNeighborhood(Collection<T> elements){
     // default load factor is 0.75. Create a HashSet large enough that it
     // won't ever need to be enlarged.
-    HashSet<Node<T>> neighborhoodElements = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
+    LinkedHashSet<Node<T>> neighborhoodElements = new LinkedHashSet<Node<T>>((int)((this.size()+1)/0.75+1));
+    //HashSet<Node<T>> neighborhoodElements = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
     for(T element : elements){
       if(!contains(element)){
         throw new NoSuchElementException(String.format("Cannot get neighborhood of nodes, "
@@ -181,6 +183,18 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   }
 
   /**
+  * {@inheritDoc}
+  */
+  protected void addNode(Node<T> n) {
+    if(!contains(n.get())) {
+      super.addVertex(n);
+      for(Node<T> neighbor : n.getNeighbors()){
+        addEdge(neighbor.get(), n.get());
+      }
+    }
+  }
+
+  /**
   * Add an edge to the graph. Adds nodes containing these two objects
   * to the graph if they are not already in the graph. Then adds
   * an edge from start to end.
@@ -191,6 +205,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   @Override
   public void addEdge(T start, T end){
     super.addEdge(start, end);
+    super.addEdge(end, start);
   }
 
   /**

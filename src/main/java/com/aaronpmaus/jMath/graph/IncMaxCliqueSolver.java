@@ -194,27 +194,28 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
       //System.out.println(smallestVertex);
     }
     int smallestVertexIndex = vertexOrdering.indexOf(smallestVertex);
-    UndirectedGraph<T> gWithoutSmallestVertex = new UndirectedGraph<T>(g);
-    gWithoutSmallestVertex.removeVertex(smallestVertex);
+    //UndirectedGraph<T> gWithoutSmallestVertex = new UndirectedGraph<T>(g);
+    //gWithoutSmallestVertex.removeVertex(smallestVertex);
     if(numCalls < 100){
       //System.out.println("graph without smallest vertex");
       //System.out.println(gWithoutSmallestVertex);
     }
     //System.out.println("making recursive call of incMaxClique");
-    UndirectedGraph<T> c1 = incMaxClique(gWithoutSmallestVertex, c, cMax);
+    //UndirectedGraph<T> c1 = incMaxClique(gWithoutSmallestVertex, c, cMax);
+
+    // CRAZY Idea, instead of creating a copy of g for every recursive call, remove the smallest
+    // vertex from g before the call, and add it back in after the call.
+    Node<T> small = g.getNode(smallestVertex);
+    g.removeVertex(smallestVertex);
+    UndirectedGraph<T> c1 = incMaxClique(g, c, cMax);
+    g.addNode(small);
+
     //System.out.println("In Call #: " + callNumber);
     //System.out.println("first recursive call complete");
     if(c1.size() > cMax.size()){
       cMax = c1;
     }
-    // update vertexUB, so far only incUB. TODO include UBindSet
-    // smallestVertex is not garanteed to be the same reference as that node in
-    // the original graph (the node used to build vertexUB), but since the hashCodes
-    // depend only on the Objects the Nodes contain and the Objects themselves
-    // are only shallow copies even if the graph is a deep copy, it doesn't matter
-    // if we don't have a reference to the original node. When a graph is copies, all
-    // the nodes and edges are copied, but the references to the objects the nodes contain
-    // are simply passed in, not deep copied.
+    // update vertexUB, includes incUB and indSetUB. TODO include MaxSatUB
     //System.out.println("smallest vertex: " + smallestVertex.get() );
     //System.out.println("Size of vertexUB: " + vertexUB.size());
     //for(Node<T> node : vertexUB.keySet()){
@@ -253,8 +254,9 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
     //System.out.println("neighbors of " + smallestVertex + ":\n" + neighborsGraph);
     //System.out.println("cUnionSmallestVertex:\n" + cUnionSmallestVertex);
-
+    //c.addNode(small);
     UndirectedGraph<T> c2 = incMaxClique(neighborsGraph, cUnionSmallestVertex, cMax);
+    //UndirectedGraph<T> c2 = incMaxClique(neighborsGraph, c, cMax);
     //System.out.println("In Call #: " + callNumber);
     //System.out.println("second recursive call complete");
 

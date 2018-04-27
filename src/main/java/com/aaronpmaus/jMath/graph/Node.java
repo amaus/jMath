@@ -218,14 +218,9 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   @Override
   @SuppressWarnings("unchecked")
   public boolean equals(Object obj){
-    Node<T> n;
-    if(this.getClass().isInstance(obj)){
-      try{
-        n = this.getClass().cast(obj);
-        return get().equals(n.get());
-      }catch(ClassCastException e){
-        e.printStackTrace();
-      }
+    if(obj instanceof Node) {
+      Node<T> n = (Node<T>) obj;
+      return this.get().equals(n.get());
     }
     return false;
   }

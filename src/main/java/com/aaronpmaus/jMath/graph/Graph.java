@@ -1,7 +1,7 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.AbstractCollection;
+import java.util.LinkedHashSet;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -31,7 +31,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @version 0.7.0
   * @since 0.1.0
   */
-  public Graph(){
+  public Graph() {
     this.adjacencyList = new HashMap<T, Node<T>>(100); // default load factor is 0.75
     this.numEdges = 0;
     this.graphFileName = "g.dimacs";
@@ -43,7 +43,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @version 0.7.0
   * @since 0.1.0
   */
-  public Graph(int numVertices){
+  public Graph(int numVertices) {
     this.adjacencyList = new HashMap<T, Node<T>>((int)((numVertices)/0.75)+1);
     this.numEdges = 0;
     this.graphFileName = "g.dimacs";
@@ -58,12 +58,12 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @version 0.7.0
   * @since 0.2.0
   */
-  public Graph(Graph<T> g){
+  public Graph(Graph<T> g) {
     Collection<Node<T>> nodes = getDeepCopyNodes(g.getNodes());
     this.adjacencyList = new HashMap<T, Node<T>>((int)((nodes.size())/0.75)+1);
     this.numEdges = 0;
-    for(Node<T> node : nodes){
-      addVertex(node);
+    for(Node<T> node : nodes) {
+      this.addVertex(node);
     }
     this.graphFileName = g.getGraphFileName();
   }
@@ -75,12 +75,12 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @version 0.7.0
   * @since 0.2.0
   */
-  protected Graph(Collection<Node<T>> nodes){
+  protected Graph(Collection<Node<T>> nodes) {
     nodes = getDeepCopyNodes(nodes);
     this.adjacencyList = new HashMap<T, Node<T>>((int)((nodes.size())/0.75)+1);
     this.numEdges = 0;
-    for(Node<T> node : nodes){
-      addVertex(node);
+    for(Node<T> node : nodes) {
+      this.addVertex(node);
     }
     this.graphFileName = "g.dimacs";
   }
@@ -92,9 +92,9 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * edges between these vertices.
   * @since 0.14.0
   */
-  public Graph<T> subset(Collection<T> elements){
+  public Graph<T> subset(Collection<T> elements) {
     LinkedList<Node<T>> nodes = new LinkedList<Node<T>>();
-    for(T element : elements){
+    for(T element : elements) {
       if(this.contains(element)) {
         nodes.add(this.getNode(element));
       }
@@ -109,7 +109,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * edges between these vertices.
   * @since 0.14.0
   */
-  private Graph<T> subset(List<Node<T>> nodes){
+  private Graph<T> subset(List<Node<T>> nodes) {
     return new Graph<T>(nodes);
   }
 
@@ -121,7 +121,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return a graph of the neighbors. This is a deep copy of this subset of the total graph.
   * @since 0.14.0
   */
-  public Graph<T> getNeighbors(T element){
+  public Graph<T> getNeighbors(T element) {
     return subset(getNode(element).getNeighbors());
   }
 
@@ -134,7 +134,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
   * @since 0.14.0
   */
-  public Graph<T> getNeighborhood(T element){
+  public Graph<T> getNeighborhood(T element) {
     return subset(getNode(element).getNodeAndNeighbors());
   }
 
@@ -147,12 +147,12 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return a graph of the neighborhood. This is a deep copy of this subset of the total graph.
   * @since 0.14.0
   */
-  public Graph<T> getNeighborhood(Collection<T> elements){
+  public Graph<T> getNeighborhood(Collection<T> elements) {
     // default load factor is 0.75. Create a HashSet large enough that it
     // won't ever need to be enlarged.
-    HashSet<Node<T>> neighborhoodElements = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
-    for(T element : elements){
-      if(!contains(element)){
+    LinkedHashSet<Node<T>> neighborhoodElements = new LinkedHashSet<Node<T>>((int)((this.size()+1)/0.75+1));
+    for(T element : elements) {
+      if(!contains(element)) {
         throw new NoSuchElementException(String.format("Cannot get neighborhood of nodes, "
           +"Node %s not in graph.", element));
       }
@@ -178,7 +178,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return the name of the file associated with this graph
   * @since 0.7.0
   */
-  public String getGraphFileName(){
+  public String getGraphFileName() {
     return this.graphFileName;
   }
 
@@ -191,7 +191,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return the complement of the graph
   * @since 0.3.0
   */
-  public Graph<T> getComplement(){
+  public Graph<T> getComplement() {
     return new Graph<T>(getComplementNodes());
   }
 
@@ -201,7 +201,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * The copy is a deep copy of all nodes and all edges
   * where both end points of the edge are in this list of nodes.
   */
-  private Collection<Node<T>> getDeepCopyNodes(){
+  private Collection<Node<T>> getDeepCopyNodes() {
     return getDeepCopyNodes(getNodes());
   }
 
@@ -210,7 +210,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * The copy is a deep copy of all nodes and all edges
   * where both end points of the edge are in this list of nodes.
   */
-  private Collection<Node<T>> getDeepCopyNodes(Collection<Node<T>> originalNodes){
+  private Collection<Node<T>> getDeepCopyNodes(Collection<Node<T>> originalNodes) {
     // first get a list of these nodes
     // store as a hashmap for constant time lookups
     // about the parameter. The default load factor is 0.75. So we want to instantiate
@@ -219,17 +219,17 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
     // it's the number of neighbors+1 (for the root).
     // Setting the initial capacity to (numNeighbors+1)/0.75 + 1 will do the trick.
     HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((originalNodes.size()+1)/0.75+1));
-    for(Node<T> node : originalNodes){
+    for(Node<T> node : originalNodes) {
       Node<T> newNode = new Node<T>(node.get());
       copyNodes.put(node.get(), newNode);
     }
 
-    for(Node<T> originalNode : originalNodes){
+    for(Node<T> originalNode : originalNodes) {
       Collection<Edge<T>> edges = originalNode.getEdges();
       Node<T> newNode = copyNodes.get(originalNode.get());
-      for(Edge<T> edge : edges){
+      for(Edge<T> edge : edges) {
         Node<T> neighbor = edge.getEnd();
-        if(copyNodes.containsKey(neighbor.get())){
+        if(copyNodes.containsKey(neighbor.get())) {
           newNode.addEdge(new Edge<T>(newNode, copyNodes.get(neighbor.get()), edge.getWeight()));
         }
       }
@@ -246,13 +246,13 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return a Collection of Nodes that would belong to the complement of this graph
   * @since 0.3.0
   */
-  protected Collection<Node<T>> getComplementNodes(){
+  protected Collection<Node<T>> getComplementNodes() {
     // create a new node for every node in the graph.
     HashMap<T, Node<T>> copyNodes = getCopyNodesNoEdges();
     Collection<Node<T>> originalNodes = getNodes();
-    for(Node<T> node : originalNodes){
-      for(Node<T> possibleNeighbor: originalNodes){
-        if(node != possibleNeighbor && !node.hasNeighbor(possibleNeighbor)){
+    for(Node<T> node : originalNodes) {
+      for(Node<T> possibleNeighbor: originalNodes) {
+        if(node != possibleNeighbor && !node.hasNeighbor(possibleNeighbor)) {
           Node<T> copyNode = copyNodes.get(node.get());
           copyNode.addNeighbor(copyNodes.get(possibleNeighbor.get()));
         }
@@ -266,25 +266,29 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return the number of Nodes in this graph
   * @since 0.1.0
   */
-  public int size(){
+  public int size() {
     return this.adjacencyList.size();
   }
 
   /**
-  * @return a {@code List<Node<T>>} of the nodes
+  * Returns a {@code Collections<Node<T>>} of the nodes. Changes to this Collection result in
+  * changes to the graph, If this Collection is modified, the state of the Graph becomes
+  * undefined. This Collection should NOT be modified.
+  * @return a {@code Collections<Node<T>>} of the nodes.
   * @since 0.1.0
   */
-  protected List<Node<T>> getNodes(){
-    return new LinkedList<Node<T>>(this.adjacencyList.values());
+  protected List<Node<T>> getNodes() {
+    return new ArrayList<Node<T>>(this.adjacencyList.values());
+    //return this.adjacencyList.values();
   }
 
   /**
   * @return all the elements in this Graph
   * @since 0.14.0
   */
-  public List<T> getElements(){
+  public List<T> getElements() {
     LinkedList<T> elements = new LinkedList<T>();
-    for(Node<T> node : this){
+    for(Node<T> node : this) {
       elements.add(node.get());
     }
     return elements;
@@ -296,7 +300,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return a Collection of the edges in this Graph
   * @since 0.11.0
   */
-  public Collection<? extends Edge<T>> getEdges(){
+  public Collection<? extends Edge<T>> getEdges() {
     HashSet<Edge<T>> edges = new HashSet<Edge<T>>((int)(numEdges()/0.75) + 1);
     for(Node<T> node : this) {
       for(Edge<T> e : node.getEdges()) {
@@ -310,10 +314,10 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * Return a copy of the nodes without any edges.
   * returns a HashMap.
   */
-  private HashMap<T,Node<T>> getCopyNodesNoEdges(){
+  private HashMap<T,Node<T>> getCopyNodesNoEdges() {
     //Collection<Node<T>> originalNodes = getNodes();
     HashMap<T,Node<T>> copyNodes = new HashMap<T,Node<T>>((int)((this.size()+1)/0.75+1));
-    for(Node<T> node : this){
+    for(Node<T> node : this) {
       Node<T> newNode = new Node<T>(node.get());
       copyNodes.put(node.get(), newNode);
     }
@@ -321,12 +325,12 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   }
 
   /**
-  * Add a node to the graph. Only adds the node if it is not already in the graph.
+  * Add a vertex to the graph. Only adds the vertex if it is not already in the graph.
   * @param n the node to add to the graph.
   * @since 0.14.0
   */
-  private void addVertex(Node<T> n){
-    if(!contains(n.get())){
+  protected void addVertex(Node<T> n) {
+    if(!contains(n.get())) {
       //System.out.println("Adding node: " + n.hashCode());
       adjacencyList.put(n.get() ,n);
       incrementNumEdges(n.numNeighbors());
@@ -338,8 +342,8 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @param e the element to add to the graph.
   * @since 0.14.0
   */
-  public void addVertex(T e){
-    addVertex(new Node<T>(e));
+  public void addVertex(T e) {
+    this.addVertex(new Node<T>(e));
   }
 
   /**
@@ -349,8 +353,8 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.14.0
   * @throws IllegalArgumentException if there is no node containing obj.
   */
-  protected Node<T> getNode(T element){
-    if(!this.adjacencyList.containsKey(element)){
+  protected Node<T> getNode(T element) {
+    if(!this.adjacencyList.containsKey(element)) {
       throw new NoSuchElementException(String.format("Node %s not in graph.", element));
     }
     return this.adjacencyList.get(element);
@@ -364,7 +368,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @param end the end object of the edge
   * @since 0.8.0
   */
-  public void addEdge(T start, T end){
+  public void addEdge(T start, T end) {
     addEdge(start, end, 1.0);
   }
 
@@ -377,12 +381,12 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @param weight, the weight of the edge
   * @since 0.8.0
   */
-  public void addEdge(T start, T end, double weight){
+  public void addEdge(T start, T end, double weight) {
     if(!contains(start)) {
-      addVertex(start);
+      this.addVertex(start);
     }
     if(!contains(end)) {
-      addVertex(end);
+      this.addVertex(end);
     }
     if(!hasEdge(start, end)) {
       getNode(start).addNeighbor(getNode(end), weight);
@@ -396,7 +400,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @param end the node at the end of the edge
   * @since 0.14.0
   */
-  public void removeEdge(T start, T end){
+  public void removeEdge(T start, T end) {
     if(hasEdge(start, end)) {
       getNode(start).removeNeighbor(getNode(end));
       decrementNumEdges();
@@ -409,28 +413,28 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return true if there is an edge from start to end, false otherwise
   * @since 0.14.0
   */
-  public boolean hasEdge(T start, T end){
-    if(this.contains(start) && this.contains(end)){
-      if(this.getNode(start).hasNeighbor(this.getNode(end))){
+  public boolean hasEdge(T start, T end) {
+    if(this.contains(start) && this.contains(end)) {
+      if(this.getNode(start).hasNeighbor(this.getNode(end))) {
         return true;
       }
     }
     return false;
   }
 
-  private void incrementNumEdges(){
+  private void incrementNumEdges() {
     this.numEdges++;
   }
 
-  private void incrementNumEdges(int num){
+  private void incrementNumEdges(int num) {
     this.numEdges += num;
   }
 
-  private void decrementNumEdges(){
+  private void decrementNumEdges() {
     this.numEdges--;
   }
 
-  private void decrementNumEdges(int num){
+  private void decrementNumEdges(int num) {
     this.numEdges -= num;
   }
 
@@ -440,9 +444,9 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return the number of edges
   * @since 0.1.0
   */
-  public int getNumEdges(){
+  public int getNumEdges() {
     int numEdges = 0;
-    for(Node<T> node : this.adjacencyList.values()){
+    for(Node<T> node : this.adjacencyList.values()) {
       numEdges += node.numNeighbors();
     }
     return numEdges;
@@ -453,7 +457,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return the number of edges of the graph.
   * @since 0.1.0
   */
-  public int numEdges(){
+  public int numEdges() {
     return this.numEdges;
   }
 
@@ -463,7 +467,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return true if one of the vertices in the graph contains element, false otherwise.
   * @since 0.14.0
   */
-  public boolean contains(T element){
+  public boolean contains(T element) {
     return adjacencyList.containsKey(element);
   }
 
@@ -473,13 +477,13 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @param element the element to remove
   * @since 0.14.0
   */
-  public void removeVertex(T element){
-    if(contains(element)){
+  public void removeVertex(T element) {
+    if(contains(element)) {
       Node<T> node = this.getNode(element);
       // check all nodes in this graph to see if there is an edge from it to
       // this node
       for(Node<T> n : this) {
-        if(n.hasNeighbor(node)){
+        if(n.hasNeighbor(node)) {
           // if there is an edge from a node to nodeToBeRemoved,
           // remove that edge from this graph.
           this.removeEdge(n.get(), node.get());
@@ -501,7 +505,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return a List containing the path from source to target, or an empty list if no path exists.
   * @throws IllegalArgumentException if there are no nodes containing the source and target values.
   */
-  public List<T> shortestPath(T source, T target){
+  public List<T> shortestPath(T source, T target) {
     Node<T> sourceNode = getNode(source);
     Node<T> targetNode = getNode(target);
 
@@ -518,7 +522,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
     prevNodeInPath.put(sourceNode,null);
 
     for(Node<T> node : this) {
-      if(!node.equals(sourceNode)){
+      if(!node.equals(sourceNode)) {
         distToSource.put(node, Double.MAX_VALUE);
         prevNodeInPath.put(node, null);
       }
@@ -526,12 +530,12 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
 
     PriorityQueue<Node<T>> unvisitedNodes =
         new PriorityQueue<Node<T>>( size(),
-            new Comparator<Node<T>>(){
-              public int compare(Node<T> a, Node<T> b){
+            new Comparator<Node<T>>() {
+              public int compare(Node<T> a, Node<T> b) {
                 double diff = distToSource.get(a) - distToSource.get(b);
-                if(diff < 0){
+                if(diff < 0) {
                   return -1;
-                } else if (diff > 0){
+                } else if (diff > 0) {
                   return 1;
                 }
                 return 0;
@@ -541,21 +545,21 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
 
     unvisitedNodes.offer(sourceNode);
 
-    while(!unvisitedNodes.isEmpty()){
+    while(!unvisitedNodes.isEmpty()) {
       Node<T> min = unvisitedNodes.poll();
       //System.out.println("Visiting node: " + min.get());
-      if(min.equals(targetNode)){
+      if(min.equals(targetNode)) {
         break;
       }
 
-      for(Node<T> neighbor : min.getNeighbors()){
+      for(Node<T> neighbor : min.getNeighbors()) {
         double distance = distToSource.get(min) + min.getEdgeWeight(neighbor);
         //System.out.printf("Neighbor %d distance to source is %.2f\n", neighbor.get(), distToSource.get(neighbor));
         //System.out.printf("Distance to neighbor %d is %.2f\n",neighbor.get(),distance);
-        if(distance < distToSource.get(neighbor)){
+        if(distance < distToSource.get(neighbor)) {
           distToSource.put(neighbor,distance);
           prevNodeInPath.put(neighbor, min);
-          if(!unvisitedNodes.contains(neighbor)){
+          if(!unvisitedNodes.contains(neighbor)) {
             unvisitedNodes.offer(neighbor);
           } else {
             // update (decrease) the priority of neighbor. The only way to do this is to
@@ -571,11 +575,11 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
 
     // build the list of nodes in the shortest path from source to target
     LinkedList<T> path = new LinkedList<T>();
-    if(prevNodeInPath.get(targetNode) != null){
+    if(prevNodeInPath.get(targetNode) != null) {
       path.add(targetNode.get());
     }
     Node<T> nodeInPath = targetNode;
-    while(prevNodeInPath.get(nodeInPath) != null){
+    while(prevNodeInPath.get(nodeInPath) != null) {
       path.add(0,prevNodeInPath.get(nodeInPath).get());
       nodeInPath = prevNodeInPath.get(nodeInPath);
     }
@@ -589,20 +593,20 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @throws NoSuchElementException if source is not in the graph
   * @since 0.13.0
   */
-  public List<T> depthFirstSearch(T source){
-    if(!contains(source)){
+  public List<T> depthFirstSearch(T source) {
+    if(!contains(source)) {
       throw new NoSuchElementException(String.format("source is not in graph."));
     }
     Stack<Node<T>> stack = new Stack<Node<T>>();
     HashSet<Node<T>> visited = new HashSet<Node<T>>();
     LinkedList<T> list = new LinkedList<T>();
     stack.push(getNode(source));
-    while(!stack.empty()){
+    while(!stack.empty()) {
       Node<T> node = stack.pop();
-      if(!visited.contains(node)){
+      if(!visited.contains(node)) {
         visited.add(node);
         list.add(node.get());
-        for(Node<T> neighbor : node.getNeighbors()){
+        for(Node<T> neighbor : node.getNeighbors()) {
           stack.push(neighbor);
         }
       }
@@ -615,7 +619,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return the density of the graph
   * @since 0.3.0
   */
-  public double density(){
+  public double density() {
     return ((double)getNumEdges())/(size()*(size()-1));
   }
 
@@ -623,7 +627,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * {@inheritDoc}
   */
   @Override
-  public Iterator<Node<T>> iterator(){
+  public Iterator<Node<T>> iterator() {
     return this.adjacencyList.values().iterator();
   }
 
@@ -632,16 +636,16 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.1.0
   */
   @Override
-  public String toString(){
+  public String toString() {
     String str = "";
-    for(Node<T> node : this){
+    for(Node<T> node : this) {
       str += node.toString() + "\n";// + " #neighbors: " + node.numNeighbors() + "\n";
     }
     return str;
   }
 
   @Override
-  public int hashCode(){
+  public int hashCode() {
     return getNodes().hashCode() + getEdges().hashCode();
   }
 
@@ -653,8 +657,8 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   */
   @Override
   @SuppressWarnings("unchecked")
-  public boolean equals(Object obj){
-    if(this.getClass().isInstance(obj)){
+  public boolean equals(Object obj) {
+    if(this.getClass().isInstance(obj)) {
       Graph<T> other = this.getClass().cast(obj);
 
       boolean ret = true;

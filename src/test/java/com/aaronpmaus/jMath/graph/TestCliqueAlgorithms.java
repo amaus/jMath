@@ -30,35 +30,35 @@ public class TestCliqueAlgorithms {
   private MaxCliqueSolver<Integer> cliqueTool;
 
   @Before
-  public void setUp(){
+  public void setUp() {
     String fileName = "example.dimacs";
     InputStream stream = TestUndirectedGraph.class.getResourceAsStream(fileName);
     example = GraphIO.readFromDimacsFile(stream, fileName);
   }
 
   @Test
-  public void testIncMaxCliqueAdapter(){
+  public void testIncMaxCliqueAdapter() {
     cliqueTool = new IncMaxCliqueAdapter();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(example);
     verifyClique(clique);
   }
 
   @Test
-  public void testIncMaxCliqueSolver(){
+  public void testIncMaxCliqueSolver() {
     cliqueTool = new IncMaxCliqueSolver<Integer>();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(example);
     verifyClique(clique);
   }
 
   @Test
-  public void testMausMaxCliqueSolver(){
+  public void testMausMaxCliqueSolver() {
     cliqueTool = new MausMaxCliqueSolver<Integer>();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(example);
     verifyClique(clique);
   }
 
   @Test
-  public void testIncMaxCliqueAdapterOnGraphOfSizeOne(){
+  public void testIncMaxCliqueAdapterOnGraphOfSizeOne() {
     UndirectedGraph<Integer> graph = new UndirectedGraph<Integer>();
     graph.addVertex(new Integer(1));
     cliqueTool = new IncMaxCliqueAdapter();
@@ -68,14 +68,14 @@ public class TestCliqueAlgorithms {
   }
 
   @Test
-  public void testIncMaxCliqueAdapterOnEmptyGraph(){
+  public void testIncMaxCliqueAdapterOnEmptyGraph() {
     UndirectedGraph<Integer> graph = new UndirectedGraph<Integer>();
     cliqueTool = new IncMaxCliqueAdapter();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(graph);
     assertTrue(clique.size() == 0);
   }
 
-  private void verifyClique(UndirectedGraph<Integer> clique){
+  private void verifyClique(UndirectedGraph<Integer> clique) {
     assertTrue(clique.contains(4));
     assertTrue(clique.contains(5));
     assertTrue(clique.contains(6));
