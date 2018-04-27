@@ -28,6 +28,8 @@ backwards compatible with 0.13.0 and before.
   - GraphIO (moved from graph package)
 - method getElements() in Graph
 ### Changed
+- Bounding criteria in MausMaxCliqueSolver, include indSetUB from
+  IncMaxCliqueSolver
 - Major changes to Graph and UndirectedGraph. Restricting client access to
   Nodes. A Graph should be viewed as a set of elements and the connections
   between them.
