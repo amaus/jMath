@@ -1,6 +1,7 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Collections;
 import java.util.Collection;
@@ -19,7 +20,6 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   private ArrayList<T> vertexOrdering;
   //private ArrayList<Integer> vertexUB;
   private HashMap<T, Integer> vertexUB;
-  private UndirectedGraph<T> originalGraph;
   public static long numCalls = 0;
   public static long numVOCalls = 0;
 
@@ -41,18 +41,15 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   * @since 0.7.0
   */
   public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph, ArrayList<T> vertexOrdering) {
-    // create a deep copy of the graph
-    this.originalGraph = graph;
-    UndirectedGraph<T> g = new UndirectedGraph<T>(graph);
     this.vertexOrdering = vertexOrdering;
-    vertexUB = new HashMap<T, Integer>((int)(g.size()/0.75)+1);
+    vertexUB = new HashMap<T, Integer>((int)(graph.size()/0.75)+1);
     for(int i = vertexOrdering.size()-1; i >= 0; i--){
-      int ubValue = incUB(i, g);
+      int ubValue = incUB(i, graph);
       vertexUB.put(vertexOrdering.get(i), ubValue);
     }
     //printUB();
-    UndirectedGraph<T> clique = incMaxClique(g, new UndirectedGraph<T>(), new UndirectedGraph<T>());
-    clique = originalGraph.subset(clique.getElements());
+    UndirectedGraph<T> clique = incMaxClique(graph, new UndirectedGraph<T>(), new UndirectedGraph<T>());
+    clique = graph.subset(clique.getElements());
     //System.out.println("is clique? " + g.isClique(clique));
     //System.out.println("is clique? " + g.checkIfClique(objs));
     return clique;
@@ -121,10 +118,9 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     colorSets.add(new ArrayList<Node<T>>());
     for(Node<T> node : descendingDegreeNodes) {
       int k = 0;
-      Collection<Node<T>> neighbors = node.getNeighbors();
       // find the lowest k where neighbors and the set of nodes in colorSets[k] share no nodes
       // in common
-      while(!Collections.disjoint(neighbors, colorSets.get(k))){
+      while(!Collections.disjoint(node.getNeighbors(), colorSets.get(k))){
         k++;
       }
       if(k > maxColorNumber) {
@@ -156,7 +152,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
                         ArrayList<ArrayList<Node<T>>> colorSets) {
 
     for(int k1 = 0; k1 < colorThreshold - 1; k1++){
-      ArrayList<Node<T>> intersection = intersection(colorSets.get(k1), node.getNeighbors());
+      LinkedList<Node<T>> intersection = intersection(colorSets.get(k1), node.getNeighbors());
       if(intersection.size() == 1) {
         Node<T> intersectedNode = intersection.get(0);
         for(int k2 = k1 + 1; k2 < colorThreshold; k2++) {
@@ -429,8 +425,8 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     return min;
   }
 
-  private ArrayList<Node<T>> intersection(Collection<Node<T>> a, Collection<Node<T>> b){
-    ArrayList<Node<T>> intersection = new ArrayList<Node<T>>();
+  private LinkedList<Node<T>> intersection(Collection<Node<T>> a, Collection<Node<T>> b){
+    LinkedList<Node<T>> intersection = new LinkedList<Node<T>>();
     for(Node<T> node : a){
       if(b.contains(node)){
         intersection.add(node);
