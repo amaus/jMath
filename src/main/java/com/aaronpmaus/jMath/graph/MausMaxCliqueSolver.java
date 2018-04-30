@@ -18,7 +18,7 @@ import java.util.Date;
 */
 public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliqueSolver<T> {
   public static long numRecursiveCalls = -1;
-  private static int maxPrintLevel = 0;
+  private static int maxPrintLevel = -1;
   private boolean verbose = false;
 
   /**
@@ -130,7 +130,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   public UndirectedGraph<T> findClique(UndirectedGraph<T> graph, int k, int level) {
     while(graph.size() >= k) {
       if(graph.isClique()) {
-        return graph;
+        return new UndirectedGraph<T>(graph);
       }
       //if(maxPossibleCliqueNum(graph) < k) {
       //return null;
@@ -224,8 +224,10 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           if(level <= maxPrintLevel) {
             start = new Date().getTime();
           }
-          //clique = findClique(neighborhood, k, level+1);
+
+          //System.out.println("before recursive call\n"+graph);
           clique = findClique(graph.getNeighborhood(node.get()), k, level+1);
+
           if(level <= maxPrintLevel) {
             long end = new Date().getTime();
             String message = (end-start)/1000.0 + " seconds to evaluate node";
@@ -341,10 +343,10 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     return indSetUB(graph.getNodes());
   }
 
-  private int indSetUB(List<Node<T>> nodes) {
+  private int indSetUB(Collection<Node<T>> nodes) {
     //System.out.println("## Calculating indSetUB");
     // get a list of nodes and sort them in descending order by degree
-    List<Node<T>> descendingDegreeNodes = nodes;
+    List<Node<T>> descendingDegreeNodes = new ArrayList<Node<T>>(nodes);
     Collections.sort(descendingDegreeNodes, Collections.reverseOrder());
     int maxColorNumber = 0;
     // initialize color sets
@@ -403,7 +405,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     UndirectedGraph<T> independentSet = findIndependentSetViaClique(graph, graph.size() - k);
     UndirectedGraph<T> vertexCover = null;
     if(independentSet != null) {
-      Collection<T> cliqueElements = graph.getElements();
+      List<T> cliqueElements = graph.getElements();
       for(T independentSetElement : independentSet.getElements()) {
         cliqueElements.remove(independentSetElement);
       }

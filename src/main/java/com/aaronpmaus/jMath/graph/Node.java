@@ -26,7 +26,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param element the element that this node holds
   * @since 0.1.0
   */
-  public Node(T element){
+  public Node(T element) {
     this.element = element;
     this.edges = new LinkedHashMap<Node<T>,Edge<T>>();
   }
@@ -42,7 +42,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @return the number of neighbors of this node.
   * @since 0.1.0
   */
-  public int numNeighbors(){
+  public int numNeighbors() {
     return this.edges.size();
   }
 
@@ -51,7 +51,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @return the Object that this Node wraps.
   * @since 0.4.0
   */
-  public T get(){
+  public T get() {
     return this.element;
   }
 
@@ -69,7 +69,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param e the edge to add to this node
   * @since 0.1.0
   */
-  public void addEdge(Edge<T> e){
+  public void addEdge(Edge<T> e) {
     this.edges.put(e.getEnd(), e);
   }
 
@@ -79,7 +79,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param n the node to add as a neighbor
   * @since 0.1.0
   */
-  public void addNeighbor(Node<T> n){
+  public void addNeighbor(Node<T> n) {
     this.edges.put(n, new Edge<T>(this, n));
   }
 
@@ -90,7 +90,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param weight the weight of the edge from this node to n
   * @since 0.1.0
   */
-  public void addNeighbor(Node<T> n, double weight){
+  public void addNeighbor(Node<T> n, double weight) {
     this.edges.put(n, new Edge<T>(this, n, weight));
   }
 
@@ -100,7 +100,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param node the node to remove
   * @since 0.1.0
   */
-  public void removeNeighbor(Node<T> node){
+  public void removeNeighbor(Node<T> node) {
     this.edges.remove(node);
   }
 
@@ -110,7 +110,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @return true if there is an edge to the node, false otherwise
   * @since 0.1.0
   */
-  public boolean hasNeighbor(Node<T> node){
+  public boolean hasNeighbor(Node<T> node) {
     return edges.containsKey(node);
   }
 
@@ -121,8 +121,8 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @throws IllegalArgumentException if neighbor is not a neighbor
   * @since 0.11.0
   */
-  public Edge<T> getEdge(Node<T> neighbor){
-    if(!hasNeighbor(neighbor)){
+  public Edge<T> getEdge(Node<T> neighbor) {
+    if(!hasNeighbor(neighbor)) {
       throw new IllegalArgumentException("Node passed to Node::getEdge() is not a neighbor.");
     }
     return this.edges.get(neighbor);
@@ -133,21 +133,21 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @return a {@code Collection<Edge<T>>} of edges
   * @since 0.1.0
   */
-  public Collection<Edge<T>> getEdges(){
+  protected Collection<Edge<T>> getEdges() {
     return edges.values();
   }
 
   /**
   * Return the neighbors of this node.
   * <p>
-  * Any changes to the collection (such as adding or removing nodes) will not affect this node.
-  * Any changes to the nodes themselves however will affect the graph.
-  * @return a {@code List<Node<T>>} of all nodes that are connected
+  * Modification of this Collection is UNSAFE. It will be reflected back on this Node.
+  * @return a {@code Collection<Node<T>>} of all nodes that are connected
   *         to this node by an edge
   * @since 0.11.0
   */
-  public List<Node<T>> getNeighbors(){
-    return new LinkedList<Node<T>>(edges.keySet());
+  protected Collection<Node<T>> getNeighbors() {
+    //return new LinkedList<Node<T>>(edges.keySet());
+    return edges.keySet();
   }
 
   /**
@@ -157,8 +157,8 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @throws IllegalArgumentException if neighbor is not a neighbor
   * @since 0.11.0
   */
-  public double getEdgeWeight(Node<T> neighbor){
-    if(!hasNeighbor(neighbor)){
+  public double getEdgeWeight(Node<T> neighbor) {
+    if(!hasNeighbor(neighbor)) {
       throw new IllegalArgumentException("Node passed to Node::getWeight() is not a neighbor.");
     }
     return getEdge(neighbor).getWeight();
@@ -170,7 +170,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @version 0.14.0
   * @since 0.2.0
   */
-  public List<Node<T>> getNodeAndNeighbors(){
+  public List<Node<T>> getNodeAndNeighbors() {
     ArrayList<Node<T>> list = new ArrayList<Node<T>>(numNeighbors()+1);
     list.add(this);
     list.addAll(edges.keySet());
@@ -184,7 +184,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @since 0.1.0
   */
   @Override
-  public int hashCode(){
+  public int hashCode() {
     return element.hashCode();
   }
 
@@ -195,9 +195,9 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @since 0.1.0
   */
   @Override
-  public String toString(){
+  public String toString() {
     String str = this.get() + ": ";
-    for(Node<T> node : getNeighbors()){
+    for(Node<T> node : getNeighbors()) {
       str += node.get() + " ";
     }
     return str;
@@ -211,7 +211,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @since 0.1.0
   */
   @Override
-  public int compareTo(Node<T> n){
+  public int compareTo(Node<T> n) {
     return numNeighbors() - n.numNeighbors();
   }
 
@@ -224,7 +224,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   */
   @Override
   @SuppressWarnings("unchecked")
-  public boolean equals(Object obj){
+  public boolean equals(Object obj) {
     if(obj instanceof Node) {
       Node<T> n = (Node<T>) obj;
       return this.get().equals(n.get());

@@ -3,8 +3,8 @@ package com.aaronpmaus.jMath.executables;
 import com.aaronpmaus.jMath.graph.*;
 import com.aaronpmaus.jMath.io.GraphIO;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
+import java.util.Collections;
 import java.util.Date;
 import java.io.FileNotFoundException;
 
@@ -19,8 +19,8 @@ import java.io.FileNotFoundException;
 * @since 0.4.0
 */
 public class FindClique {
-  public static void main(String[] args){
-    if(args.length != 2){
+  public static void main(String[] args) {
+    if(args.length != 2) {
       System.out.println("Usage: FindClique dimacsfilename cliqueSize");
       System.exit(1);
     }
@@ -44,24 +44,24 @@ public class FindClique {
       // run the find clique algorithm while clocking it to know how much time it took
       MausMaxCliqueSolver<Integer> maxCliqueTool = new MausMaxCliqueSolver<Integer>();
       long startTime = new Date().getTime();
-      UndirectedGraph<Integer> maxClique = maxCliqueTool.findClique(graph, k, 1);
+      UndirectedGraph<Integer> clique = maxCliqueTool.findClique(graph, k, 1);
       long endTime = new Date().getTime();
       System.out.println("Runtime: " + (endTime-startTime) + " milliseconds");
-
-      // Print out the max clique
-      if(maxClique != null){
-        // build a clique string containing the IDs of all the nodes in this clique
-        String cliqueStr = "";
-        for(Node<Integer> node : maxClique){
-          cliqueStr += node.get() + " ";
+      String cliqueStr = "";
+      if(clique != null) {
+        List<Integer> nodeNums = clique.getElements();
+        Collections.sort(nodeNums);
+        for(Integer i : nodeNums) {
+          cliqueStr += i + " ";
         }
+
         System.out.println(cliqueStr);
-        System.out.println(maxClique.size() + " nodes in clique");
-        System.out.print(maxClique);
+        System.out.println(clique.size() + " nodes in clique");
+        System.out.print(clique);
       } else {
         System.out.println("There are no cliques of size " + k);
       }
-    } catch (FileNotFoundException e){
+    } catch (FileNotFoundException e) {
       System.out.println(filename + " not found. input proper filename or check file");
     }
   }

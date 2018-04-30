@@ -30,7 +30,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * Vertices and edges can be added via addEdge() and addNode().
   * @since 0.1.0
   */
-  public UndirectedGraph(){
+  public UndirectedGraph() {
     super();
   }
 
@@ -39,7 +39,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @param numVertices the number of vertices the graph will hold.
   * @since 0.1.0
   */
-  public UndirectedGraph(int numVertices){
+  public UndirectedGraph(int numVertices) {
     super(numVertices);
   }
 
@@ -73,7 +73,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @param g the UndirectedGraph to Copy
   * @since 0.2.0
   */
-  public UndirectedGraph(UndirectedGraph<T> g){
+  public UndirectedGraph(UndirectedGraph<T> g) {
     super(g);
   }
 
@@ -83,7 +83,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @param nodes the nodes to be in the graph
   * @since 0.2.0
   */
-  private UndirectedGraph(Collection<Node<T>> nodes){
+  private UndirectedGraph(Collection<Node<T>> nodes) {
     super(nodes);
   }
 
@@ -94,9 +94,9 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * edges between these vertices.
   * @since 0.14.0
   */
-  public UndirectedGraph<T> subset(Collection<T> elements){
+  public UndirectedGraph<T> subset(List<T> elements) {
     LinkedList<Node<T>> nodes = new LinkedList<Node<T>>();
-    for(T element : elements){
+    for(T element : elements) {
       if(this.contains(element)) {
         nodes.add(this.getNode(element));
       }
@@ -111,7 +111,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * edges between these vertices.
   * @since 0.14.0
   */
-  private UndirectedGraph<T> subset(List<Node<T>> nodes){
+  private UndirectedGraph<T> subset(Collection<Node<T>> nodes) {
     return new UndirectedGraph<T>(nodes);
   }
 
@@ -123,7 +123,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @return a graph of the neighbors. This is a deep copy of this subset of the total graph.
   * @since 0.14.0
   */
-  public UndirectedGraph<T> getNeighbors(T element){
+  public UndirectedGraph<T> getNeighbors(T element) {
     return subset(getNode(element).getNeighbors());
   }
 
@@ -132,7 +132,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.14.0
   */
   @Override
-  public UndirectedGraph<T> getNeighborhood(T element){
+  public UndirectedGraph<T> getNeighborhood(T element) {
     return subset(getNode(element).getNodeAndNeighbors());
   }
 
@@ -141,13 +141,13 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.14.0
   */
   @Override
-  public UndirectedGraph<T> getNeighborhood(Collection<T> elements){
+  public UndirectedGraph<T> getNeighborhood(Collection<T> elements) {
     // default load factor is 0.75. Create a HashSet large enough that it
     // won't ever need to be enlarged.
     LinkedHashSet<Node<T>> neighborhoodElements = new LinkedHashSet<Node<T>>((int)((this.size()+1)/0.75+1));
     //HashSet<Node<T>> neighborhoodElements = new HashSet<Node<T>>((int)((this.size()+1)/0.75+1));
-    for(T element : elements){
-      if(!contains(element)){
+    for(T element : elements) {
+      if(!contains(element)) {
         throw new NoSuchElementException(String.format("Cannot get neighborhood of nodes, "
           +"Node %s not in graph.", element));
       }
@@ -161,7 +161,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.3.0
   */
   @Override
-  public UndirectedGraph<T> getComplement(){
+  public UndirectedGraph<T> getComplement() {
     return new UndirectedGraph<T>(getComplementNodes());
   }
 
@@ -172,14 +172,32 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @return true if the nodes containing these objects are a clique. false otherwise
   * @since 0.7.0
   */
-  public boolean checkIfClique(Collection<T> elements){
-    //ArrayList<Node<T>> nodesInClique = new ArrayList<Node<T>>(elements.size());
-    //for(T element : elements){
-      //nodesInClique.add(getNode(element));
-    //}
-    //UndirectedGraph<T> clique = new UndirectedGraph<T>(nodesInClique);
-    //return clique.isClique( );
-    return this.subset(elements).isClique();
+  public boolean checkIfClique(List<T> elements) {
+    for(T a : elements) {
+      for(T b : elements) {
+        if(a.equals(b)) {
+          continue;
+        }
+        if(!getNode(a).hasNeighbor(getNode(b))) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  private boolean isClique(List<T> ) {
+    for(Node<T> a : nodes) {
+      for(Node<T> b : nodes) {
+        if(a.equals(b)) {
+          continue;
+        }
+        if(!a.hasNeighbor(b)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**
@@ -188,9 +206,10 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   protected void addNode(Node<T> n) {
     if(!contains(n.get())) {
       super.addVertex(n);
-      for(Node<T> neighbor : n.getNeighbors()){
-        addEdge(neighbor.get(), n.get());
-      }
+    }
+    for(Node<T> neighbor : n.getNeighbors()) {
+      addEdge(neighbor.get(), n.get());
+      addEdge(n.get(), neighbor.get());
     }
   }
 
@@ -203,7 +222,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.14.0
   */
   @Override
-  public void addEdge(T start, T end){
+  public void addEdge(T start, T end) {
     super.addEdge(start, end);
     super.addEdge(end, start);
   }
@@ -218,7 +237,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.14.0
   */
   @Override
-  public void addEdge(T start, T end, double weight){
+  public void addEdge(T start, T end, double weight) {
     super.addEdge(start, end, weight);
     super.addEdge(end, start, weight);
   }
@@ -234,11 +253,11 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * the 0th index
   * @since 0.14.0
   */
-  public ArrayList<T> degeneracyOrdering( ){
+  public ArrayList<T> degeneracyOrdering( ) {
     ArrayList<T> vertexOrdering = new ArrayList<T>(this.size());
     // Build the Degeneracy Vertex Ordering
     UndirectedGraph<T> temp = new UndirectedGraph<T>(this);
-    while(temp.size() > 0){
+    while(temp.size() > 0) {
       // get the node with the smallest degree in temp
       Node<T> theSmallestVertex = Collections.min(temp.getNodes());
       // add the original node reference to vertexOrdering
@@ -253,7 +272,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * {@inheritDoc}
   */
   @Override
-  public double density(){
+  public double density() {
     // the implementation of the undirected graph includes both forward and back edges.
     // ie, double the edges. so we don't need to multiply by 2.
     return super.density();
@@ -264,7 +283,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @return a Collection of the edges in this UndirectedGraph
   * @since 0.11.0
   */
-  public Collection<? extends Edge<T>> getEdges(){
+  public Collection<? extends Edge<T>> getEdges() {
     HashSet<UndirectedEdge<T>> edges = new HashSet<UndirectedEdge<T>>((int)(numEdges()/0.75) + 1);
     for(Node<T> node : this) {
       for(Edge<T> e : node.getEdges()) {
@@ -284,7 +303,7 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @since 0.3.0
   */
   @Override
-  public int numEdges(){
+  public int numEdges() {
     return super.numEdges()/2;
   }
 
@@ -294,11 +313,11 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
   * @return true if the graph is a clique, false otherwise
   * @since 0.7.0
   */
-  public boolean isClique( ){
+  public boolean isClique( ) {
     int numEdges = numEdges();
     int numNodes = size();
     int edgesRequired = (numNodes * (numNodes - 1))/2;
-    if(numEdges == edgesRequired){
+    if(numEdges == edgesRequired) {
       return true;
     }
     return false;

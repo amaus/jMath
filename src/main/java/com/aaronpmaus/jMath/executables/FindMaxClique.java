@@ -4,7 +4,7 @@ import com.aaronpmaus.jMath.graph.*;
 import com.aaronpmaus.jMath.io.GraphIO;
 import com.aaronpmaus.jMath.io.CommandLineParser;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.Date;
 import java.util.Collections;
@@ -56,26 +56,26 @@ public class FindMaxClique{
   private static String graphFileName;
   private static UndirectedGraph<Integer> graph;
 
-  public static void main(String[] arguments){
+  public static void main(String[] arguments) {
     CommandLineParser args = new CommandLineParser(arguments);
-    if(arguments.length == 0 || args.contains("-h")){
+    if(arguments.length == 0 || args.contains("-h")) {
       printUsage();
       System.exit(1);
     } else {
-      if(args.contains("--graph")){
+      if(args.contains("--graph")) {
         graphFileName = args.getValue("--graph");
         graphFileProvided = true;
       }
-      if(args.contains("--inc-adapter")){
+      if(args.contains("--inc-adapter")) {
         runIncAdapter = true;
       }
-      if(args.contains("--inc-solver")){
+      if(args.contains("--inc-solver")) {
         runIncSolver = true;
       }
-      if(args.contains("--maus")){
+      if(args.contains("--maus")) {
         runMaus = true;
       }
-      if(!graphFileProvided){
+      if(!graphFileProvided) {
         System.out.println("You must provide a graph DIMACS file.");
         System.out.println();
         printUsage();
@@ -91,13 +91,13 @@ public class FindMaxClique{
           System.out.println("Graph built from dimacs file " + graphFileName + " in "
               + (graphBuildEnd-graphBuildStart) + " milliseconds.");
           System.out.println("Graph Density: " + graph.density());
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
           System.out.println(graphFileName + " not found. input proper filename or check file");
           System.exit(1);
         }
       }
 
-      if(runIncAdapter){
+      if(runIncAdapter) {
         System.out.println("########################### IncMaxCliqueAdapter ###########################");
         MaxCliqueSolver<Integer> maxCliqueTool = new IncMaxCliqueAdapter();
         long cliqueStart = new Date().getTime();
@@ -106,7 +106,7 @@ public class FindMaxClique{
         printCliqueResults(maxClique, (cliqueEnd - cliqueStart));
       }
 
-      if(runIncSolver){
+      if(runIncSolver) {
         System.out.println("########################### IncMaxCliqueSolver ############################");
         MaxCliqueSolver<Integer> maxCliqueTool = new IncMaxCliqueSolver<Integer>();
         long cliqueStart = new Date().getTime();
@@ -115,7 +115,7 @@ public class FindMaxClique{
         printCliqueResults(maxClique, (cliqueEnd - cliqueStart));
       }
 
-      if(runMaus){
+      if(runMaus) {
         System.out.println("############################## Maus Solver ################################");
         MaxCliqueSolver<Integer> maxCliqueTool = new MausMaxCliqueSolver<Integer>();
         long cliqueStart = new Date().getTime();
@@ -126,15 +126,12 @@ public class FindMaxClique{
     }
   }
 
-  private static void printCliqueResults(UndirectedGraph<Integer> clique, long runTime){
-    if(clique != null){
+  private static void printCliqueResults(UndirectedGraph<Integer> clique, long runTime) {
+    if(clique != null) {
       String cliqueStr = "";
-      ArrayList<Integer> nodeNums = new ArrayList<Integer>();
-      for(Node<Integer> node : clique){
-        nodeNums.add(node.get());
-      }
+      List<Integer> nodeNums = clique.getElements();
       Collections.sort(nodeNums);
-      for(Integer i : nodeNums){
+      for(Integer i : nodeNums) {
         cliqueStr += i + " ";
       }
       System.out.println("MAXIMUM CLIQUE");
@@ -148,10 +145,10 @@ public class FindMaxClique{
     }
   }
 
-  private static void printUsage(){
+  private static void printUsage() {
     InputStream stream = FindMaxClique.class.getResourceAsStream("FindMaxCliqueUsage.txt");
     Scanner in = new Scanner(stream);
-    while(in.hasNextLine()){
+    while(in.hasNextLine()) {
       System.out.println(in.nextLine());
     }
   }

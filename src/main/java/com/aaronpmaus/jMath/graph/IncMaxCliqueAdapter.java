@@ -31,12 +31,12 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
     // create a deep copy of the graph so that the client's Object is not
     // modified
     graph = new UndirectedGraph<Integer>(graph);
-    if(graph.size() <= 1){
+    if(graph.size() <= 1) {
       return graph;
     }
     HashMap<Integer, Integer> nodeIDMapping = new HashMap<Integer, Integer>();
     int nodeID = 1;
-    for(Node<Integer> n : graph){
+    for(Node<Integer> n : graph) {
       nodeIDMapping.put(nodeID, n.get());
       n.set(nodeID);
       nodeID++;
@@ -53,7 +53,7 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
       e.printStackTrace();
     }
     UndirectedGraph<Integer> clique = findMaxClique(g.getGraphFileName(), g);
-    for(int seqID = 1; seqID < nodeID; seqID++){
+    for(int seqID = 1; seqID < nodeID; seqID++) {
       if(clique.contains(seqID)) {
         clique.getNode(seqID).set(nodeIDMapping.get(seqID));
       }
@@ -83,7 +83,7 @@ public class IncMaxCliqueAdapter extends MaxCliqueSolver<Integer>{
     Process process = null;
     try {
       String os = System.getProperty("os.name").trim().toLowerCase();
-      if(os.equals("mac os x")){
+      if(os.equals("mac os x")) {
         process = new ProcessBuilder("IncMaxCliqueMac", filename).start();
       } else if (os.equals("linux")) {
         process = new ProcessBuilder("IncMaxCliqueLinux", filename).start();

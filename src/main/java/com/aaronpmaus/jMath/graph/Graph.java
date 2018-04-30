@@ -92,7 +92,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * edges between these vertices.
   * @since 0.14.0
   */
-  public Graph<T> subset(Collection<T> elements) {
+  public Graph<T> subset(List<T> elements) {
     LinkedList<Node<T>> nodes = new LinkedList<Node<T>>();
     for(T element : elements) {
       if(this.contains(element)) {
@@ -109,7 +109,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * edges between these vertices.
   * @since 0.14.0
   */
-  private Graph<T> subset(List<Node<T>> nodes) {
+  private Graph<T> subset(Collection<Node<T>> nodes) {
     return new Graph<T>(nodes);
   }
 
@@ -249,9 +249,9 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   protected Collection<Node<T>> getComplementNodes() {
     // create a new node for every node in the graph.
     HashMap<T, Node<T>> copyNodes = getCopyNodesNoEdges();
-    Collection<Node<T>> originalNodes = getNodes();
-    for(Node<T> node : originalNodes) {
-      for(Node<T> possibleNeighbor: originalNodes) {
+    //Collection<Node<T>> originalNodes = getNodes();
+    for(Node<T> node : this) {
+      for(Node<T> possibleNeighbor: this) {
         if(node != possibleNeighbor && !node.hasNeighbor(possibleNeighbor)) {
           Node<T> copyNode = copyNodes.get(node.get());
           copyNode.addNeighbor(copyNodes.get(possibleNeighbor.get()));
@@ -277,7 +277,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @return a {@code Collections<Node<T>>} of the nodes.
   * @since 0.1.0
   */
-  protected List<Node<T>> getNodes() {
+  protected Collection<Node<T>> getNodes() {
     return new ArrayList<Node<T>>(this.adjacencyList.values());
     //return this.adjacencyList.values();
   }

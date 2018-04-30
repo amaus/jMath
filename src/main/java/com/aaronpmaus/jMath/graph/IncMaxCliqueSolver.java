@@ -107,7 +107,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   private int indSetUB(UndirectedGraph<T> g, int cMaxSize, int cSize) {
     //System.out.println("## Calculating indSetUB");
     // get a list of nodes and sort them in descending order by degree
-    List<Node<T>> descendingDegreeNodes = g.getNodes();
+    List<Node<T>> descendingDegreeNodes = new ArrayList<Node<T>>(g.getNodes());
     Collections.sort(descendingDegreeNodes, Collections.reverseOrder());
     int maxColorNumber = 0;
     // initialize color sets
@@ -234,42 +234,50 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
     // save the vertexUB values of the neighbors of smallestVertex
     // first, get the set of neighbors
-    UndirectedGraph<T> neighborsGraph = g.getNeighbors(smallestVertex);
-    //HashSet<Node<T>> neighbors = new HashSet<Node<T>>(g.getNode(smallestVertex).getNeighbors());
+    UndirectedGraph<T> neighbors = g.getNeighbors(smallestVertex);
+    //Collection<Node<T>> neighbors = g.getNode(smallestVertex).getNeighbors();
     // copy all the vertexUB values for the neighbors of smallestVertex
-    HashMap<T, Integer> vertexUB_bkup = new HashMap<T, Integer>();
-    for(Node<T> neighbor : neighborsGraph) {
-      vertexUB_bkup.put(neighbor.get(), vertexUB.get(neighbor.get()));
+    ArrayList<T> vertexUB_bkup_elements = new ArrayList<T>(neighbors.size());
+    int[] vertexUB_bkup_values = new int[neighbors.size()];
+    //HashMap<T, Integer> vertexUB_bkup = new HashMap<T, Integer>();
+    int i = 0;
+    for(Node<T> neighbor : neighbors) {
+      vertexUB_bkup_elements.add(neighbor.get());
+      vertexUB_bkup_values[i] = vertexUB.get(neighbor.get());
+      i++;
+      //vertexUB_bkup.put(neighbor.get(), vertexUB.get(neighbor.get()));
     }
 
     List<T> cUnionSmallestVertex = new LinkedList<T>(c);
     cUnionSmallestVertex.add(smallestVertex);
-    //c.add(smallestVertex);
 
     //System.out.println("neighbors of " + smallestVertex + ":\n" + neighborsGraph);
     //System.out.println("cUnionSmallestVertex:\n" + cUnionSmallestVertex);
-    //List<Node<T>> allNodes = g.getNodes();
-    //List<Node<T>> nonNeighbors = new LinkedList<Node<T>>();
-    //for(Node<T> node : allNodes) {
-      //if(!neighbors.contains(node)) {
-        //nonNeighbors.add(new Node<T>(node));
-      //}
-    //}
-    //for(Node<T> node : nonNeighbors) {
-      //g.removeVertex(node.get());
-    //}
-    List<T> c2 = incMaxClique(neighborsGraph, cUnionSmallestVertex, cMax);
+
+    /*Collection<Node<T>> allNodes = g.getNodes();
+    List<Node<T>> nonNeighbors = new LinkedList<Node<T>>();
+    for(Node<T> node : allNodes) {
+      if(!neighbors.contains(node)) {
+        nonNeighbors.add(node);
+      }
+    }
+    for(Node<T> node : nonNeighbors) {
+      g.removeVertex(node.get());
+    }*/
+    List<T> c2 = incMaxClique(neighbors, cUnionSmallestVertex, cMax);
     //List<T> c2 = incMaxClique(g, cUnionSmallestVertex, cMax);
-    //for(Node<T> node : nonNeighbors){
-      //g.addNode(node);
-    //}
+    /*for(Node<T> node : nonNeighbors) {
+      g.addNode(node);
+    }*/
     //List<T> c2 = incMaxClique(neighborsGraph, c, cMax);
     //System.out.println("In Call #: " + callNumber);
     //System.out.println("second recursive call complete");
 
     // restore the saved vertexUB values
-    for(Node<T> neighbor : neighborsGraph) {
-      vertexUB.put(neighbor.get(), vertexUB_bkup.get(neighbor.get()));
+    //for(Node<T> neighbor : neighbors) {
+    for(i = 0; i < neighbors.size(); i++) {
+      vertexUB.put(vertexUB_bkup_elements.get(i), vertexUB_bkup_values[i]);
+      //vertexUB.put(neighbor.get(), vertexUB_bkup.get(neighbor.get()));
     }
 
     vertexUB.put(smallestVertex, Math.min(vertexUB.get(smallestVertex), (c2.size() - c.size())));

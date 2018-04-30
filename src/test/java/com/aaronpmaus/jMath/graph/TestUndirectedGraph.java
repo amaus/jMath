@@ -45,7 +45,7 @@ public class TestUndirectedGraph{
   public final ExpectedException exception = ExpectedException.none();
 
   @Before
-  public void setUp(){
+  public void setUp() {
     graph = new UndirectedGraph<Integer>();
     String fileName = "example.dimacs"; // clique: 4 5 6 7
     InputStream stream = TestUndirectedGraph.class.getResourceAsStream(fileName);
@@ -60,7 +60,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testGraphConstruction(){
+  public void testGraphConstruction() {
     assertEquals(7, example.size());
     assertEquals(15, example.numEdges());
 
@@ -123,7 +123,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testAddNode(){
+  public void testAddNode() {
     assertEquals(0,graph.size());
     graph.addVertex(1);
     assertEquals(1,graph.size());
@@ -131,7 +131,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testEdges(){
+  public void testEdges() {
     assertEquals(15,example.numEdges());
     assertEquals(4,example.getNode(1).numNeighbors());
     assertEquals(4,example.getNode(2).numNeighbors());
@@ -143,11 +143,11 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testGetNeighborhood(){
+  public void testGetNeighborhood() {
     UndirectedGraph<Integer> neighborhood = example.getNeighborhood(4);
     assertEquals(6,neighborhood.size());
     ArrayList<Integer> values = new ArrayList<Integer>();
-    for(Node<Integer> n : neighborhood){
+    for(Node<Integer> n : neighborhood) {
       values.add(n.get());
     }
     assertTrue(values.contains(1));
@@ -209,7 +209,37 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testGetNeighborhoodException(){
+  public void testComplexAddAndRemove() {
+    UndirectedGraph<Integer> copy = new UndirectedGraph<Integer>(example);
+    Node<Integer> one = example.getNode(1);
+    Node<Integer> two = example.getNode(2);
+    example.removeVertex(1);
+    assertFalse(example.contains(1));
+    assertFalse(example.hasEdge(2,1));
+    assertFalse(example.hasEdge(3,1));
+    assertFalse(example.hasEdge(4,1));
+    assertFalse(example.hasEdge(6,1));
+    example.removeVertex(2);
+    assertFalse(example.contains(2));
+    assertFalse(example.hasEdge(3,2));
+    assertFalse(example.hasEdge(5,2));
+    assertFalse(example.hasEdge(7,2));
+    example.addNode(one);
+    assertTrue(example.contains(1));
+    assertTrue(example.hasEdge(2,1));
+    assertTrue(example.hasEdge(3,1));
+    assertTrue(example.hasEdge(4,1));
+    assertTrue(example.hasEdge(6,1));
+    example.addNode(two);
+    assertTrue(example.contains(2));
+    assertTrue(example.hasEdge(3,2));
+    assertTrue(example.hasEdge(5,2));
+    assertTrue(example.hasEdge(7,2));
+    assertEquals(example, copy);
+  }
+
+  @Test
+  public void testGetNeighborhoodException() {
     Node<Integer> two = example.getNode(2);
     example.removeVertex(2);
     exception.expect(NoSuchElementException.class);
@@ -217,7 +247,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testGetNeighborhoodFromCollectionException(){
+  public void testGetNeighborhoodFromCollectionException() {
     Node<Integer> one = example.getNode(1);
     Node<Integer> two = example.getNode(2);
     ArrayList<Integer> list = new ArrayList<Integer>();
@@ -229,7 +259,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testGetComplement(){
+  public void testGetComplement() {
     UndirectedGraph<Integer> complement = example.getComplement();
     one = complement.getNode(1);
     two = complement.getNode(2);
@@ -302,7 +332,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testGetComplementNoEdgesBoundary(){
+  public void testGetComplementNoEdgesBoundary() {
     example.addEdge(4, 2);
 
     UndirectedGraph<Integer> complement = example.getComplement();
@@ -327,7 +357,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testRemoveNode(){
+  public void testRemoveNode() {
     example.removeVertex(2);
     example.removeVertex(2);
 
@@ -354,7 +384,7 @@ public class TestUndirectedGraph{
   * modified by adding or removing elements, the graph should not be changed.
   */
   @Test
-  public void testGetNodesGraphSafety(){
+  public void testGetNodesGraphSafety() {
     Collection<Node<Integer>> values = example.getNodes();
     assertEquals(7, example.size());
 
@@ -367,7 +397,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testShortestPath(){
+  public void testShortestPath() {
     Node<Integer> n1 = new Node<Integer>(1);
     Node<Integer> n2 = new Node<Integer>(2);
     Node<Integer> n3 = new Node<Integer>(3);
@@ -404,7 +434,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testDepthFirstSearch(){
+  public void testDepthFirstSearch() {
     UndirectedGraph<String> graph = new UndirectedGraph<String>();
     graph.addEdge("A","B");
     graph.addEdge("A","C");
@@ -416,7 +446,7 @@ public class TestUndirectedGraph{
 
     List<String> traversal = graph.depthFirstSearch("A");
     assertEquals(traversal.size(), 7);
-    //for(String e : traversal){
+    //for(String e : traversal) {
       //System.out.println(e);
     //}
     // There are multiple correct traversals for the example graph.
@@ -432,7 +462,7 @@ public class TestUndirectedGraph{
   }
 
   @Test
-  public void testSubset(){
+  public void testSubset() {
     LinkedList<Integer> list = new LinkedList<Integer>();
     list.add(3);
     list.add(4);
