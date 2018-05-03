@@ -23,6 +23,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   private HashMap<T, Integer> vertexUB;
   public static long numCalls = 0;
   public static long numVOCalls = 0;
+  private ArrayList<ArrayList<Node<T>>> colorSets;
 
   /**
   * {@inheritDoc}
@@ -103,6 +104,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   * @param g the graph a clique is being sought in
   * @param cMaxSize the size of the largest clique found so far
   * @param cSize the size of the clique under construction
+  * @return the partition of the graph into independent sets (color sets)
   */
   private int indSetUB(UndirectedGraph<T> g, int cMaxSize, int cSize) {
     //System.out.println("## Calculating indSetUB");
@@ -113,7 +115,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     // initialize color sets
     // The index of the outer ArrayList is k and the inner arraylists hold all the nodes that belong
     // to that color k.
-    ArrayList<ArrayList<Node<T>>> colorSets = new ArrayList<ArrayList<Node<T>>>();
+    colorSets = new ArrayList<ArrayList<Node<T>>>();
     // initialize the first two color sets (k = 0,1)
     colorSets.add(new ArrayList<Node<T>>());
     colorSets.add(new ArrayList<Node<T>>());
@@ -141,12 +143,14 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
         if(colorSets.get(colorSets.size()-1).isEmpty()) {
           // decrement the max color number
           maxColorNumber--;
+          //colorSets.remove(colorSets.size()-1);
         }
       }
       //System.out.printf("after re-number: %d\n", maxColorNumber);
     }
     // return the number of colors assigned
     return maxColorNumber + 1;
+    //return colorSets;
   }
 
   private void reNumber(Node<T> node, int nodeColor, int colorThreshold,
@@ -223,9 +227,18 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     //System.out.println(node.get());
     //}
     //printUB();
+    //ArrayList<ArrayList<Node<T>>> partition = indSetUB(g, cMax.size(), c.size());
+    int indSetUpperBound = indSetUB(g, cMax.size(), c.size());
+    int maxSatUB = MaxSatUB.estimateCardinality(g, colorSets);
+    if(maxSatUB < indSetUpperBound) {
+      //System.out.println(maxSatUB + ", " + indSetUpperBound);
+    }
+    //System.out.println("Calling MaxSatUB, Graph:\n" + g);
     vertexUB.put(smallestVertex, min(vertexUB.get(smallestVertex),
                                      incUB(smallestVertexIndex, g),
-                                     indSetUB(g, cMax.size(), c.size())));
+                                     indSetUpperBound,
+                                     maxSatUB));
+                                     //MaxSatUB.estimateCardinality(g, partition)));
     //System.out.println("Updating UB for " + smallestVertex);
     //printUB();
 

@@ -51,21 +51,10 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     // graph is a clique), ((N+1) + N)/2 == N. Searching for a clique of
     // size N will be the last search made.
     if(verbose) System.out.println("Original Graph Size: " + graph.size());
-    //System.out.println(graph);
-    //int high = maxPossibleCliqueNumDeep(graph) + 1;
-    ArrayList<UndirectedGraph<T>> independentSets = null;
-    //int high = graph.size();
-    //if(density() > 0.90) {
-    // use IndependentSetPartition to determine bound
-    //independentSets = graph.getIndependentSetPartition();
-    //high = independentSets.size() + 1;
-    //if(verbose) System.out.println("Max Possible Clique Number (Ind Sets): " + (high-1));
-    //} else {
-    // determine it via graph edges
-    //high = maxPossibleCliqueNum(graph) + 1;
-    //if(verbose) System.out.println("Max Possible Clique Number: " + (high-1));
-    //}
-    int high = indSetUB(graph.getNodes()) + 1;
+    
+    ArrayList<ArrayList<Node<T>>> indSets = indSetUB(graph.getNodes());
+    int maxSatUB = MaxSatUB.estimateCardinality(graph, indSets);
+    int high = Math.min(indSets.size()-1, maxSatUB) + 1;
     //int high = maxPossibleCliqueNum(graph) + 1;
     int low = 0;
     UndirectedGraph<T> clique = null;
@@ -198,8 +187,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       // call to keep searching.
       node = nodes.get(0); // the first node in the list is the node with the lowest # neighbors.
       if(node.numNeighbors() > k-1) {
-        //UndirectedGraph<T> neighborhood = graph.getNeighborhood(node.get());
-        List<Node<T>> neighbors = node.getNodeAndNeighbors();
+        UndirectedGraph<T> neighbors = graph.getNeighborhood(node.get());
+        //List<Node<T>> neighbors = node.getNodeAndNeighbors();
         if(level <= maxPrintLevel) {
           levelPrint(level, "# looking for clique of size " + k);
           levelPrint(level, "# in node: "+node.get() +" 's neighborhood.");
@@ -210,7 +199,11 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
         UndirectedGraph<T> clique = null;
 
         //int maxPosCliqueNum = indSetUB(neighborhood);
-        int maxPosCliqueNum = indSetUB(neighbors);
+        ArrayList<ArrayList<Node<T>>> indSets = indSetUB(neighbors.getNodes());
+        int maxSatUB = MaxSatUB.estimateCardinality(neighbors, indSets);
+        int maxPosCliqueNum = Math.min(indSets.size()-1, maxSatUB);
+        //System.out.println("MAX POS CLIQUE NUM: " + maxPosCliqueNum);
+        //neighbors = null;
         if(maxPosCliqueNum < k) {
           clique = null;
           if(level <= maxPrintLevel) {
@@ -226,7 +219,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           }
 
           //System.out.println("before recursive call\n"+graph);
-          clique = findClique(graph.getNeighborhood(node.get()), k, level+1);
+          //clique = findClique(graph.getNeighborhood(node.get()), k, level+1);
+          clique = findClique(neighbors, k, level+1);
 
           if(level <= maxPrintLevel) {
             long end = new Date().getTime();
@@ -339,11 +333,11 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     return k;
   }
 
-  private int indSetUB(UndirectedGraph<T> graph) {
+  private ArrayList<ArrayList<Node<T>>> indSetUB(UndirectedGraph<T> graph) {
     return indSetUB(graph.getNodes());
   }
 
-  private int indSetUB(Collection<Node<T>> nodes) {
+  private ArrayList<ArrayList<Node<T>>> indSetUB(Collection<Node<T>> nodes) {
     //System.out.println("## Calculating indSetUB");
     // get a list of nodes and sort them in descending order by degree
     List<Node<T>> descendingDegreeNodes = new ArrayList<Node<T>>(nodes);
@@ -371,7 +365,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       colorSets.get(k).add(node);
 
     }
-    return maxColorNumber + 1;
+    //System.out.println(colorSets.size()-1 + ", " + (maxColorNumber+1));
+    return colorSets;
   }
 
   /**
