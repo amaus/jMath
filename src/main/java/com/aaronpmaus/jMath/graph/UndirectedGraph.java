@@ -186,20 +186,6 @@ public class UndirectedGraph<T extends Comparable<? super T>> extends Graph<T>{
     return true;
   }
 
-  private boolean isClique(List<T> ) {
-    for(Node<T> a : nodes) {
-      for(Node<T> b : nodes) {
-        if(a.equals(b)) {
-          continue;
-        }
-        if(!a.hasNeighbor(b)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
   /**
   * {@inheritDoc}
   */
