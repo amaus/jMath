@@ -1,8 +1,10 @@
 package com.aaronpmaus.jMath.graph;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.Collections;
 import java.util.Iterator;
@@ -12,39 +14,26 @@ import java.util.NoSuchElementException;
 class MaxSatUB {
   private static boolean verbose = false;
 
+  public static <T extends Comparable<? super T>> int estimateCardinality(UndirectedGraph<T> graph) {
+    return estimateCardinality(graph, partitionGraph(graph));
+  }
+
   public static <T extends Comparable<? super T>> int estimateCardinality(UndirectedGraph<T> graph, ArrayList<ArrayList<Node<T>>> partition) {
     // Encode graph into MaxSatEncoding
-    int numComplementEdges = graph.size() * (graph.size()-1) - graph.getNumEdges();
-    MaxSatEncoding<T> encoding = new MaxSatEncoding<T>(partition.size(), numComplementEdges);
-    
-    for(ArrayList<Node<T>> set : partition) {
-      if(set.size() > 0) {
-        //System.out.println("Adding set: " + set);
-        Clause<T> clause = new Clause<T>(set, true);
-        //System.out.println("Add Soft Clause: " + clause);
-        encoding.addSoftClause(clause);
-      }
-    }
-    List<T> elements = graph.getElements();
-    for(int i = 0; i < graph.size(); i++) {
-      T vertex = elements.get(i);
-      for(int j = i+1; j < graph.size(); j++) {
-        T neighbor = elements.get(j);
-        if(vertex != neighbor && !graph.hasEdge(vertex, neighbor)) {
-          Clause<T> clause = new Clause<T>(vertex, neighbor, false);
-          //System.out.println("Add Hard Clause: " + clause);
-          encoding.addHardClause(clause);
-        }
-      }
-    }
+    MaxSatEncoding<T> encoding = new MaxSatEncoding<T>(graph, partition);
+
     if(verbose) System.out.println("Starting MaxSatUB");
     if(verbose) System.out.println(encoding);
     // perform cardinality test on encoding
     int s = 0;
-    while(encoding.hasUntestedSoftClause()) {
+    while(encoding.hasSoftClauses()) {
       encoding.initializeInconsistentClauses();
       Clause<T> min = encoding.getMinUntestedSoftClause();
-      encoding.setAsTested(min);
+      // if min is null, there are no untested Soft Clauses
+      if(min == null) {
+        break;
+      }
+      min.setAsTested();
       if(verbose) System.out.println("Testing min Clause " + min);
       if(failedClauseDetection(encoding, min)) {
         encoding.removeSoftClause(min);
@@ -70,53 +59,47 @@ class MaxSatUB {
 
   private static <T extends Comparable<? super T>> boolean failedLiteralDetection(MaxSatEncoding<T> originalEncoding, T literal) {
     // remove all soft clauses containing literal
-    Iterator<Clause<T>> it = originalEncoding.getSoftClauses().iterator();
+    MaxSatEncoding<T> encoding = new MaxSatEncoding<T>(originalEncoding);
+    Iterator<Clause<T>> it = encoding.getSoftClauses().iterator();
     while(it.hasNext()) {
       if(it.next().contains(literal)) {
         it.remove();
       }
     }
-    /*for(Clause<T> clause : originalEncoding.getSoftClauses()) {
-      if(clause.contains(literal)) {
-        originalEncoding.removeSoftClause(clause);
-      }
-    }*/
     // remove the literal from all hard clauses
-    for(Clause<T> clause : originalEncoding.getHardClauses()) {
+    for(Clause<T> clause : encoding.getHardClauses()) {
       if(clause.contains(literal)) {
         if(verbose) System.out.printf("Removing %s from Clause %s\n", literal, clause);
         clause.remove(literal);
         if(clause.isEmpty()) {
           if(verbose) System.out.println("Reached Empty Clause before Unit Prop. Return.");
-          originalEncoding.setContainsEmptyClause();
+          encoding.setContainsEmptyClause();
           return true;
         }
       }
     }
     // perform unit propogation
     if(verbose) System.out.println("Encoding before Unit Propogation:\n" + originalEncoding);
-    MaxSatEncoding<T> encoding = unitPropogation(originalEncoding);
+    encoding = unitPropogation(encoding, originalEncoding);
     if(encoding.containsEmptyClause()) {
       return true;
-    } else {
-      ArrayList<Clause<T>> clauses = new ArrayList<Clause<T>>(encoding.getSoftClauses());
-      for(Clause<T> clause : clauses) {
-        if(clause.getNumLiterals() == 2 && clause.isModified()) {
-          if(failedClauseDetection(encoding, clause)) {
-            return true;
-          }
+    }/* else {
+      for(Clause<T> clause : encoding.getNewBinaryClauses()) {
+        if(failedClauseDetection(encoding, clause)) {
+          return true;
         }
       }
       return false;
-    }
-    //return false;
+    }*/
+    return false;
   }
 
-  private static <T extends Comparable<? super T>> MaxSatEncoding<T> unitPropogation(MaxSatEncoding<T> originalEncoding) {
+  private static <T extends Comparable<? super T>> MaxSatEncoding<T> unitPropogation(
+      MaxSatEncoding<T> encoding, MaxSatEncoding<T> originalEncoding) {
+
     // the set of soft clauses that give rise to a contradiction, any soft clause that is modified
     // on the path to deriving an empty clause
     LinkedList<Clause<T>> inconsistentClauses = new LinkedList<Clause<T>>();
-    MaxSatEncoding<T> encoding = new MaxSatEncoding<T>(originalEncoding);
     LinkedList<Clause<T>> queue = new LinkedList<Clause<T>>();
     for(Clause<T> unit : encoding.getUnitClauses()) {
       queue.offer(unit);
@@ -125,6 +108,7 @@ class MaxSatUB {
       Clause<T> c = queue.poll();
       T l = c.getLiteral();
       if(verbose) System.out.println("Processing " + l);
+
       if(c.isSoft()) {
         // remove l from all hard clauses that contain it
         for(Clause<T> hardClause : encoding.getHardClauses()) {
@@ -145,8 +129,7 @@ class MaxSatUB {
             queue.offer(hardClause);
           }
         }
-      // Otherwise, the unit clause is a hard clause
-      } else {
+      } else { // Otherwise, the unit clause is a hard clause
         // implying that the literal in it must be 0 and can be removed from all soft clauses
         for(Clause<T> softClause : encoding.getSoftClauses()) {
           if(softClause.contains(l)) {
@@ -177,61 +160,132 @@ class MaxSatUB {
     return encoding;
   }
 
+  /**
+  * This method is a heuristic to estimate the number of independent sets in a graph via a greedy
+  * graph coloring algorithm. The algorithm comes from Tomita et al. 2003 and 2010.
+  * @param g the graph a clique is being sought in
+  * @return the partition of the graph into independent sets (color sets)
+  */
+  private static <T extends Comparable<? super T>> ArrayList<ArrayList<Node<T>>> partitionGraph(UndirectedGraph<T> g) {
+    //System.out.println("## Calculating indSetUB");
+    // get a list of nodes and sort them in descending order by degree
+    List<Node<T>> descendingDegreeNodes = new ArrayList<Node<T>>(g.getNodes());
+    Collections.sort(descendingDegreeNodes, Collections.reverseOrder());
+    int maxColorNumber = 0;
+    // initialize color sets
+    // The index of the outer ArrayList is k and the inner arraylists hold all the nodes that belong
+    // to that color k.
+    ArrayList<ArrayList<Node<T>>> colorSets = new ArrayList<ArrayList<Node<T>>>();
+    // initialize the first two color sets (k = 0,1)
+    colorSets.add(new ArrayList<Node<T>>());
+    colorSets.add(new ArrayList<Node<T>>());
+    for(Node<T> node : descendingDegreeNodes) {
+      int k = 0;
+      // find the lowest k where neighbors and the set of nodes in colorSets[k] share no nodes
+      // in common
+      while(!Collections.disjoint(node.getNeighbors(), colorSets.get(k))) {
+        k++;
+      }
+      if(k > maxColorNumber) {
+        maxColorNumber = k;
+        // initialize and add the next color set
+        colorSets.add(new ArrayList<Node<T>>());
+      }
+      colorSets.get(k).add(node);
+    }
+    // return the number of colors assigned
+    //return maxColorNumber + 1;
+    return colorSets;
+  }
+
   private static class MaxSatEncoding  <T extends Comparable<? super T>> {
-    private ArrayList<Clause<T>> softClauses;
-    private ArrayList<Clause<T>> hardClauses;
-    private ArrayList<Clause<T>> unitClauses;
+    private LinkedList<Clause<T>> softClauses;
+    private LinkedList<Clause<T>> hardClauses;
     private int partitionSize;
     private boolean containsEmptyClause = false;
-    private ArrayList<Clause<T>> inconsistentClauses;
-    private PriorityQueue<Clause<T>> untestedSoftClauses;
+    private LinkedList<Clause<T>> inconsistentClauses;
 
-    public MaxSatEncoding(int numSoftClauses, int numHardClauses) {
-      softClauses = new ArrayList<Clause<T>>();
-      hardClauses = new ArrayList<Clause<T>>();
-      inconsistentClauses = new ArrayList<Clause<T>>();
-      untestedSoftClauses = new PriorityQueue<Clause<T>>();
+    public MaxSatEncoding(UndirectedGraph<T> graph, ArrayList<ArrayList<Node<T>>> partition) {
+      softClauses = new LinkedList<Clause<T>>();
+      hardClauses = new LinkedList<Clause<T>>();
+
+      for(ArrayList<Node<T>> set : partition) {
+        if(set.size() > 0) {
+          //System.out.println("Adding set: " + set);
+          Clause<T> clause = new Clause<T>(set, true);
+          //System.out.println("Add Soft Clause: " + clause);
+          addSoftClause(clause);
+        }
+      }
+      List<T> elements = graph.getElements();
+      for(int i = 0; i < graph.size(); i++) {
+        T vertex = elements.get(i);
+        for(int j = i+1; j < graph.size(); j++) {
+          T neighbor = elements.get(j);
+          if(vertex != neighbor && !graph.hasEdge(vertex, neighbor)) {
+            Clause<T> clause = new Clause<T>(vertex, neighbor, false);
+            //System.out.println("Add Hard Clause: " + clause);
+            addHardClause(clause);
+          }
+        }
+      }
     }
 
     public MaxSatEncoding(MaxSatEncoding<T> other) {
-      softClauses = new ArrayList<Clause<T>>(other.getNumSoftClauses());
-      hardClauses = new ArrayList<Clause<T>>(other.getNumHardClauses());
-      inconsistentClauses = new ArrayList<Clause<T>>();
-      unitClauses = new ArrayList<Clause<T>>();
+      softClauses = new LinkedList<Clause<T>>();
+      hardClauses = new LinkedList<Clause<T>>();
       for(Clause<T> clause : other.getSoftClauses()) {
         Clause<T> copy = new Clause<T>(clause);
-        if(copy.isUnitClause()) {
-          unitClauses.add(copy);
-        }
         softClauses.add(copy);
       }
       for(Clause<T> clause : other.getHardClauses()) {
         Clause<T> copy = new Clause<T>(clause);
-        if(copy.isUnitClause()) {
-          unitClauses.add(copy);
-        }
         hardClauses.add(copy);
       }
     }
 
-    public ArrayList<Clause<T>> getUnitClauses() {
-      return unitClauses;
+    public LinkedList<Clause<T>> getNewBinaryClauses() {
+      LinkedList<Clause<T>> clauses = new LinkedList<Clause<T>>();
+      for(Clause<T> clause : getSoftClauses()){
+        if(clause.getNumLiterals() == 2 && clause.isModified()){
+          clauses.add(clause);
+        }
+      }
+      return clauses;
     }
 
-    public void setAsTested(Clause<T> softClause) {
-      untestedSoftClauses.remove(softClause);
+    public LinkedList<Clause<T>> getUnitClauses() {
+      LinkedList<Clause<T>> queue = new LinkedList<Clause<T>>();
+      for(Clause<T> clause : softClauses) {
+        if(clause.isUnitClause()){
+          queue.offer(clause);
+        }
+      }
+      for(Clause<T> clause : hardClauses) {
+        if(clause.isUnitClause()){
+          queue.offer(clause);
+        }
+      }
+      return queue;
     }
 
-    public boolean hasUntestedSoftClause() {
-      return !untestedSoftClauses.isEmpty();
-    }
-
+    // nullable
     public Clause<T> getMinUntestedSoftClause() {
-      return untestedSoftClauses.poll();
+      int minSize = Integer.MAX_VALUE;
+      Clause<T> min = null;
+      for(Clause<T> clause : softClauses) {
+        if(!clause.isTested()) {
+          if(clause.getNumLiterals() < minSize) {
+            minSize = clause.getNumLiterals();
+            min = clause;
+          }
+        }
+      }
+      return min;
     }
 
     public void initializeInconsistentClauses() {
-      inconsistentClauses = new ArrayList<Clause<T>>();
+      inconsistentClauses = new LinkedList<Clause<T>>();
     }
 
     public void removeInconsistentClauses() {
@@ -244,6 +298,13 @@ class MaxSatUB {
       inconsistentClauses.addAll(clauses);
     }
 
+    public boolean hasSoftClauses() {
+      if(softClauses.size() > 0) {
+        return true;
+      }
+      return false;
+    }
+
     public int getNumSoftClauses() {
       return softClauses.size();
     }
@@ -252,7 +313,7 @@ class MaxSatUB {
       return hardClauses.size();
     }
 
-    public List<Clause<T>> getSoftClauses() {
+    public Collection<Clause<T>> getSoftClauses() {
       return this.softClauses;
     }
 
@@ -262,12 +323,10 @@ class MaxSatUB {
 
     public void removeSoftClause(Clause<T> clause) {
       softClauses.remove(clause);
-      untestedSoftClauses.remove(clause);
     }
 
     public void addSoftClause(Clause<T> clause) {
       softClauses.add(clause);
-      untestedSoftClauses.add(clause);
     }
 
     public void addHardClause(Clause<T> clause) {
@@ -283,16 +342,11 @@ class MaxSatUB {
     }
 
     public boolean containsSoftClause(Clause<T> other) {
-      for(Clause<T> clause : getSoftClauses()) {
-        if(clause.equals(other)) {
-          return true;
-        }
-      }
-      return false;
+      return this.softClauses.contains(other);
     }
 
     public Clause<T> getSoftClause(Clause<T> other) {
-      for(Clause<T> clause : getSoftClauses()) {
+      for(Clause<T> clause : this.softClauses) {
         if(clause.equals(other)) {
           return clause;
         }
@@ -303,24 +357,24 @@ class MaxSatUB {
     @Override
     public String toString() {
       String str = "Soft Clauses:\n {";
-      //for(Clause<T> soft : getSoftClauses()) {
-      for(int i = 0; i < getNumSoftClauses(); i++) {
-        Clause<T> soft = this.softClauses.get(i);
+      int i = 0;
+      for(Clause<T> soft : getSoftClauses()) {
         if(i == getNumSoftClauses()-1){
           str += soft;
         } else {
           str += soft + ", ";
         }
+        i++;
       }
       str += "}\nHard Clauses:\n {";
-      //for(Clause<T> hard : getHardClauses()) {
-      for(int i = 0; i < getNumHardClauses(); i++) {
-        Clause<T> hard = this.hardClauses.get(i);
+      i = 0;
+      for(Clause<T> hard : getHardClauses()) {
         if(i == getNumHardClauses()-1){
           str += hard;
         } else {
           str += hard + ", ";
         }
+        i++;
       }
       str += "}";
       return str;
@@ -331,6 +385,7 @@ class MaxSatUB {
     private ArrayList<T> literals;
     private boolean isSoft;
     private boolean modified = false;
+    private boolean tested = false;
 
     public Clause(ArrayList<Node<T>> vertices, boolean isSoft) {
       this.isSoft = isSoft;
@@ -369,6 +424,14 @@ class MaxSatUB {
 
     public boolean isSoft() {
       return isSoft;
+    }
+
+    public boolean isTested() {
+      return tested;
+    }
+
+    public void setAsTested() {
+      this.tested = true;
     }
 
     public boolean contains(T literal) {

@@ -20,6 +20,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   public static long numRecursiveCalls = -1;
   private static int maxPrintLevel = -1;
   private boolean verbose = false;
+  private int maxSatQuit = 0;
 
   /**
   * Find and return a Maximum Clique of an UndirectedGraph.
@@ -51,10 +52,11 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     // graph is a clique), ((N+1) + N)/2 == N. Searching for a clique of
     // size N will be the last search made.
     if(verbose) System.out.println("Original Graph Size: " + graph.size());
-    
-    ArrayList<ArrayList<Node<T>>> indSets = indSetUB(graph.getNodes());
-    int maxSatUB = MaxSatUB.estimateCardinality(graph, indSets);
-    int high = Math.min(indSets.size()-1, maxSatUB) + 1;
+
+    //ArrayList<ArrayList<Node<T>>> indSets = indSetUB(graph.getNodes());
+    //int indSetUB = indSetUB(graph.getNodes());
+    int maxSatUB = MaxSatUB.estimateCardinality(graph);
+    int high = maxSatUB + 1;
     //int high = maxPossibleCliqueNum(graph) + 1;
     int low = 0;
     UndirectedGraph<T> clique = null;
@@ -74,11 +76,13 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       if(clique != null) { // clique found
         if(verbose) System.out.println("##### Found a clique of size " + clique.size() +" #####");
         if(verbose) System.out.print(clique);
-        String cliqueStr = "CLIQUE: ";
-        for(Node<T> node : clique) {
-          cliqueStr += node.get() + " ";
+        if(verbose) {
+          String cliqueStr = "CLIQUE: ";
+          for(Node<T> node : clique) {
+            cliqueStr += node.get() + " ";
+          }
+          System.out.println(cliqueStr);
         }
-        if(verbose) System.out.println(cliqueStr);
         maxClique = clique;
         // findClique can return a clique larger than k.
         // The first thing the method does is check if the graph passed in
@@ -93,13 +97,16 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
         if(verbose) System.out.println("##### No clique found of size " + k + " #####");
         high = k;
       }
-      if(verbose) System.out.println("Took " + (endTime - startTime) + " milliseconds to run findClique for k: " + k);
-      if(verbose) System.out.println("using " + numRecursiveCalls + " recursive calls.");
+      if(verbose)
+      System.out.println("Took " + (endTime - startTime) + " milliseconds to run findClique for k: " + k);
+      if(verbose)
+      System.out.println("using " + numRecursiveCalls + " recursive calls.");
     }
     long fullEndTime = new Date().getTime();
     //System.out.print("Maximum Clique\n"+maxClique);
     //System.out.println("size: " + maxClique.size());
     if(verbose) System.out.println("Total Time: " + (fullEndTime - fullStartTime) + " milliseconds");
+    System.out.println("Num Times Max Sat Bounded a branch: " + maxSatQuit);
     return maxClique;
   }
 
@@ -117,6 +124,12 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @since 0.7.0
   */
   public UndirectedGraph<T> findClique(UndirectedGraph<T> graph, int k, int level) {
+    int maxSatUB = MaxSatUB.estimateCardinality(graph);
+    if(maxSatUB < k) {
+      //System.out.printf("QUITING BECAUSE MAXSATUB is less than k, %d < %d\n", maxSatUB, k);
+      maxSatQuit++;
+      return null;
+    }
     while(graph.size() >= k) {
       if(graph.isClique()) {
         return new UndirectedGraph<T>(graph);
@@ -187,8 +200,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       // call to keep searching.
       node = nodes.get(0); // the first node in the list is the node with the lowest # neighbors.
       if(node.numNeighbors() > k-1) {
-        UndirectedGraph<T> neighbors = graph.getNeighborhood(node.get());
-        //List<Node<T>> neighbors = node.getNodeAndNeighbors();
+        //UndirectedGraph<T> neighbors = graph.getNeighborhood(node.get());
+        List<Node<T>> neighbors = node.getNodeAndNeighbors();
         if(level <= maxPrintLevel) {
           levelPrint(level, "# looking for clique of size " + k);
           levelPrint(level, "# in node: "+node.get() +" 's neighborhood.");
@@ -199,9 +212,10 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
         UndirectedGraph<T> clique = null;
 
         //int maxPosCliqueNum = indSetUB(neighborhood);
-        ArrayList<ArrayList<Node<T>>> indSets = indSetUB(neighbors.getNodes());
-        int maxSatUB = MaxSatUB.estimateCardinality(neighbors, indSets);
-        int maxPosCliqueNum = Math.min(indSets.size()-1, maxSatUB);
+        //ArrayList<ArrayList<Node<T>>> indSets = indSetUB(neighbors.getNodes());
+        //int maxSatUB = MaxSatUB.estimateCardinality(neighbors, indSets);
+        //int maxPosCliqueNum = Math.min(indSets.size()-1, maxSatUB);
+        int maxPosCliqueNum = indSetUB(neighbors);
         //System.out.println("MAX POS CLIQUE NUM: " + maxPosCliqueNum);
         //neighbors = null;
         if(maxPosCliqueNum < k) {
@@ -219,8 +233,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           }
 
           //System.out.println("before recursive call\n"+graph);
-          //clique = findClique(graph.getNeighborhood(node.get()), k, level+1);
-          clique = findClique(neighbors, k, level+1);
+          clique = findClique(graph.getNeighborhood(node.get()), k, level+1);
+          //clique = findClique(neighbors, k, level+1);
 
           if(level <= maxPrintLevel) {
             long end = new Date().getTime();
@@ -333,11 +347,11 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     return k;
   }
 
-  private ArrayList<ArrayList<Node<T>>> indSetUB(UndirectedGraph<T> graph) {
+  private int indSetUB(UndirectedGraph<T> graph) {
     return indSetUB(graph.getNodes());
   }
 
-  private ArrayList<ArrayList<Node<T>>> indSetUB(Collection<Node<T>> nodes) {
+  private int indSetUB(Collection<Node<T>> nodes) {
     //System.out.println("## Calculating indSetUB");
     // get a list of nodes and sort them in descending order by degree
     List<Node<T>> descendingDegreeNodes = new ArrayList<Node<T>>(nodes);
@@ -366,7 +380,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
 
     }
     //System.out.println(colorSets.size()-1 + ", " + (maxColorNumber+1));
-    return colorSets;
+    return maxColorNumber + 1;
+    //return colorSets;
   }
 
   /**
