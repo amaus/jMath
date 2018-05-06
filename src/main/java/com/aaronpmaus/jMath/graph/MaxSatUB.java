@@ -10,9 +10,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-//import com.aaronpmaus.jMath.graph.*;
 class MaxSatUB <T extends Comparable<? super T>> {
-  private  boolean verbose = false;
+  private boolean verbose = false;
   private MaxSatEncoding originalEncoding;
   private int partitionSize;
 
@@ -60,8 +59,8 @@ class MaxSatUB <T extends Comparable<? super T>> {
   }
 
   private boolean failedClauseDetection(MaxSatEncoding encoding, Clause clause) {
-    for(Literal literal : clause) {
-      if(!failedLiteralDetection(encoding, literal.get())) {
+    for(T literal : clause) {
+      if(!failedLiteralDetection(encoding, literal)) {
         return false;
       }
     }
@@ -71,15 +70,20 @@ class MaxSatUB <T extends Comparable<? super T>> {
   private boolean failedLiteralDetection(MaxSatEncoding encoding, T literal) {
     // remove all soft clauses containing literal
     encoding = new MaxSatEncoding(encoding);
-    Iterator<Clause> it = encoding.getClauses().iterator();
+    Iterator<Clause> it = encoding.getSoftClauses().iterator();
     boolean negated;
+    Clause c;
     while(it.hasNext()) {
-      Clause c = it.next();
+      c = it.next();
       negated = false;
       // if the clause contains the nonnegated form of the literal, remove the clause
       if(c.contains(literal, negated)) {
         it.remove();
       }
+    }
+    it = encoding.getHardClauses().iterator();
+    while(it.hasNext()) {
+      c = it.next();
       negated = true;
       // if the clause contains the negated form of the literal, remove the literal
       if(c.contains(literal, negated)) {
@@ -116,18 +120,26 @@ class MaxSatUB <T extends Comparable<? super T>> {
     // on the path to deriving an empty clause
     LinkedList<Clause> inconsistentClauses = new LinkedList<Clause>();
     LinkedList<Clause> queue = encoding.getUnitClauses();
+    PriorityQueue<Clause> softClauses = encoding.getSoftClauses();
+    PriorityQueue<Clause> hardClauses = encoding.getHardClauses();
+    PriorityQueue<Clause> clauses;
     Clause c;
-    Literal lit;
     T l;
     boolean negated;
     if(verbose) System.out.printf("queue.size(): %d\n", queue.size());
     while(!queue.isEmpty()) {
       c = queue.poll();
-      lit = c.getLiteral();
-      l = lit.get();
+      l = c.getLiteral();
+      //l = lit.get();
       if(verbose) System.out.println("Processing " + l);
-      for(Clause clause : encoding.getClauses()) {
-        if(!lit.isNegated()) {
+      if(c.isSoft()) {
+        clauses = hardClauses;
+      } else {
+        clauses = softClauses;
+      }
+      for(Clause clause : clauses) {
+        //if(!lit.isNegated()) {
+        if(!c.isNegated(l)) {
           // if the literal is non negated, then we are looking for negated versions of this literal
           negated = true;
         } else {
@@ -203,15 +215,15 @@ class MaxSatUB <T extends Comparable<? super T>> {
   }
 
   private class MaxSatEncoding {
-    private PriorityQueue<Clause> clauses;
+    private PriorityQueue<Clause> softClauses;
+    private PriorityQueue<Clause> hardClauses;
     private int partitionSize;
     private boolean containsEmptyClause = false;
     private LinkedList<Clause> inconsistentClauses;
-    private int numSoftClauses;
 
     public MaxSatEncoding(UndirectedGraph<T> graph, ArrayList<ArrayList<Node<T>>> partition) {
-      clauses = new PriorityQueue<Clause>();
-      numSoftClauses = 0;
+      softClauses = new PriorityQueue<Clause>();
+      hardClauses = new PriorityQueue<Clause>();
 
       for(ArrayList<Node<T>> set : partition) {
         if(set.size() > 0) {
@@ -236,16 +248,16 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
 
     public MaxSatEncoding(MaxSatEncoding other) {
-      clauses = new PriorityQueue<Clause>();
-      for(Clause clause : other.getClauses()) {
+      softClauses = new PriorityQueue<Clause>();
+      hardClauses = new PriorityQueue<Clause>();
+      for(Clause clause : other.getSoftClauses()) {
         Clause copy = new Clause(clause);
         addClause(copy);
       }
-      numSoftClauses = other.getNumSoftClauses();
-    }
-
-    public PriorityQueue<Clause> getClauses() {
-      return clauses;
+      for(Clause clause : other.getHardClauses()) {
+        Clause copy = new Clause(clause);
+        addClause(copy);
+      }
     }
 
     public LinkedList<Clause> getNewBinaryClauses() {
@@ -260,7 +272,12 @@ class MaxSatUB <T extends Comparable<? super T>> {
 
     public LinkedList<Clause> getUnitClauses() {
       LinkedList<Clause> queue = new LinkedList<Clause>();
-      for(Clause clause : clauses) {
+      for(Clause clause : getSoftClauses()) {
+        if(clause.isUnitClause()){
+          queue.offer(clause);
+        }
+      }
+      for(Clause clause : getHardClauses()) {
         if(clause.isUnitClause()){
           queue.offer(clause);
         }
@@ -272,8 +289,8 @@ class MaxSatUB <T extends Comparable<? super T>> {
     public Clause getMinUntestedSoftClause() {
       int minSize = Integer.MAX_VALUE;
       Clause min = null;
-      for(Clause clause : clauses) {
-        if(clause.isSoft() && !clause.isTested()) {
+      for(Clause clause : getSoftClauses()) {
+        if(!clause.isTested()) {
           if(clause.getNumLiterals() < minSize) {
             minSize = clause.getNumLiterals();
             min = clause;
@@ -299,61 +316,37 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
 
     public boolean hasSoftClauses() {
-      if(numSoftClauses > 0) {
+      if(getNumSoftClauses() > 0) {
         return true;
       }
       return false;
     }
 
     public int getNumSoftClauses() {
-      int num = 0;
-      for(Clause c : clauses) {
-        if(c.isSoft()) {
-          num++;
-        }
-      }
-      return num;
+      return this.softClauses.size();
     }
 
     public int getNumHardClauses() {
-      int num = 0;
-      for(Clause c : clauses) {
-        if(!c.isSoft()) {
-          num++;
-        }
-      }
-      return num;
+      return this.hardClauses.size();
     }
 
-    public Collection<Clause> getSoftClauses() {
-      LinkedList<Clause> softClauses = new LinkedList<Clause>();
-      for(Clause c : clauses) {
-        if(c.isSoft()) {
-          softClauses.add(c);
-        }
-      }
+    public PriorityQueue<Clause> getSoftClauses() {
       return softClauses;
     }
 
-    public List<Clause> getHardClauses() {
-      LinkedList<Clause> hardClauses = new LinkedList<Clause>();
-      for(Clause c : clauses) {
-        if(!c.isSoft()) {
-          hardClauses.add(c);
-        }
-      }
+    public PriorityQueue<Clause> getHardClauses() {
       return hardClauses;
     }
 
     public void removeSoftClause(Clause clause) {
-      clauses.remove(clause);
-      numSoftClauses--;
+      softClauses.remove(clause);
     }
 
     public void addClause(Clause clause) {
-      clauses.add(clause);
       if(clause.isSoft()) {
-        numSoftClauses++;
+        softClauses.add(clause);
+      } else {
+        hardClauses.add(clause);
       }
     }
 
@@ -366,11 +359,11 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
 
     public boolean containsSoftClause(Clause other) {
-      return this.clauses.contains(other);
+      return this.softClauses.contains(other);
     }
 
     public Clause getSoftClause(Clause other) {
-      for(Clause clause : this.clauses) {
+      for(Clause clause : this.softClauses) {
         if(clause.equals(other)) {
           return clause;
         }
@@ -405,48 +398,55 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
   }
 
-  private class Clause implements Comparable<Clause>, Iterable<Literal> {
-    private ArrayList<Literal> literals;
-    //private ArrayList<T> lits;
-    //private ArrayList<Boolean> negated;
+  private class Clause implements Comparable<Clause>, Iterable<T> {
+    private ArrayList<T> literals;
+    private ArrayList<Boolean> negated;
     private boolean isSoft;
     private boolean modified = false;
     private boolean tested = false;
 
     public Clause(ArrayList<Node<T>> vertices, boolean isSoft) {
       this.isSoft = isSoft;
-      literals = new ArrayList<Literal>(vertices.size());
+      literals = new ArrayList<T>(vertices.size());
+      negated = new ArrayList<Boolean>(vertices.size());
       boolean isNegation;
       for(Node<T> vertex : vertices) {
         if(isSoft) {
           isNegation = false;
-          literals.add(new Literal(vertex.get(), isNegation));
+          literals.add(vertex.get());
+          negated.add(isNegation);
         } else {
           isNegation = true;
-          literals.add(new Literal(vertex.get(), isNegation));
+          literals.add(vertex.get());
+          negated.add(isNegation);
         }
       }
     }
 
     public Clause(T a, T b, boolean isSoft) {
       this.isSoft = isSoft;
-      literals = new ArrayList<Literal>(2);
+      literals = new ArrayList<T>(2);
+      negated = new ArrayList<Boolean>(2);
       boolean isNegation;
       if(isSoft) {
         isNegation = false;
       } else {
         isNegation = true;
       }
-      literals.add(new Literal(a, isNegation));
-      literals.add(new Literal(b, isNegation));
+      literals.add(a);
+      negated.add(isNegation);
+      literals.add(b);
+      negated.add(isNegation);
 
 
     }
 
     public Clause(Clause other) {
-      literals = new ArrayList<Literal>(other.getNumLiterals());
-      for(Literal lit : other) {
-        literals.add(lit);
+      literals = new ArrayList<T>(other.getNumLiterals());
+      negated = new ArrayList<Boolean>(other.getNumLiterals());
+      for(int i = 0; i < other.getNumLiterals(); i++) {
+        literals.add(other.getLiteral(i));
+        negated.add(other.isNegated(i));
       }
       this.isSoft = other.isSoft();
     }
@@ -476,20 +476,13 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
 
     public boolean contains(T literal) {
-      Iterator<Literal> it = iterator();
-      while(it.hasNext()) {
-        if(it.next().equals(literal)) {
-          return true;
-        }
-      }
-      return false;
+      return literals.contains(literal);
     }
 
     public boolean contains(T literal, boolean negated) {
-      Iterator<Literal> it = iterator();
-      while(it.hasNext()) {
-        Literal lit = it.next();
-        if(lit.get().equals(literal) && lit.isNegated() == negated) {
+      int index = literals.indexOf(literal);
+      if(index != -1) {
+        if(negated == this.negated.get(index)) {
           return true;
         }
       }
@@ -498,11 +491,10 @@ class MaxSatUB <T extends Comparable<? super T>> {
 
 
     public void remove(T literal) {
-      Iterator<Literal> it = iterator();
-      while(it.hasNext()) {
-        if(it.next().get().equals(literal)) {
-          it.remove();
-        }
+      int index = literals.indexOf(literal);
+      if(index != -1) {
+        literals.remove(index);
+        negated.remove(index);
       }
       this.modified = true;
     }
@@ -515,8 +507,20 @@ class MaxSatUB <T extends Comparable<? super T>> {
     * Only call if this clause is a unit clause. Returns the remaining literal.
     * @return the remaining literal in a unit clause
     */
-    public Literal getLiteral() {
+    public T getLiteral() {
       return literals.get(0);
+    }
+
+    public T getLiteral(int i) {
+      return literals.get(i);
+    }
+
+    public Boolean isNegated(int i) {
+      return negated.get(i);
+    }
+
+    public Boolean isNegated(T lit) {
+      return negated.get(literals.indexOf(lit));
     }
 
     @Override
@@ -524,12 +528,16 @@ class MaxSatUB <T extends Comparable<? super T>> {
       return this.getNumLiterals() - other.getNumLiterals();
     }
 
-    public ArrayList<Literal> getLiterals() {
+    public ArrayList<T> getLiterals() {
       return this.literals;
     }
 
+    public ArrayList<Boolean> getNegated() {
+      return this.negated;
+    }
+
     @Override
-    public Iterator<Literal> iterator() {
+    public Iterator<T> iterator() {
       return literals.iterator();
     }
 
@@ -541,10 +549,10 @@ class MaxSatUB <T extends Comparable<? super T>> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
-      //if(obj instanceof Clause) {
       if(obj.getClass() == Clause.class) {
         Clause other = (Clause) obj;
-        if(this.literals.equals(other.getLiterals())) {
+        if(this.literals.equals(other.getLiterals())
+            && this.negated.equals(other.getNegated())) {
           return true;
         }
       }
@@ -555,57 +563,20 @@ class MaxSatUB <T extends Comparable<? super T>> {
     public String toString() {
       String str = "";
       if(!isEmpty()) {
-        str = String.format("%s",literals.get(0));
+        if(isNegated(0)) {
+          str = String.format("!%s",literals.get(0));
+        } else {
+          str = String.format("%s",literals.get(0));
+        }
         for(int i = 1; i < literals.size(); i++) {
-          str = String.format("%s V %s", str, literals.get(i));
+          if(isNegated(i)) {
+            str = String.format("%s V !%s", str, literals.get(i));
+          } else {
+            str = String.format("%s V %s", str, literals.get(i));
+          }
         }
       }
       return str;
-    }
-  }
-
-  private class Literal {
-    private T element;
-    private boolean isNegation;
-
-    public Literal(T element, boolean isNegation) {
-      this.element = element;
-      this.isNegation = isNegation;
-    }
-
-    public T get() {
-      return element;
-    }
-
-    public boolean isNegated() {
-      return isNegation;
-    }
-
-    @Override
-    public String toString() {
-      if(isNegated()) {
-        return String.format("!%s",get());
-      }
-      return String.format("%s",get());
-    }
-
-    @Override
-    public int hashCode() {
-      return get().hashCode();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean equals(Object obj) {
-      //if(obj instanceof Literal) {
-      if(obj.getClass() == Literal.class) {
-        Literal other = (Literal) obj;
-        if(this.get().equals(other.get())
-            && (this.isNegated() == other.isNegated())) {
-          return true;
-        }
-      }
-      return false;
     }
   }
 }
