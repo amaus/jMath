@@ -229,16 +229,15 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     //printUB();
     //ArrayList<ArrayList<Node<T>>> partition = indSetUB(g, cMax.size(), c.size());
     int indSetUpperBound = indSetUB(g, cMax.size(), c.size());
-    int maxSatUB = MaxSatUB.estimateCardinality(g, colorSets);
-    if(maxSatUB < indSetUpperBound) {
+    //int maxSatUB = new MaxSatUB<T>(g, colorSets).estimateCardinality();
+    //if(maxSatUB < indSetUpperBound) {
       //System.out.println(maxSatUB + ", " + indSetUpperBound);
-    }
+    //}
     //System.out.println("Calling MaxSatUB, Graph:\n" + g);
     vertexUB.put(smallestVertex, min(vertexUB.get(smallestVertex),
                                      incUB(smallestVertexIndex, g),
-                                     indSetUpperBound,
-                                     maxSatUB));
-                                     //MaxSatUB.estimateCardinality(g, partition)));
+                                     indSetUpperBound));
+                                     //maxSatUB));
     //System.out.println("Updating UB for " + smallestVertex);
     //printUB();
 

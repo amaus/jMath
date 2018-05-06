@@ -20,7 +20,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   public static long numRecursiveCalls = -1;
   private static int maxPrintLevel = -1;
   private boolean verbose = false;
-  private int maxSatQuit = 0;
+  private int maxSatQuit;
 
   /**
   * Find and return a Maximum Clique of an UndirectedGraph.
@@ -38,6 +38,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @since 0.7.0
   */
   public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph) {
+    maxSatQuit = 0;
     long fullStartTime = new Date().getTime();
     // the plus 1 is necessary. Imagine a trivial example where
     // the max possible clique number is 5, and the actualy clique
@@ -55,7 +56,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
 
     //ArrayList<ArrayList<Node<T>>> indSets = indSetUB(graph.getNodes());
     //int indSetUB = indSetUB(graph.getNodes());
-    int maxSatUB = MaxSatUB.estimateCardinality(graph);
+    int maxSatUB = new MaxSatUB<T>(graph).estimateCardinality();
     int high = maxSatUB + 1;
     //int high = maxPossibleCliqueNum(graph) + 1;
     int low = 0;
@@ -124,7 +125,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @since 0.7.0
   */
   public UndirectedGraph<T> findClique(UndirectedGraph<T> graph, int k, int level) {
-    int maxSatUB = MaxSatUB.estimateCardinality(graph);
+    int maxSatUB = new MaxSatUB<T>(graph).estimateCardinality();
     if(maxSatUB < k) {
       //System.out.printf("QUITING BECAUSE MAXSATUB is less than k, %d < %d\n", maxSatUB, k);
       maxSatQuit++;
@@ -213,7 +214,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
 
         //int maxPosCliqueNum = indSetUB(neighborhood);
         //ArrayList<ArrayList<Node<T>>> indSets = indSetUB(neighbors.getNodes());
-        //int maxSatUB = MaxSatUB.estimateCardinality(neighbors, indSets);
+        //int maxSatUB = new MaxSatUB<T>(neighbors, indSets).estimateCardinality();
         //int maxPosCliqueNum = Math.min(indSets.size()-1, maxSatUB);
         int maxPosCliqueNum = indSetUB(neighbors);
         //System.out.println("MAX POS CLIQUE NUM: " + maxPosCliqueNum);
