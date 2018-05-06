@@ -33,6 +33,8 @@ class MaxSatUB <T extends Comparable<? super T>> {
     // perform cardinality test on encoding
     int s = 0;
     while(originalEncoding.hasSoftClauses()) {
+      if(verbose) System.out.printf("Starting round of Failed Clause Detection\n");
+      if(verbose) System.out.printf("Working on encoding\n %s\n",originalEncoding);
       originalEncoding.initializeInconsistentClauses();
       Clause min = originalEncoding.getMinUntestedSoftClause();
       // if min is null, there are no untested Soft Clauses
@@ -42,6 +44,8 @@ class MaxSatUB <T extends Comparable<? super T>> {
       min.setAsTested();
       if(verbose) System.out.println("Testing min Clause " + min);
       if(failedClauseDetection(originalEncoding, min)) {
+        if(verbose) System.out.printf("Failed Clause Detected: %s\n", min);
+        if(verbose) System.out.printf("Removing it and inconsistent clauses:\n");
         originalEncoding.removeSoftClause(min);
         originalEncoding.removeInconsistentClauses();
         if(verbose) System.out.println("After Failed Clause Detection, Encoding: \n" + originalEncoding);
@@ -49,14 +53,15 @@ class MaxSatUB <T extends Comparable<? super T>> {
       }
     }
     int cardinality = this.partitionSize - s;
-    if(verbose) System.out.println("CARDINALITY ESTIMATE: " + cardinality);
+    if(verbose) System.out.printf("CARDINALITY ESTIMATE %d - %d: %d\n", partitionSize, s, cardinality);
     if(verbose) System.out.println("#########################");
+    //System.exit(0);
     return cardinality;
   }
 
   private boolean failedClauseDetection(MaxSatEncoding encoding, Clause clause) {
-    for(T literal : clause) {
-      if(!failedLiteralDetection(encoding, literal)) {
+    for(Literal literal : clause) {
+      if(!failedLiteralDetection(encoding, literal.get())) {
         return false;
       }
     }
@@ -66,26 +71,30 @@ class MaxSatUB <T extends Comparable<? super T>> {
   private boolean failedLiteralDetection(MaxSatEncoding encoding, T literal) {
     // remove all soft clauses containing literal
     encoding = new MaxSatEncoding(encoding);
-    Iterator<Clause> it = encoding.getSoftClauses().iterator();
+    Iterator<Clause> it = encoding.getClauses().iterator();
+    boolean negated;
     while(it.hasNext()) {
-      if(it.next().contains(literal)) {
+      Clause c = it.next();
+      negated = false;
+      // if the clause contains the nonnegated form of the literal, remove the clause
+      if(c.contains(literal, negated)) {
         it.remove();
       }
-    }
-    // remove the literal from all hard clauses
-    for(Clause clause : encoding.getHardClauses()) {
-      if(clause.contains(literal)) {
-        if(verbose) System.out.printf("Removing %s from Clause %s\n", literal, clause);
-        clause.remove(literal);
-        if(clause.isEmpty()) {
+      negated = true;
+      // if the clause contains the negated form of the literal, remove the literal
+      if(c.contains(literal, negated)) {
+        if(verbose) System.out.printf("Removing %s from Clause %s\n", literal, c);
+        c.remove(literal);
+        if(c.isEmpty()) {
           if(verbose) System.out.println("Reached Empty Clause before Unit Prop. Return.");
           encoding.setContainsEmptyClause();
           return true;
         }
       }
+
     }
     // perform unit propogation
-    if(verbose) System.out.println("Encoding before Unit Propogation:\n" + originalEncoding);
+    if(verbose) System.out.println("Encoding before Unit Propogation:\n" + encoding);
     encoding = unitPropogation(encoding);
     if(encoding.containsEmptyClause()) {
       return true;
@@ -102,59 +111,52 @@ class MaxSatUB <T extends Comparable<? super T>> {
 
   private MaxSatEncoding unitPropogation( MaxSatEncoding encoding) {
 
+    if(verbose) System.out.printf("In unitPropogation\n");
     // the set of soft clauses that give rise to a contradiction, any soft clause that is modified
     // on the path to deriving an empty clause
     LinkedList<Clause> inconsistentClauses = new LinkedList<Clause>();
     LinkedList<Clause> queue = encoding.getUnitClauses();
+    Clause c;
+    Literal lit;
+    T l;
+    boolean negated;
+    if(verbose) System.out.printf("queue.size(): %d\n", queue.size());
     while(!queue.isEmpty()) {
-      Clause c = queue.poll();
-      T l = c.getLiteral();
+      c = queue.poll();
+      lit = c.getLiteral();
+      l = lit.get();
       if(verbose) System.out.println("Processing " + l);
-
-      if(c.isSoft()) {
-        // remove l from all hard clauses that contain it
-        for(Clause hardClause : encoding.getHardClauses()) {
-          if(hardClause.contains(l)) {
-            if(verbose) System.out.printf("Removing %s from Clause %s\n", l, hardClause);
-            hardClause.remove(l);
-            // if this clause ONLY contained l, then it is now an empty clause.
-            // set containsEmptyClause to TRUE, add inconsistentClauses to original
-            // encoding, and return encoding
-            if(hardClause.isEmpty()) {
-              if(verbose) System.out.println("Reaching Empty Clause. Return.");
-              encoding.setContainsEmptyClause();
-              this.originalEncoding.addInconsistentClauses(inconsistentClauses);
-              return encoding;
-            }
-            // Otherwise, after removing l, it will become a unit clause, add it to the queue
-            if(verbose) System.out.printf("Is Unit Clause, adding %s to queue\n", hardClause);
-            queue.offer(hardClause);
-          }
+      for(Clause clause : encoding.getClauses()) {
+        if(!lit.isNegated()) {
+          // if the literal is non negated, then we are looking for negated versions of this literal
+          negated = true;
+        } else {
+          // otherwise, we are looking for non-negated versions of this literal
+          negated = false;
         }
-      } else { // Otherwise, the unit clause is a hard clause
-        // implying that the literal in it must be 0 and can be removed from all soft clauses
-        for(Clause softClause : encoding.getSoftClauses()) {
-          if(softClause.contains(l)) {
-            // save this soft clause from the original encoding in inconsistenSubset
-            // we only want to save it once, before it has been modified. If the original encoding
-            // contains a soft clause with the same literals as this one, then get than clause and
-            // add it to the list of inconsistent subsets.
-            if(this.originalEncoding.containsSoftClause(softClause)) {
-              inconsistentClauses.add(this.originalEncoding.getSoftClause(softClause));
-            }
-            if(verbose) System.out.printf("Removing %s from Clause %s\n", l, softClause);
-            softClause.remove(l);
-            // if the softClause is empty, wrap up unit propogation: set containsEmptyClause, add
-            // inconsistentClauses to the original encoding, and return encoding.
-            if(softClause.isEmpty()) {
-              encoding.setContainsEmptyClause();
-              this.originalEncoding.addInconsistentClauses(inconsistentClauses);
-              return encoding;
-            }
-            if(softClause.isUnitClause()) {
-              if(verbose) System.out.printf("Is Unit Clause, adding %s to queue\n", softClause);
-              queue.offer(softClause);
-            }
+        // if lit is a non negated literal, then the following condition checks for negated versions
+        // of this literal and removes them from their clauses.
+        // if lit is negated, the this condition checks for non negated literals and removes them
+        if(clause.contains(l, negated)) {
+          // if the clause is soft, add it to inconsistent subsets
+          // we only want to save it once, before it has been modified. If the original encoding
+          // contains a soft clause with the same literals as this one, then get than clause and
+          // add it to the list of inconsistent subsets.
+          if(clause.isSoft() && this.originalEncoding.containsSoftClause(clause)) {
+            if(verbose) System.out.printf("Adding %s to set of inconsistent clauses.\n", clause);
+            inconsistentClauses.add(this.originalEncoding.getSoftClause(clause));
+          }
+          if(verbose) System.out.printf("Removing %s from Clause %s\n", l, clause);
+          clause.remove(l);
+          if(clause.isUnitClause()) {
+            if(verbose) System.out.printf("Is Unit Clause, adding %s to queue\n", clause);
+            queue.add(clause);
+          }
+          if(clause.isEmpty()) {
+            if(verbose) System.out.println("Reaching Empty Clause. Return.");
+            encoding.setContainsEmptyClause();
+            this.originalEncoding.addInconsistentClauses(inconsistentClauses);
+            return encoding;
           }
         }
       }
@@ -201,22 +203,22 @@ class MaxSatUB <T extends Comparable<? super T>> {
   }
 
   private class MaxSatEncoding {
-    private LinkedList<Clause> softClauses;
-    private LinkedList<Clause> hardClauses;
+    private PriorityQueue<Clause> clauses;
     private int partitionSize;
     private boolean containsEmptyClause = false;
     private LinkedList<Clause> inconsistentClauses;
+    private int numSoftClauses;
 
     public MaxSatEncoding(UndirectedGraph<T> graph, ArrayList<ArrayList<Node<T>>> partition) {
-      softClauses = new LinkedList<Clause>();
-      hardClauses = new LinkedList<Clause>();
+      clauses = new PriorityQueue<Clause>();
+      numSoftClauses = 0;
 
       for(ArrayList<Node<T>> set : partition) {
         if(set.size() > 0) {
           //System.out.println("Adding set: " + set);
           Clause clause = new Clause(set, true);
           //System.out.println("Add Soft Clause: " + clause);
-          addSoftClause(clause);
+          addClause(clause);
         }
       }
       List<T> elements = graph.getElements();
@@ -227,23 +229,23 @@ class MaxSatUB <T extends Comparable<? super T>> {
           if(vertex != neighbor && !graph.hasEdge(vertex, neighbor)) {
             Clause clause = new Clause(vertex, neighbor, false);
             //System.out.println("Add Hard Clause: " + clause);
-            addHardClause(clause);
+            addClause(clause);
           }
         }
       }
     }
 
     public MaxSatEncoding(MaxSatEncoding other) {
-      softClauses = new LinkedList<Clause>();
-      hardClauses = new LinkedList<Clause>();
-      for(Clause clause : other.getSoftClauses()) {
+      clauses = new PriorityQueue<Clause>();
+      for(Clause clause : other.getClauses()) {
         Clause copy = new Clause(clause);
-        softClauses.add(copy);
+        addClause(copy);
       }
-      for(Clause clause : other.getHardClauses()) {
-        Clause copy = new Clause(clause);
-        hardClauses.add(copy);
-      }
+      numSoftClauses = other.getNumSoftClauses();
+    }
+
+    public PriorityQueue<Clause> getClauses() {
+      return clauses;
     }
 
     public LinkedList<Clause> getNewBinaryClauses() {
@@ -258,12 +260,7 @@ class MaxSatUB <T extends Comparable<? super T>> {
 
     public LinkedList<Clause> getUnitClauses() {
       LinkedList<Clause> queue = new LinkedList<Clause>();
-      for(Clause clause : softClauses) {
-        if(clause.isUnitClause()){
-          queue.offer(clause);
-        }
-      }
-      for(Clause clause : hardClauses) {
+      for(Clause clause : clauses) {
         if(clause.isUnitClause()){
           queue.offer(clause);
         }
@@ -275,8 +272,8 @@ class MaxSatUB <T extends Comparable<? super T>> {
     public Clause getMinUntestedSoftClause() {
       int minSize = Integer.MAX_VALUE;
       Clause min = null;
-      for(Clause clause : softClauses) {
-        if(!clause.isTested()) {
+      for(Clause clause : clauses) {
+        if(clause.isSoft() && !clause.isTested()) {
           if(clause.getNumLiterals() < minSize) {
             minSize = clause.getNumLiterals();
             min = clause;
@@ -292,6 +289,7 @@ class MaxSatUB <T extends Comparable<? super T>> {
 
     public void removeInconsistentClauses() {
       for(Clause clause : inconsistentClauses) {
+        if(verbose) System.out.printf("Removing Clause: %s\n", clause);
         removeSoftClause(clause);
       }
     }
@@ -301,38 +299,62 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
 
     public boolean hasSoftClauses() {
-      if(softClauses.size() > 0) {
+      if(numSoftClauses > 0) {
         return true;
       }
       return false;
     }
 
     public int getNumSoftClauses() {
-      return softClauses.size();
+      int num = 0;
+      for(Clause c : clauses) {
+        if(c.isSoft()) {
+          num++;
+        }
+      }
+      return num;
     }
 
     public int getNumHardClauses() {
-      return hardClauses.size();
+      int num = 0;
+      for(Clause c : clauses) {
+        if(!c.isSoft()) {
+          num++;
+        }
+      }
+      return num;
     }
 
     public Collection<Clause> getSoftClauses() {
-      return this.softClauses;
+      LinkedList<Clause> softClauses = new LinkedList<Clause>();
+      for(Clause c : clauses) {
+        if(c.isSoft()) {
+          softClauses.add(c);
+        }
+      }
+      return softClauses;
     }
 
     public List<Clause> getHardClauses() {
-      return this.hardClauses;
+      LinkedList<Clause> hardClauses = new LinkedList<Clause>();
+      for(Clause c : clauses) {
+        if(!c.isSoft()) {
+          hardClauses.add(c);
+        }
+      }
+      return hardClauses;
     }
 
     public void removeSoftClause(Clause clause) {
-      softClauses.remove(clause);
+      clauses.remove(clause);
+      numSoftClauses--;
     }
 
-    public void addSoftClause(Clause clause) {
-      softClauses.add(clause);
-    }
-
-    public void addHardClause(Clause clause) {
-      hardClauses.add(clause);
+    public void addClause(Clause clause) {
+      clauses.add(clause);
+      if(clause.isSoft()) {
+        numSoftClauses++;
+      }
     }
 
     public void setContainsEmptyClause() {
@@ -344,11 +366,11 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
 
     public boolean containsSoftClause(Clause other) {
-      return this.softClauses.contains(other);
+      return this.clauses.contains(other);
     }
 
     public Clause getSoftClause(Clause other) {
-      for(Clause clause : this.softClauses) {
+      for(Clause clause : this.clauses) {
         if(clause.equals(other)) {
           return clause;
         }
@@ -383,30 +405,47 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
   }
 
-  private class Clause implements Comparable<Clause>, Iterable<T> {
-    private ArrayList<T> literals;
+  private class Clause implements Comparable<Clause>, Iterable<Literal> {
+    private ArrayList<Literal> literals;
+    //private ArrayList<T> lits;
+    //private ArrayList<Boolean> negated;
     private boolean isSoft;
     private boolean modified = false;
     private boolean tested = false;
 
     public Clause(ArrayList<Node<T>> vertices, boolean isSoft) {
       this.isSoft = isSoft;
-      literals = new ArrayList<T>(vertices.size());
+      literals = new ArrayList<Literal>(vertices.size());
+      boolean isNegation;
       for(Node<T> vertex : vertices) {
-        literals.add(vertex.get());
+        if(isSoft) {
+          isNegation = false;
+          literals.add(new Literal(vertex.get(), isNegation));
+        } else {
+          isNegation = true;
+          literals.add(new Literal(vertex.get(), isNegation));
+        }
       }
     }
 
     public Clause(T a, T b, boolean isSoft) {
       this.isSoft = isSoft;
-      literals = new ArrayList<T>(2);
-      literals.add(a);
-      literals.add(b);
+      literals = new ArrayList<Literal>(2);
+      boolean isNegation;
+      if(isSoft) {
+        isNegation = false;
+      } else {
+        isNegation = true;
+      }
+      literals.add(new Literal(a, isNegation));
+      literals.add(new Literal(b, isNegation));
+
+
     }
 
     public Clause(Clause other) {
-      literals = new ArrayList<T>(other.getNumLiterals());
-      for(T lit : other) {
+      literals = new ArrayList<Literal>(other.getNumLiterals());
+      for(Literal lit : other) {
         literals.add(lit);
       }
       this.isSoft = other.isSoft();
@@ -437,11 +476,34 @@ class MaxSatUB <T extends Comparable<? super T>> {
     }
 
     public boolean contains(T literal) {
-      return literals.contains(literal);
+      Iterator<Literal> it = iterator();
+      while(it.hasNext()) {
+        if(it.next().equals(literal)) {
+          return true;
+        }
+      }
+      return false;
     }
 
+    public boolean contains(T literal, boolean negated) {
+      Iterator<Literal> it = iterator();
+      while(it.hasNext()) {
+        Literal lit = it.next();
+        if(lit.get().equals(literal) && lit.isNegated() == negated) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+
     public void remove(T literal) {
-      literals.remove(literal);
+      Iterator<Literal> it = iterator();
+      while(it.hasNext()) {
+        if(it.next().get().equals(literal)) {
+          it.remove();
+        }
+      }
       this.modified = true;
     }
 
@@ -453,7 +515,7 @@ class MaxSatUB <T extends Comparable<? super T>> {
     * Only call if this clause is a unit clause. Returns the remaining literal.
     * @return the remaining literal in a unit clause
     */
-    public T getLiteral() {
+    public Literal getLiteral() {
       return literals.get(0);
     }
 
@@ -462,12 +524,12 @@ class MaxSatUB <T extends Comparable<? super T>> {
       return this.getNumLiterals() - other.getNumLiterals();
     }
 
-    public ArrayList<T> getLiterals() {
+    public ArrayList<Literal> getLiterals() {
       return this.literals;
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<Literal> iterator() {
       return literals.iterator();
     }
 
@@ -492,22 +554,58 @@ class MaxSatUB <T extends Comparable<? super T>> {
     @Override
     public String toString() {
       String str = "";
-      if(isSoft()) {
-        if(!isEmpty()) {
-          str = String.format("%s",literals.get(0));
-          for(int i = 1; i < literals.size(); i++) {
-            str = String.format("%s V %s", str, literals.get(i));
-          }
-        }
-      } else {
-        if(!isEmpty()){
-          str = String.format("!%s",literals.get(0));
-          for(int i = 1; i < literals.size(); i++) {
-            str = String.format("%s V !%s", str, literals.get(i));
-          }
+      if(!isEmpty()) {
+        str = String.format("%s",literals.get(0));
+        for(int i = 1; i < literals.size(); i++) {
+          str = String.format("%s V %s", str, literals.get(i));
         }
       }
       return str;
+    }
+  }
+
+  private class Literal {
+    private T element;
+    private boolean isNegation;
+
+    public Literal(T element, boolean isNegation) {
+      this.element = element;
+      this.isNegation = isNegation;
+    }
+
+    public T get() {
+      return element;
+    }
+
+    public boolean isNegated() {
+      return isNegation;
+    }
+
+    @Override
+    public String toString() {
+      if(isNegated()) {
+        return String.format("!%s",get());
+      }
+      return String.format("%s",get());
+    }
+
+    @Override
+    public int hashCode() {
+      return get().hashCode();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(Object obj) {
+      //if(obj instanceof Literal) {
+      if(obj.getClass() == Literal.class) {
+        Literal other = (Literal) obj;
+        if(this.get().equals(other.get())
+            && (this.isNegated() == other.isNegated())) {
+          return true;
+        }
+      }
+      return false;
     }
   }
 }
