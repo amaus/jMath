@@ -42,7 +42,7 @@ public class FindClique {
       //System.out.println("Is Clique?: " + graph.isClique(neighborhood));
 
       // run the find clique algorithm while clocking it to know how much time it took
-      MausMaxCliqueSolver<Integer> maxCliqueTool = new MausMaxCliqueSolver<Integer>();
+      MausMaxCliqueSolver maxCliqueTool = new MausMaxCliqueSolver();
       long startTime = new Date().getTime();
       UndirectedGraph<Integer> clique = maxCliqueTool.findClique(graph, k, 1);
       long endTime = new Date().getTime();

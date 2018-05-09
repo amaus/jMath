@@ -108,7 +108,7 @@ public class FindMaxClique{
 
       if(runIncSolver) {
         System.out.println("########################### IncMaxCliqueSolver ############################");
-        MaxCliqueSolver<Integer> maxCliqueTool = new IncMaxCliqueSolver<Integer>();
+        MaxCliqueSolver<Integer> maxCliqueTool = new IncMaxCliqueSolver();
         long cliqueStart = new Date().getTime();
         UndirectedGraph<Integer> maxClique = maxCliqueTool.findMaxClique(graph);
         long cliqueEnd = new Date().getTime();
@@ -117,7 +117,7 @@ public class FindMaxClique{
 
       if(runMaus) {
         System.out.println("############################## Maus Solver ################################");
-        MaxCliqueSolver<Integer> maxCliqueTool = new MausMaxCliqueSolver<Integer>();
+        MaxCliqueSolver<Integer> maxCliqueTool = new MausMaxCliqueSolver();
         long cliqueStart = new Date().getTime();
         UndirectedGraph<Integer> maxClique = maxCliqueTool.findMaxClique(graph);
         long cliqueEnd = new Date().getTime();

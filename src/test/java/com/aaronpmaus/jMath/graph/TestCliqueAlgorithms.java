@@ -47,14 +47,14 @@ public class TestCliqueAlgorithms {
 
   @Test
   public void testIncMaxCliqueSolver() {
-    cliqueTool = new IncMaxCliqueSolver<Integer>();
+    cliqueTool = new IncMaxCliqueSolver();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(example);
     verifyClique(clique);
   }
 
   @Test
   public void testMausMaxCliqueSolver() {
-    cliqueTool = new MausMaxCliqueSolver<Integer>();
+    cliqueTool = new MausMaxCliqueSolver();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(example);
     verifyClique(clique);
   }
@@ -95,7 +95,7 @@ public class TestCliqueAlgorithms {
     set.add(maxSatGraph.getNode(4));
     set.add(maxSatGraph.getNode(6));
     colorSets.add(set);
-    int maxSatUB = new MaxSatUB<Integer>(maxSatGraph, colorSets).estimateCardinality();
+    int maxSatUB = new MaxSatUB(maxSatGraph).estimateCardinality();
 
   }
 

@@ -17,20 +17,20 @@ import java.util.Comparator;
 * INCOMPLETE - does not include UB max sat
 * @since 0.7.0
 */
-public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliqueSolver<T> {
-  private ArrayList<T> vertexOrdering;
+public class IncMaxCliqueSolver extends MaxCliqueSolver<Integer> {
+  private ArrayList<Integer> vertexOrdering;
   //private ArrayList<Integer> vertexUB;
-  private HashMap<T, Integer> vertexUB;
+  private HashMap<Integer, Integer> vertexUB;
   public static long numCalls = 0;
   public static long numVOCalls = 0;
-  private ArrayList<ArrayList<Node<T>>> colorSets;
+  private ArrayList<ArrayList<Node<Integer>>> colorSets;
 
   /**
   * {@inheritDoc}
   * @since 0.7.0
   */
-  public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph) {
-    ArrayList<T> vertexOrdering = vertexOrdering(graph);
+  public UndirectedGraph<Integer> findMaxClique(UndirectedGraph<Integer> graph) {
+    ArrayList<Integer> vertexOrdering = vertexOrdering(graph);
     // initialize vertexUB
     return findMaxClique(graph, vertexOrdering);
   }
@@ -39,19 +39,19 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   * Finds the maximum clique in g
   * @param graph the graph to search for a max clique in
   * @param vertexOrdering the ordering of the vertices to use when searching for the clique
-  * @return An {@code UndirectedGraph<T>} that is a max clique in graph
+  * @return An {@code UndirectedGraph<Integer>} that is a max clique in graph
   * @since 0.7.0
   */
-  public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph, ArrayList<T> vertexOrdering) {
+  public UndirectedGraph<Integer> findMaxClique(UndirectedGraph<Integer> graph, ArrayList<Integer> vertexOrdering) {
     this.vertexOrdering = vertexOrdering;
-    vertexUB = new HashMap<T, Integer>((int)(graph.size()/0.75)+1);
+    vertexUB = new HashMap<Integer, Integer>((int)(graph.size()/0.75)+1);
     for(int i = vertexOrdering.size()-1; i >= 0; i--) {
       int ubValue = incUB(i, graph);
       vertexUB.put(vertexOrdering.get(i), ubValue);
     }
     //printUB();
-    List<T> elements = incMaxClique(graph, new LinkedList<T>(), new LinkedList<T>());
-    UndirectedGraph<T> clique = graph.subset(elements);
+    List<Integer> elements = incMaxClique(graph, new LinkedList<Integer>(), new LinkedList<Integer>());
+    UndirectedGraph<Integer> clique = graph.subset(elements);
     //System.out.println("is clique? " + g.isClique(clique));
     //System.out.println("is clique? " + g.checkIfClique(objs));
     return clique;
@@ -75,8 +75,8 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   // when calculating UB values
   // @param index is the index of the vertex in the vertexOrdering
   // @param g is the graph to use to establish neighbors
-  private int incUB(int index, UndirectedGraph<T> g) {
-    Node<T> vertex = g.getNode(vertexOrdering.get(index));
+  private int incUB(int index, UndirectedGraph<Integer> g) {
+    Node<Integer> vertex = g.getNode(vertexOrdering.get(index));
     //System.out.println("Calculating inc UB of " + vertex.get());
     if(vertex == null) {
       throw new NullPointerException("IncMaxCliqueSolver::incUB() vertex at index in vertexOrdering not in g");
@@ -85,7 +85,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     for(int i = index+1; i < vertexOrdering.size(); i++) {
       // if v_i and v_j are neighbors
       if(g.contains(vertexOrdering.get(i))) {
-        Node<T> neighbor = g.getNode(vertexOrdering.get(i));
+        Node<Integer> neighbor = g.getNode(vertexOrdering.get(i));
         //if(neighbor != null) System.out.println("looking at " + neighbor.get());
         if(vertex.hasNeighbor(neighbor)) {
           //System.out.println(neighbor.get() + " is a neighbor with UB of " + vertexUB.get(vertexOrdering.get(i)));
@@ -106,20 +106,20 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   * @param cSize the size of the clique under construction
   * @return the partition of the graph into independent sets (color sets)
   */
-  private int indSetUB(UndirectedGraph<T> g, int cMaxSize, int cSize) {
+  private int indSetUB(UndirectedGraph<Integer> g, int cMaxSize, int cSize) {
     //System.out.println("## Calculating indSetUB");
     // get a list of nodes and sort them in descending order by degree
-    List<Node<T>> descendingDegreeNodes = new ArrayList<Node<T>>(g.getNodes());
+    List<Node<Integer>> descendingDegreeNodes = new ArrayList<Node<Integer>>(g.getNodes());
     Collections.sort(descendingDegreeNodes, Collections.reverseOrder());
     int maxColorNumber = 0;
     // initialize color sets
     // The index of the outer ArrayList is k and the inner arraylists hold all the nodes that belong
     // to that color k.
-    colorSets = new ArrayList<ArrayList<Node<T>>>();
+    colorSets = new ArrayList<ArrayList<Node<Integer>>>();
     // initialize the first two color sets (k = 0,1)
-    colorSets.add(new ArrayList<Node<T>>());
-    colorSets.add(new ArrayList<Node<T>>());
-    for(Node<T> node : descendingDegreeNodes) {
+    colorSets.add(new ArrayList<Node<Integer>>());
+    colorSets.add(new ArrayList<Node<Integer>>());
+    for(Node<Integer> node : descendingDegreeNodes) {
       int k = 0;
       // find the lowest k where neighbors and the set of nodes in colorSets[k] share no nodes
       // in common
@@ -129,7 +129,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
       if(k > maxColorNumber) {
         maxColorNumber = k;
         // initialize and add the next color set
-        colorSets.add(new ArrayList<Node<T>>());
+        colorSets.add(new ArrayList<Node<Integer>>());
       }
       colorSets.get(k).add(node);
 
@@ -153,13 +153,13 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     //return colorSets;
   }
 
-  private void reNumber(Node<T> node, int nodeColor, int colorThreshold,
-                        ArrayList<ArrayList<Node<T>>> colorSets) {
+  private void reNumber(Node<Integer> node, int nodeColor, int colorThreshold,
+                        ArrayList<ArrayList<Node<Integer>>> colorSets) {
 
     for(int k1 = 0; k1 < colorThreshold - 1; k1++) {
-      LinkedList<Node<T>> intersection = intersection(colorSets.get(k1), node.getNeighbors());
+      LinkedList<Node<Integer>> intersection = intersection(colorSets.get(k1), node.getNeighbors());
       if(intersection.size() == 1) {
-        Node<T> intersectedNode = intersection.get(0);
+        Node<Integer> intersectedNode = intersection.get(0);
         for(int k2 = k1 + 1; k2 < colorThreshold; k2++) {
           if(Collections.disjoint(colorSets.get(k2), intersectedNode.getNeighbors())) {
             colorSets.get(nodeColor).remove(node);
@@ -179,7 +179,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   * @param gMax the max clique found so far
   * @return a list containing the elements of the maximum clique found in g
   */
-  private List<T> incMaxClique(UndirectedGraph<T> g, List<T> c, List<T> cMax) {
+  private List<Integer> incMaxClique(UndirectedGraph<Integer> g, List<Integer> c, List<Integer> cMax) {
     if(numCalls == 100) { // for testing purposes to stop infinite recursion
       //return c;
     }
@@ -191,7 +191,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
       //System.out.println("c:\n"+c);
       return c;
     }
-    T smallestVertex = getSmallestVertex(g);
+    Integer smallestVertex = getSmallestVertex(g);
     if(numCalls < 100) {
       //System.out.println("The whole graph");
       //System.out.println(g);
@@ -199,20 +199,20 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
       //System.out.println(smallestVertex);
     }
     int smallestVertexIndex = vertexOrdering.indexOf(smallestVertex);
-    //UndirectedGraph<T> gWithoutSmallestVertex = new UndirectedGraph<T>(g);
+    //UndirectedGraph<Integer> gWithoutSmallestVertex = new UndirectedGraph<Integer>(g);
     //gWithoutSmallestVertex.removeVertex(smallestVertex);
     if(numCalls < 100) {
       //System.out.println("graph without smallest vertex");
       //System.out.println(gWithoutSmallestVertex);
     }
     //System.out.println("making recursive call of incMaxClique");
-    //UndirectedGraph<T> c1 = incMaxClique(gWithoutSmallestVertex, c, cMax);
+    //UndirectedGraph<Integer> c1 = incMaxClique(gWithoutSmallestVertex, c, cMax);
 
     // CRAZY Idea, instead of creating a copy of g for every recursive call, remove the smallest
     // vertex from g before the call, and add it back in after the call.
-    Node<T> small = g.getNode(smallestVertex);
+    Node<Integer> small = g.getNode(smallestVertex);
     g.removeVertex(smallestVertex);
-    List<T> c1 = incMaxClique(g, c, cMax);
+    List<Integer> c1 = incMaxClique(g, c, cMax);
     g.addNode(small);
 
     //System.out.println("In Call #: " + callNumber);
@@ -223,16 +223,13 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     // update vertexUB, includes incUB and indSetUB. TODO include MaxSatUB
     //System.out.println("smallest vertex: " + smallestVertex.get() );
     //System.out.println("Size of vertexUB: " + vertexUB.size());
-    //for(Node<T> node : vertexUB.keySet()) {
+    //for(Node<Integer> node : vertexUB.keySet()) {
     //System.out.println(node.get());
     //}
     //printUB();
-    //ArrayList<ArrayList<Node<T>>> partition = indSetUB(g, cMax.size(), c.size());
+    //ArrayList<ArrayList<Node<Integer>>> partition = indSetUB(g, cMax.size(), c.size());
     int indSetUpperBound = indSetUB(g, cMax.size(), c.size());
-    //int maxSatUB = new MaxSatUB<T>(g, colorSets).estimateCardinality();
-    //if(maxSatUB < indSetUpperBound) {
-      //System.out.println(maxSatUB + ", " + indSetUpperBound);
-    //}
+    //int maxSatUB = new MaxSatUB(g, colorSets).estimateCardinality();
     //System.out.println("Calling MaxSatUB, Graph:\n" + g);
     vertexUB.put(smallestVertex, min(vertexUB.get(smallestVertex),
                                      incUB(smallestVertexIndex, g),
@@ -246,47 +243,47 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
     // save the vertexUB values of the neighbors of smallestVertex
     // first, get the set of neighbors
-    UndirectedGraph<T> neighbors = g.getNeighbors(smallestVertex);
-    //Collection<Node<T>> neighbors = g.getNode(smallestVertex).getNeighbors();
+    UndirectedGraph<Integer> neighbors = g.getNeighbors(smallestVertex);
+    //Collection<Node<Integer>> neighbors = g.getNode(smallestVertex).getNeighbors();
     // copy all the vertexUB values for the neighbors of smallestVertex
-    ArrayList<T> vertexUB_bkup_elements = new ArrayList<T>(neighbors.size());
+    ArrayList<Integer> vertexUB_bkup_elements = new ArrayList<Integer>(neighbors.size());
     int[] vertexUB_bkup_values = new int[neighbors.size()];
-    //HashMap<T, Integer> vertexUB_bkup = new HashMap<T, Integer>();
+    //HashMap<Integer, Integer> vertexUB_bkup = new HashMap<Integer, Integer>();
     int i = 0;
-    for(Node<T> neighbor : neighbors) {
+    for(Node<Integer> neighbor : neighbors) {
       vertexUB_bkup_elements.add(neighbor.get());
       vertexUB_bkup_values[i] = vertexUB.get(neighbor.get());
       i++;
       //vertexUB_bkup.put(neighbor.get(), vertexUB.get(neighbor.get()));
     }
 
-    List<T> cUnionSmallestVertex = new LinkedList<T>(c);
+    List<Integer> cUnionSmallestVertex = new LinkedList<Integer>(c);
     cUnionSmallestVertex.add(smallestVertex);
 
     //System.out.println("neighbors of " + smallestVertex + ":\n" + neighborsGraph);
     //System.out.println("cUnionSmallestVertex:\n" + cUnionSmallestVertex);
 
-    /*Collection<Node<T>> allNodes = g.getNodes();
-    List<Node<T>> nonNeighbors = new LinkedList<Node<T>>();
-    for(Node<T> node : allNodes) {
+    /*Collection<Node<Integer>> allNodes = g.getNodes();
+    List<Node<Integer>> nonNeighbors = new LinkedList<Node<Integer>>();
+    for(Node<Integer> node : allNodes) {
       if(!neighbors.contains(node)) {
         nonNeighbors.add(node);
       }
     }
-    for(Node<T> node : nonNeighbors) {
+    for(Node<Integer> node : nonNeighbors) {
       g.removeVertex(node.get());
     }*/
-    List<T> c2 = incMaxClique(neighbors, cUnionSmallestVertex, cMax);
-    //List<T> c2 = incMaxClique(g, cUnionSmallestVertex, cMax);
-    /*for(Node<T> node : nonNeighbors) {
+    List<Integer> c2 = incMaxClique(neighbors, cUnionSmallestVertex, cMax);
+    //List<Integer> c2 = incMaxClique(g, cUnionSmallestVertex, cMax);
+    /*for(Node<Integer> node : nonNeighbors) {
       g.addNode(node);
     }*/
-    //List<T> c2 = incMaxClique(neighborsGraph, c, cMax);
+    //List<Integer> c2 = incMaxClique(neighborsGraph, c, cMax);
     //System.out.println("In Call #: " + callNumber);
     //System.out.println("second recursive call complete");
 
     // restore the saved vertexUB values
-    //for(Node<T> neighbor : neighbors) {
+    //for(Node<Integer> neighbor : neighbors) {
     for(i = 0; i < neighbors.size(); i++) {
       vertexUB.put(vertexUB_bkup_elements.get(i), vertexUB_bkup_values[i]);
       //vertexUB.put(neighbor.get(), vertexUB_bkup.get(neighbor.get()));
@@ -301,7 +298,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     }
   }
 
-  private T getSmallestVertex(UndirectedGraph<T> g) {
+  private Integer getSmallestVertex(UndirectedGraph<Integer> g) {
     for(int i = 0; i < vertexOrdering.size(); i++) {
       if(g.contains(vertexOrdering.get(i))) {
         return vertexOrdering.get(i);
@@ -316,27 +313,27 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
   * @return an ArrayList of the graphs that make up the partition
   * @since 0.7.0
   */
-  public ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g) {
-    ArrayList<T> indSetVertexOrder = g.degeneracyOrdering( );
+  public ArrayList<UndirectedGraph<Integer>> getIndependentSetPartition(UndirectedGraph<Integer> g) {
+    ArrayList<Integer> indSetVertexOrder = g.degeneracyOrdering( );
     Collections.reverse(indSetVertexOrder);
     return getIndependentSetPartition(g, indSetVertexOrder);
   }
 
-  private ArrayList<UndirectedGraph<T>> getIndependentSetPartition(UndirectedGraph<T> g, ArrayList<T> indSetVertexOrder) {
-    ArrayList<UndirectedGraph<T>> indSets = new ArrayList<UndirectedGraph<T>>();
-    UndirectedGraph<T> gComplement = g.getComplement();
-    IncMaxCliqueSolver<T> indSetSolver = new IncMaxCliqueSolver<T>();
+  private ArrayList<UndirectedGraph<Integer>> getIndependentSetPartition(UndirectedGraph<Integer> g, ArrayList<Integer> indSetVertexOrder) {
+    ArrayList<UndirectedGraph<Integer>> indSets = new ArrayList<UndirectedGraph<Integer>>();
+    UndirectedGraph<Integer> gComplement = g.getComplement();
+    IncMaxCliqueSolver indSetSolver = new IncMaxCliqueSolver();
     while(gComplement.size() > 1) {
       //System.out.println("gComplement.size(): " +gComplement.size());
       //System.out.println("gComplement.density(): " +gComplement.density());
       //System.out.println("RUNNING MAX CLIQUE ON COMPLEMENT GRAPH");
       //System.out.println("VERTEX ORDER: " + indSetVertexOrder);
       //System.out.println("GRAPH: \n" + gComplement);
-      UndirectedGraph<T> indSetComplementNodes = indSetSolver.findMaxClique(gComplement, indSetVertexOrder);
+      UndirectedGraph<Integer> indSetComplementNodes = indSetSolver.findMaxClique(gComplement, indSetVertexOrder);
       if(numVOCalls == 100) {
         //throw new RuntimeException("VO debugging, QUIT VO Calls");
       }
-      for(Node<T> n : indSetComplementNodes) {
+      for(Node<Integer> n : indSetComplementNodes) {
         gComplement.removeVertex(n.get());
         indSetVertexOrder.remove(n.get());
       }
@@ -350,20 +347,20 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
 
   // Combining MaxSAT Reasoning and Incremental Upper Bound for the Maximum Clique Problem
   // Li, Fang, Xu 2013
-  private ArrayList<T> vertexOrdering(UndirectedGraph<T> g) {
+  private ArrayList<Integer> vertexOrdering(UndirectedGraph<Integer> g) {
     numVOCalls++;
     // System.out.println("#####\nvertexOrdering call # " + numVOCalls + ", g.density(): " + g.density());
     // Build the Degeneracy Vertex Ordering
-    ArrayList<T> vertexOrdering = g.degeneracyOrdering();
+    ArrayList<Integer> vertexOrdering = g.degeneracyOrdering();
     // System.out.println("after building degeneracy ordering, g.density(): " + g.density());
 
-    ArrayList<UndirectedGraph<T>> indSets = new ArrayList<UndirectedGraph<T>>();
+    ArrayList<UndirectedGraph<Integer>> indSets = new ArrayList<UndirectedGraph<Integer>>();
 
     if(g.density() < 0.70) { // if g is not dense
       // System.out.println("graph sparse, returning degeneracy vertex ordering");
       return vertexOrdering;
     } else {
-      ArrayList<T> indSetVertexOrder = new ArrayList<T>(vertexOrdering);
+      ArrayList<Integer> indSetVertexOrder = new ArrayList<Integer>(vertexOrdering);
       Collections.reverse(indSetVertexOrder);
       // System.out.println("graph dense, finding ind set partition");
       //System.out.println("IND SET VERTEX ORDER: " + indSetVertexOrder);
@@ -371,7 +368,7 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
 
       boolean isIrregular = false; //partition is irregular if there are >=2 indSets of size 1
       int numSingleElementSets = 0;
-      for(UndirectedGraph<T> indSet : indSets) {
+      for(UndirectedGraph<Integer> indSet : indSets) {
         if(indSet.size() == 1) {
           numSingleElementSets++;
         }
@@ -383,23 +380,23 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
         // System.out.println("Ind Set Partition is irregular, returning degeneracy ordering");
         return vertexOrdering;
       } else { //return MaxIndSet vertex ordering
-        vertexOrdering = new ArrayList<T>(g.getElements());
-        Collections.sort(vertexOrdering, new MaxIndSetComparator<T>(g, indSets));
+        vertexOrdering = new ArrayList<Integer>(g.getElements());
+        Collections.sort(vertexOrdering, new MaxIndSetComparator(g, indSets));
         // System.out.println("Ind Set Parition is regular, returning Ind Set Ordering");
         return vertexOrdering;
       }
     }
   }
-  private class MaxIndSetComparator<T extends Comparable<? super T>> implements Comparator<T> {
-    private ArrayList<UndirectedGraph<T>> indSetPartition;
-    private UndirectedGraph<T> g;
+  private class MaxIndSetComparator implements Comparator<Integer> {
+    private ArrayList<UndirectedGraph<Integer>> indSetPartition;
+    private UndirectedGraph<Integer> g;
 
     /**
     * This constructor takes in an ArrayList of the Independent Sets.
     * @param partition the list of Independent Sets in the IND Set partition of a graph
     * @since 0.7.0
     */
-    public MaxIndSetComparator(UndirectedGraph<T> g, ArrayList<UndirectedGraph<T>> partition) {
+    public MaxIndSetComparator(UndirectedGraph<Integer> g, ArrayList<UndirectedGraph<Integer>> partition) {
       this.indSetPartition = partition;
       this.g = g;
     }
@@ -413,9 +410,9 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     * @return {@literal -1 if n1 < n2, 0 if same, 1 if n1 > n2}
     * @since 0.7.0
     */
-    public int compare(T e1, T e2) {
-      Node<T> n1 = this.g.getNode(e1);
-      Node<T> n2 = this.g.getNode(e2);
+    public int compare(Integer e1, Integer e2) {
+      Node<Integer> n1 = this.g.getNode(e1);
+      Node<Integer> n2 = this.g.getNode(e2);
       int n1_index = getIndSetPartitionIndex(e1);
       int n2_index = getIndSetPartitionIndex(e2);
       if(n1_index > n2_index) {
@@ -433,9 +430,9 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
       }
     }
 
-    private int getIndSetPartitionIndex(T e) {
+    private int getIndSetPartitionIndex(Integer e) {
       for(int i = 0; i < indSetPartition.size(); i++) {
-        UndirectedGraph<T> g = indSetPartition.get(i);
+        UndirectedGraph<Integer> g = indSetPartition.get(i);
         if(g.contains(e)) {
           return i;
         }
@@ -454,9 +451,9 @@ public class IncMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliq
     return min;
   }
 
-  private LinkedList<Node<T>> intersection(Collection<Node<T>> a, Collection<Node<T>> b) {
-    LinkedList<Node<T>> intersection = new LinkedList<Node<T>>();
-    for(Node<T> node : a) {
+  private LinkedList<Node<Integer>> intersection(Collection<Node<Integer>> a, Collection<Node<Integer>> b) {
+    LinkedList<Node<Integer>> intersection = new LinkedList<Node<Integer>>();
+    for(Node<Integer> node : a) {
       if(b.contains(node)) {
         intersection.add(node);
       }

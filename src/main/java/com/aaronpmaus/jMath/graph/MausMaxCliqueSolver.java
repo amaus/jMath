@@ -16,7 +16,7 @@ import java.util.Date;
 * @version 0.14.0
 * @since 0.7.0
 */
-public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCliqueSolver<T> {
+public class MausMaxCliqueSolver extends MaxCliqueSolver<Integer> {
   public static long numRecursiveCalls = -1;
   private static int maxPrintLevel = -1;
   private boolean verbose = false;
@@ -37,7 +37,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @return an UndirectedGraph that is the Maximum Clique
   * @since 0.7.0
   */
-  public UndirectedGraph<T> findMaxClique(UndirectedGraph<T> graph) {
+  public UndirectedGraph<Integer> findMaxClique(UndirectedGraph<Integer> graph) {
     maxSatQuit = 0;
     long fullStartTime = new Date().getTime();
     // the plus 1 is necessary. Imagine a trivial example where
@@ -54,14 +54,14 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     // size N will be the last search made.
     if(verbose) System.out.println("Original Graph Size: " + graph.size());
 
-    //ArrayList<ArrayList<Node<T>>> indSets = indSetUB(graph.getNodes());
+    //ArrayList<ArrayList<Node<Integer>>> indSets = indSetUB(graph.getNodes());
     //int indSetUB = indSetUB(graph.getNodes());
-    int maxSatUB = new MaxSatUB<T>(graph).estimateCardinality();
+    int maxSatUB = new MaxSatUB(graph).estimateCardinality();
     int high = maxSatUB + 1;
     //int high = maxPossibleCliqueNum(graph) + 1;
     int low = 0;
-    UndirectedGraph<T> clique = null;
-    UndirectedGraph<T> maxClique = null;
+    UndirectedGraph<Integer> clique = null;
+    UndirectedGraph<Integer> maxClique = null;
     while(high - low > 1) {
       int k = (high + low) / 2;
       long startTime = new Date().getTime();
@@ -72,14 +72,14 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       // last parameter is a copy of the vertex ordering so that we don't have to
       // recalculate it every time we want to call findClique. the copy passed in
       // will be modified by findClique
-      clique = findClique(new UndirectedGraph<T>(graph), k, 1);
+      clique = findClique(new UndirectedGraph<Integer>(graph), k, 1);
       long endTime = new Date().getTime();
       if(clique != null) { // clique found
         if(verbose) System.out.println("##### Found a clique of size " + clique.size() +" #####");
         if(verbose) System.out.print(clique);
         if(verbose) {
           String cliqueStr = "CLIQUE: ";
-          for(Node<T> node : clique) {
+          for(Node<Integer> node : clique) {
             cliqueStr += node.get() + " ";
           }
           System.out.println(cliqueStr);
@@ -120,12 +120,12 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @param graph the graph to search for cliques in
   * @param k the size of the clique to search for
   * @param level track the level of recursion
-  * @return an UndirectedGraph{@literal <T>} that is a clique or null if no clique
+  * @return an UndirectedGraph{@literal <Integer>} that is a clique or null if no clique
   * of size k exists.
   * @since 0.7.0
   */
-  public UndirectedGraph<T> findClique(UndirectedGraph<T> graph, int k, int level) {
-    int maxSatUB = new MaxSatUB<T>(graph).estimateCardinality();
+  public UndirectedGraph<Integer> findClique(UndirectedGraph<Integer> graph, int k, int level) {
+    int maxSatUB = new MaxSatUB(graph).estimateCardinality();
     if(maxSatUB < k) {
       //System.out.printf("QUITING BECAUSE MAXSATUB is less than k, %d < %d\n", maxSatUB, k);
       maxSatQuit++;
@@ -133,7 +133,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     }
     while(graph.size() >= k) {
       if(graph.isClique()) {
-        return new UndirectedGraph<T>(graph);
+        return new UndirectedGraph<Integer>(graph);
       }
       //if(maxPossibleCliqueNum(graph) < k) {
       //return null;
@@ -143,14 +143,14 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
         levelPrint(level, "graph of size "+graph.size() + " - level " + level + " ");
         levelPrint(level, "density: " + graph.density());
       }
-      ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(graph.getNodes());
-      //ArrayList<Node<T>> nodes = degeneracyOrdering(graph);
+      ArrayList<Node<Integer>> nodes = new ArrayList<Node<Integer>>(graph.getNodes());
+      //ArrayList<Node<Integer>> nodes = degeneracyOrdering(graph);
       Collections.sort(nodes); // O(N*log(N)) operation. faster if I let each
       // for loop go through every node? Then the
       // whole while loop is O(3N) looks at nodes.
-      ArrayList<Node<T>> removedNodes = new ArrayList<Node<T>>();
+      ArrayList<Node<Integer>> removedNodes = new ArrayList<Node<Integer>>();
       boolean nodesRemoved = false;
-      for(Node<T> node : nodes) {
+      for(Node<Integer> node : nodes) {
         if(node.numNeighbors() >= k-1) {
           break;
         }
@@ -171,17 +171,17 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           nodesRemoved = true;
         }
       } // end of for loop for node with too few neighbors to be in clique
-      for(Node<T> node : removedNodes) {
+      for(Node<Integer> node : removedNodes) {
         nodes.remove(node);
       }
       if(nodesRemoved) {
         continue;
       }
 
-      Node<T> node = nodes.get(0); // the node with the lowest # neighbors
+      Node<Integer> node = nodes.get(0); // the node with the lowest # neighbors
       //System.out.println("Looking at neighbohood of Node: " + node.get());
       if(node.numNeighbors() == k-1) {
-        //UndirectedGraph<T> neighborhood = null;
+        //UndirectedGraph<Integer> neighborhood = null;
         //neighborhood = graph.getNeighborhood(node.get());
         if(isClique(node.getNodeAndNeighbors())) {
           return graph.getNeighborhood(node.get());
@@ -201,8 +201,8 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       // call to keep searching.
       node = nodes.get(0); // the first node in the list is the node with the lowest # neighbors.
       if(node.numNeighbors() > k-1) {
-        //UndirectedGraph<T> neighbors = graph.getNeighborhood(node.get());
-        List<Node<T>> neighbors = node.getNodeAndNeighbors();
+        //UndirectedGraph<Integer> neighbors = graph.getNeighborhood(node.get());
+        List<Node<Integer>> neighbors = node.getNodeAndNeighbors();
         if(level <= maxPrintLevel) {
           levelPrint(level, "# looking for clique of size " + k);
           levelPrint(level, "# in node: "+node.get() +" 's neighborhood.");
@@ -210,11 +210,11 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
           //levelPrint(level, "# density of its neighborhood: " + neighborhood.density());
         }
 
-        UndirectedGraph<T> clique = null;
+        UndirectedGraph<Integer> clique = null;
 
         //int maxPosCliqueNum = indSetUB(neighborhood);
-        //ArrayList<ArrayList<Node<T>>> indSets = indSetUB(neighbors.getNodes());
-        //int maxSatUB = new MaxSatUB<T>(neighbors, indSets).estimateCardinality();
+        //ArrayList<ArrayList<Node<Integer>>> indSets = indSetUB(neighbors.getNodes());
+        //int maxSatUB = new MaxSatUB(neighbors, indSets).estimateCardinality();
         //int maxPosCliqueNum = Math.min(indSets.size()-1, maxSatUB);
         int maxPosCliqueNum = indSetUB(neighbors);
         //System.out.println("MAX POS CLIQUE NUM: " + maxPosCliqueNum);
@@ -284,7 +284,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @deprecated indSetUB gives better bounds
   */
   @Deprecated
-  private int maxPossibleCliqueNum(UndirectedGraph<T> graph) {
+  private int maxPossibleCliqueNum(UndirectedGraph<Integer> graph) {
     int maxEdges = Collections.max(graph.getNodes()).numNeighbors();
     // if the node with the max edges has 3 edges, then those three
     // neighbors plus itself makes a subgraph of 4 nodes.
@@ -292,7 +292,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     boolean cont = true;
     while(cont) {
       int numPotentialMembers = 0;
-      for(Node<T> n : graph) {
+      for(Node<Integer> n : graph) {
         if(n.numNeighbors() + 1 >= k) {
           numPotentialMembers++;
         }
@@ -319,10 +319,10 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @deprecated runtime too great
   */
   @Deprecated
-  private int maxPossibleCliqueNumDeep(UndirectedGraph<T> graph) {
+  private int maxPossibleCliqueNumDeep(UndirectedGraph<Integer> graph) {
     int k = 0;
-    for(Node<T> node : graph) {
-      UndirectedGraph<T> neighborhood = graph.getNeighborhood(node.get());
+    for(Node<Integer> node : graph) {
+      UndirectedGraph<Integer> neighborhood = graph.getNeighborhood(node.get());
       int maxEdges = Collections.max(neighborhood.getNodes()).numNeighbors();
       // if the node with the max edges has 3 edges, then those three
       // neighbors plus itself makes a subgraph of 4 nodes.
@@ -330,7 +330,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       boolean cont = true;
       while(cont) {
         int numPotentialMembers = 0;
-        for(Node<T> n : neighborhood) {
+        for(Node<Integer> n : neighborhood) {
           if(n.numNeighbors() + 1 >= tempK) {
             numPotentialMembers++;
           }
@@ -348,24 +348,24 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     return k;
   }
 
-  private int indSetUB(UndirectedGraph<T> graph) {
+  private int indSetUB(UndirectedGraph<Integer> graph) {
     return indSetUB(graph.getNodes());
   }
 
-  private int indSetUB(Collection<Node<T>> nodes) {
+  private int indSetUB(Collection<Node<Integer>> nodes) {
     //System.out.println("## Calculating indSetUB");
     // get a list of nodes and sort them in descending order by degree
-    List<Node<T>> descendingDegreeNodes = new ArrayList<Node<T>>(nodes);
+    List<Node<Integer>> descendingDegreeNodes = new ArrayList<Node<Integer>>(nodes);
     Collections.sort(descendingDegreeNodes, Collections.reverseOrder());
     int maxColorNumber = 0;
     // initialize color sets
     // The index of the outer ArrayList is k and the inner arraylists hold all the nodes that belong
     // to that color k.
-    ArrayList<ArrayList<Node<T>>> colorSets = new ArrayList<ArrayList<Node<T>>>();
+    ArrayList<ArrayList<Node<Integer>>> colorSets = new ArrayList<ArrayList<Node<Integer>>>();
     // initialize the first two color sets (k = 0,1)
-    colorSets.add(new ArrayList<Node<T>>());
-    colorSets.add(new ArrayList<Node<T>>());
-    for(Node<T> node : descendingDegreeNodes) {
+    colorSets.add(new ArrayList<Node<Integer>>());
+    colorSets.add(new ArrayList<Node<Integer>>());
+    for(Node<Integer> node : descendingDegreeNodes) {
       int k = 0;
       // find the lowest k where neighbors and the set of nodes in colorSets[k] share no nodes
       // in common
@@ -375,7 +375,7 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
       if(k > maxColorNumber) {
         maxColorNumber = k;
         // initialize and add the next color set
-        colorSets.add(new ArrayList<Node<T>>());
+        colorSets.add(new ArrayList<Node<Integer>>());
       }
       colorSets.get(k).add(node);
 
@@ -393,12 +393,12 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @return the independent set if exists, null otherwise
   * @since 0.7.0
   */
-  public UndirectedGraph<T> findIndependentSetViaClique(UndirectedGraph<T> graph, int k) {
-    UndirectedGraph<T> complement = graph.getComplement();
-    UndirectedGraph<T> clique = findClique(new UndirectedGraph<T>(complement),k,1);
-    UndirectedGraph<T> independentSet = null;
+  public UndirectedGraph<Integer> findIndependentSetViaClique(UndirectedGraph<Integer> graph, int k) {
+    UndirectedGraph<Integer> complement = graph.getComplement();
+    UndirectedGraph<Integer> clique = findClique(new UndirectedGraph<Integer>(complement),k,1);
+    UndirectedGraph<Integer> independentSet = null;
     if(clique != null) {
-      independentSet = graph.subset(clique.getElements()); //new UndirectedGraph<T>(nodes);
+      independentSet = graph.subset(clique.getElements()); //new UndirectedGraph<Integer>(nodes);
     }
     return independentSet;
   }
@@ -412,26 +412,26 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
   * @return the vertex cover if exists, null otherwise
   * @since 0.7.0
   */
-  public UndirectedGraph<T> findVertexCoverViaClique(UndirectedGraph<T> graph, int k) {
-    UndirectedGraph<T> independentSet = findIndependentSetViaClique(graph, graph.size() - k);
-    UndirectedGraph<T> vertexCover = null;
+  public UndirectedGraph<Integer> findVertexCoverViaClique(UndirectedGraph<Integer> graph, int k) {
+    UndirectedGraph<Integer> independentSet = findIndependentSetViaClique(graph, graph.size() - k);
+    UndirectedGraph<Integer> vertexCover = null;
     if(independentSet != null) {
-      List<T> cliqueElements = graph.getElements();
-      for(T independentSetElement : independentSet.getElements()) {
+      List<Integer> cliqueElements = graph.getElements();
+      for(Integer independentSetElement : independentSet.getElements()) {
         cliqueElements.remove(independentSetElement);
       }
-      vertexCover = graph.subset(cliqueElements); //new UndirectedGraph<T>(nodes);
+      vertexCover = graph.subset(cliqueElements); //new UndirectedGraph<Integer>(nodes);
     }
     return vertexCover;
   }
 
-  private ArrayList<Node<T>> degeneracyOrdering(UndirectedGraph<T> graph) {
-    ArrayList<Node<T>> vertexOrdering = new ArrayList<Node<T>>(graph.size());
+  private ArrayList<Node<Integer>> degeneracyOrdering(UndirectedGraph<Integer> graph) {
+    ArrayList<Node<Integer>> vertexOrdering = new ArrayList<Node<Integer>>(graph.size());
     // Build the Degeneracy Vertex Ordering
-    UndirectedGraph<T> temp = new UndirectedGraph<T>(graph);
+    UndirectedGraph<Integer> temp = new UndirectedGraph<Integer>(graph);
     while(temp.size() > 0) {
       // get the node with the smallest degree in temp
-      Node<T> theSmallestVertex = Collections.min(temp.getNodes());
+      Node<Integer> theSmallestVertex = Collections.min(temp.getNodes());
       // add the original node reference to vertexOrdering
       vertexOrdering.add(theSmallestVertex);
       // remove the node from temp
@@ -440,9 +440,9 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     return vertexOrdering;
   }
 
-  private LinkedList<Node<T>> intersection(Collection<Node<T>> a, Collection<Node<T>> b) {
-    LinkedList<Node<T>> intersection = new LinkedList<Node<T>>();
-    for(Node<T> node : a) {
+  private LinkedList<Node<Integer>> intersection(Collection<Node<Integer>> a, Collection<Node<Integer>> b) {
+    LinkedList<Node<Integer>> intersection = new LinkedList<Node<Integer>>();
+    for(Node<Integer> node : a) {
       if(b.contains(node)) {
         intersection.add(node);
       }
@@ -450,9 +450,9 @@ public class MausMaxCliqueSolver<T extends Comparable<? super T>> extends MaxCli
     return intersection;
   }
 
-  private boolean isClique(List<Node<T>> nodes) {
-    for(Node<T> a : nodes) {
-      for(Node<T> b : nodes) {
+  private boolean isClique(List<Node<Integer>> nodes) {
+    for(Node<Integer> a : nodes) {
+      for(Node<Integer> b : nodes) {
         if(a.equals(b)) {
           continue;
         }
