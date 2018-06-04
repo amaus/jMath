@@ -113,6 +113,9 @@ public class FindMaxClique{
         UndirectedGraph<Integer> maxClique = maxCliqueTool.findMaxClique(graph);
         long cliqueEnd = new Date().getTime();
         printCliqueResults(maxClique, (cliqueEnd - cliqueStart));
+        System.out.printf("Total Time Running MaxSatUB: %d\n", MaxSatUB.totalTimeRunning);
+        System.out.printf("Total Time constructing Encodings: %d\n", MaxSatUB.timeConstructingEncodings);
+        System.out.printf("Max Individual Runtime for MaxSatUB: %d\n", MaxSatUB.maxRuntime);
       }
 
       if(runMaus) {
@@ -122,6 +125,9 @@ public class FindMaxClique{
         UndirectedGraph<Integer> maxClique = maxCliqueTool.findMaxClique(graph);
         long cliqueEnd = new Date().getTime();
         printCliqueResults(maxClique, (cliqueEnd - cliqueStart));
+        System.out.printf("Total Time Running MaxSatUB: %d\n", MaxSatUB.totalTimeRunning);
+        System.out.printf("Total Time constructing Encodings: %d\n", MaxSatUB.timeConstructingEncodings);
+        System.out.printf("Max Individual Runtime for MaxSatUB: %d\n", MaxSatUB.maxRuntime);
       }
     }
   }

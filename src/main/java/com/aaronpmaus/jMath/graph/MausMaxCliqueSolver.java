@@ -21,6 +21,7 @@ public class MausMaxCliqueSolver extends MaxCliqueSolver<Integer> {
   private static int maxPrintLevel = -1;
   private boolean verbose = false;
   private int maxSatQuit;
+  private MaxSatUB satSolver;
 
   /**
   * Find and return a Maximum Clique of an UndirectedGraph.
@@ -56,8 +57,11 @@ public class MausMaxCliqueSolver extends MaxCliqueSolver<Integer> {
 
     //ArrayList<ArrayList<Node<Integer>>> indSets = indSetUB(graph.getNodes());
     //int indSetUB = indSetUB(graph.getNodes());
-    int maxSatUB = new MaxSatUB(graph).estimateCardinality();
+    satSolver = new MaxSatUB(graph);
+    int maxSatUB = satSolver.estimateCardinality(graph);
+    System.out.printf("Time for first MaxSatUB run: %d\n", MaxSatUB.maxRuntime);
     int high = maxSatUB + 1;
+    //int high = indSetUB + 1;
     //int high = maxPossibleCliqueNum(graph) + 1;
     int low = 0;
     UndirectedGraph<Integer> clique = null;
@@ -125,7 +129,7 @@ public class MausMaxCliqueSolver extends MaxCliqueSolver<Integer> {
   * @since 0.7.0
   */
   public UndirectedGraph<Integer> findClique(UndirectedGraph<Integer> graph, int k, int level) {
-    int maxSatUB = new MaxSatUB(graph).estimateCardinality();
+    int maxSatUB = satSolver.estimateCardinality(graph);
     if(maxSatUB < k) {
       //System.out.printf("QUITING BECAUSE MAXSATUB is less than k, %d < %d\n", maxSatUB, k);
       maxSatQuit++;

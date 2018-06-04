@@ -93,7 +93,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.14.0
   */
   public Graph<T> subset(List<T> elements) {
-    LinkedList<Node<T>> nodes = new LinkedList<Node<T>>();
+    ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(elements.size());
     for(T element : elements) {
       if(this.contains(element)) {
         nodes.add(this.getNode(element));
@@ -287,7 +287,7 @@ public class Graph<T extends Comparable<? super T>> implements Iterable<Node<T>>
   * @since 0.14.0
   */
   public List<T> getElements() {
-    LinkedList<T> elements = new LinkedList<T>();
+    ArrayList<T> elements = new ArrayList<T>(this.size());
     for(Node<T> node : this) {
       elements.add(node.get());
     }

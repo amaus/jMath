@@ -95,7 +95,7 @@ public class TestCliqueAlgorithms {
     set.add(maxSatGraph.getNode(4));
     set.add(maxSatGraph.getNode(6));
     colorSets.add(set);
-    int maxSatUB = new MaxSatUB(maxSatGraph).estimateCardinality();
+    int maxSatUB = new MaxSatUB(maxSatGraph).estimateCardinality(maxSatGraph);
 
   }
 

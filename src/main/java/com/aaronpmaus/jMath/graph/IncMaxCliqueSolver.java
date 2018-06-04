@@ -24,6 +24,7 @@ public class IncMaxCliqueSolver extends MaxCliqueSolver<Integer> {
   public static long numCalls = 0;
   public static long numVOCalls = 0;
   private ArrayList<ArrayList<Node<Integer>>> colorSets;
+  private MaxSatUB satSolver;
 
   /**
   * {@inheritDoc}
@@ -49,6 +50,7 @@ public class IncMaxCliqueSolver extends MaxCliqueSolver<Integer> {
       int ubValue = incUB(i, graph);
       vertexUB.put(vertexOrdering.get(i), ubValue);
     }
+    satSolver = new MaxSatUB(graph);
     //printUB();
     List<Integer> elements = incMaxClique(graph, new LinkedList<Integer>(), new LinkedList<Integer>());
     UndirectedGraph<Integer> clique = graph.subset(elements);
@@ -229,7 +231,7 @@ public class IncMaxCliqueSolver extends MaxCliqueSolver<Integer> {
     //printUB();
     //ArrayList<ArrayList<Node<Integer>>> partition = indSetUB(g, cMax.size(), c.size());
     int indSetUpperBound = indSetUB(g, cMax.size(), c.size());
-    //int maxSatUB = new MaxSatUB(g, colorSets).estimateCardinality();
+    int maxSatUB = satSolver.estimateCardinality(g, colorSets);
     //System.out.println("Calling MaxSatUB, Graph:\n" + g);
     vertexUB.put(smallestVertex, min(vertexUB.get(smallestVertex),
                                      incUB(smallestVertexIndex, g),
