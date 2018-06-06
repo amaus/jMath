@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
-## [0.14.0]
+## [0.14.0] - 2018-06-06
 NOTE: Due to changes in Graph and UndirectedGraph, this version is not
 backwards compatible with 0.13.0 and before.
 ### Added
@@ -44,6 +44,9 @@ backwards compatible with 0.13.0 and before.
   - shortestPath()
   - getNeighbors()
   - getNeighborhood()
+### Modified
+- MaxClique Solvers and MaxSatUB. Still in progress. Goal to complete
+  implementation of MaxSatUB and improve efficiency of Max Clique Solvers.
 
 ## [0.13.0] - 2018-04-14
 ### Added
