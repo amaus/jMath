@@ -31,7 +31,7 @@ public class Edge<T extends Comparable<? super T>> implements Comparable<Undirec
   * @param end the "to" node of the edge
   * @since 0.1.0
   */
-  public Edge(Node<T> start, Node<T> end){
+  public Edge(Node<T> start, Node<T> end) {
     this(start,end,1.0);
   }
 
@@ -42,7 +42,7 @@ public class Edge<T extends Comparable<? super T>> implements Comparable<Undirec
   * @param weight the weight of this edge
   * @since 0.1.0
   */
-  public Edge(Node<T> start, Node<T> end, double weight){
+  public Edge(Node<T> start, Node<T> end, double weight) {
     this.start = start;
     this.end = end;
     this.weight = weight;
@@ -53,7 +53,7 @@ public class Edge<T extends Comparable<? super T>> implements Comparable<Undirec
   * @return the start Node{@literal <T>}
   * @since 0.1.0
   */
-  public Node<T> getStart(){
+  public Node<T> getStart() {
     return this.start;
   }
 
@@ -62,7 +62,7 @@ public class Edge<T extends Comparable<? super T>> implements Comparable<Undirec
   * @return the end Node{@literal <T>}
   * @since 0.1.0
   */
-  public Node<T> getEnd(){
+  public Node<T> getEnd() {
     return this.end;
   }
 
@@ -71,12 +71,12 @@ public class Edge<T extends Comparable<? super T>> implements Comparable<Undirec
   * @return the weight
   * @since 0.1.0
   */
-  public double getWeight(){
+  public double getWeight() {
     return this.weight;
   }
 
   @Override
-  public String toString(){
+  public String toString() {
     return String.format("(%s, %s)", getStart().get(), getEnd().get());
   }
 
@@ -102,7 +102,7 @@ public class Edge<T extends Comparable<? super T>> implements Comparable<Undirec
   * @since 0.6.0
   */
   @Override
-  public int hashCode(){
+  public int hashCode() {
     String str = String.format("%d%d",getStart().hashCode(),getEnd().hashCode());
     return Integer.parseInt(str);
   }
@@ -117,12 +117,12 @@ public class Edge<T extends Comparable<? super T>> implements Comparable<Undirec
   */
   @Override
   @SuppressWarnings("unchecked")
-  public boolean equals(Object obj){
+  public boolean equals(Object obj) {
     Edge<T> other;
-    if(this.getClass().isInstance(obj)){
+    if(this.getClass().isInstance(obj)) {
       other = this.getClass().cast(obj);
       if(getStart().equals(other.getStart())
-      && getEnd().equals(other.getEnd())){
+      && getEnd().equals(other.getEnd())) {
         return true;
       }
     }

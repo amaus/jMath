@@ -1,4 +1,5 @@
-package com.aaronpmaus.jMath.graph;
+package com.aaronpmaus.jMath.io;
+
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -8,9 +9,11 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.FileInputStream;
 
+import com.aaronpmaus.jMath.graph.UndirectedGraph;
+import com.aaronpmaus.jMath.graph.Edge;
+
 /**
-* This class provides statix methods to read and write graphs to and from DIMACS files.
-* @author Aaron Maus aaron@aaronpmaus.com
+* This class provides static methods to read and write graphs to and from DIMACS files.
 * @version 0.10.0
 * @since 0.1.0
 */
@@ -28,10 +31,10 @@ public class GraphIO{
     int numNodes = 0;
     int numEdges = 0;
     UndirectedGraph<Integer> graph;
-    while(fileReader.hasNextLine()){
+    while(fileReader.hasNextLine()) {
       String line = fileReader.nextLine();
       String[] tokens = line.split(" ");
-      if(tokens[0].equals("p")){
+      if(tokens[0].equals("p")) {
         numNodes = Integer.parseInt(tokens[2]);
         numEdges = Integer.parseInt(tokens[3]);
         break;
@@ -39,19 +42,16 @@ public class GraphIO{
     }
     graph = new UndirectedGraph<Integer>(numNodes);
     graph.setGraphFileName(graphFileName);
-    while(fileReader.hasNextLine()){
+    while(fileReader.hasNextLine()) {
       String line = fileReader.nextLine();
       String[] tokens = line.split(" ");
       tokens[0] = tokens[0].toLowerCase();
       // e for edge and a for arc. both can be used to indicate an edge in the graph
-      if(tokens[0].equals("e") || tokens[0].equals("a")){
-        if(tokens.length == 3){
-          graph.addEdge(new Node<Integer>(new Integer(tokens[1])),
-                        new Node<Integer>(new Integer(tokens[2])));
-        } else if (tokens.length == 4){
-          graph.addEdge(new Node<Integer>(new Integer(tokens[1])),
-                        new Node<Integer>(new Integer(tokens[2])),
-                        new Double(tokens[3]));
+      if(tokens[0].equals("e") || tokens[0].equals("a")) {
+        if(tokens.length == 3) {
+          graph.addEdge(new Integer(tokens[1]), new Integer(tokens[2]));
+        } else if (tokens.length == 4) {
+          graph.addEdge(new Integer(tokens[1]), new Integer(tokens[2]), new Double(tokens[3]));
         }
       }
     }
@@ -91,7 +91,7 @@ public class GraphIO{
     out.write(String.format("c edges density      : %.6f\n", theGraph.density()));
     out.write(String.format("p col %d %d\n", theGraph.size(), theGraph.numEdges()));
 
-    for(Edge<Integer> e : theGraph.getEdges()){
+    for(Edge<Integer> e : theGraph.getEdges()) {
       out.write(String.format("e %d %d\n",e.getStart().get(), e.getEnd().get()));
     }
     out.close();

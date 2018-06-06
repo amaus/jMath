@@ -19,7 +19,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Security
 [None]
 
-## [0.13.0]
+## [0.14.0] - 2018-06-06
+NOTE: Due to changes in Graph and UndirectedGraph, this version is not
+backwards compatible with 0.13.0 and before.
+### Added
+- Package io with:
+  - CommandLineParser (new class)
+  - GraphIO (moved from graph package)
+- method getElements() in Graph
+### Changed
+- Bounding criteria in MausMaxCliqueSolver, include indSetUB from
+  IncMaxCliqueSolver
+- Major changes to Graph and UndirectedGraph. Restricting client access to
+  Nodes. A Graph should be viewed as a set of elements and the connections
+  between them.
+- Changed usage of the word Node in method names and javadocs to Vertex. Vertex
+  is more intuitive for a Graph.
+- Methods that require Nodes as parameters are being deprecated and removed in
+  favor of versions of those methods that take elements instead.
+  - addEdge()
+  - removeEdge()
+  - addNode()
+  - removeNode()
+  - shortestPath()
+  - getNeighbors()
+  - getNeighborhood()
+### Modified
+- MaxClique Solvers and MaxSatUB. Still in progress. Goal to complete
+  implementation of MaxSatUB and improve efficiency of Max Clique Solvers.
+
+## [0.13.0] - 2018-04-14
 ### Added
 - Add Depth First Search to Graph and junit test to UndirectedGraph tester
 ### Fixed

@@ -10,8 +10,10 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 
 import com.aaronpmaus.jMath.graph.*;
+import com.aaronpmaus.jMath.io.GraphIO;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 
 // @Test flags a method as a test method.
 // @Before indicates that a method will be run before every
@@ -25,41 +27,42 @@ import java.io.InputStream;
 
 public class TestCliqueAlgorithms {
   private UndirectedGraph<Integer> example;
+  private UndirectedGraph<Integer> maxSatGraph;
   private UndirectedGraph<Integer> clique;
   private MaxCliqueSolver<Integer> cliqueTool;
 
   @Before
-  public void setUp(){
+  public void setUp() {
     String fileName = "example.dimacs";
     InputStream stream = TestUndirectedGraph.class.getResourceAsStream(fileName);
     example = GraphIO.readFromDimacsFile(stream, fileName);
   }
 
   @Test
-  public void testIncMaxCliqueAdapter(){
+  public void testIncMaxCliqueAdapter() {
     cliqueTool = new IncMaxCliqueAdapter();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(example);
     verifyClique(clique);
   }
 
   @Test
-  public void testIncMaxCliqueSolver(){
-    cliqueTool = new IncMaxCliqueSolver<Integer>();
+  public void testIncMaxCliqueSolver() {
+    cliqueTool = new IncMaxCliqueSolver();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(example);
     verifyClique(clique);
   }
 
   @Test
-  public void testMausMaxCliqueSolver(){
-    cliqueTool = new MausMaxCliqueSolver<Integer>();
+  public void testMausMaxCliqueSolver() {
+    cliqueTool = new MausMaxCliqueSolver();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(example);
     verifyClique(clique);
   }
 
   @Test
-  public void testIncMaxCliqueAdapterOnGraphOfSizeOne(){
+  public void testIncMaxCliqueAdapterOnGraphOfSizeOne() {
     UndirectedGraph<Integer> graph = new UndirectedGraph<Integer>();
-    graph.addNode(new Integer(1));
+    graph.addVertex(new Integer(1));
     cliqueTool = new IncMaxCliqueAdapter();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(graph);
     assertTrue(clique.size() == 1);
@@ -67,14 +70,36 @@ public class TestCliqueAlgorithms {
   }
 
   @Test
-  public void testIncMaxCliqueAdapterOnEmptyGraph(){
+  public void testIncMaxCliqueAdapterOnEmptyGraph() {
     UndirectedGraph<Integer> graph = new UndirectedGraph<Integer>();
     cliqueTool = new IncMaxCliqueAdapter();
     UndirectedGraph<Integer> clique = cliqueTool.findMaxClique(graph);
     assertTrue(clique.size() == 0);
   }
 
-  private void verifyClique(UndirectedGraph<Integer> clique){
+  @Test
+  public void testMaxSatUB() {
+    String fileName = "maxSatGraph.dimacs";
+    InputStream stream = TestUndirectedGraph.class.getResourceAsStream(fileName);
+    maxSatGraph = GraphIO.readFromDimacsFile(stream, fileName);
+    ArrayList<ArrayList<Node<Integer>>> colorSets = new ArrayList<ArrayList<Node<Integer>>>();
+    ArrayList<Node<Integer>> set = new ArrayList<Node<Integer>>();
+    set.add(maxSatGraph.getNode(5));
+    colorSets.add(set);
+    set = new ArrayList<Node<Integer>>();
+    set.add(maxSatGraph.getNode(2));
+    set.add(maxSatGraph.getNode(3));
+    colorSets.add(set);
+    set = new ArrayList<Node<Integer>>();
+    set.add(maxSatGraph.getNode(1));
+    set.add(maxSatGraph.getNode(4));
+    set.add(maxSatGraph.getNode(6));
+    colorSets.add(set);
+    int maxSatUB = new MaxSatUB(maxSatGraph).estimateCardinality(maxSatGraph);
+
+  }
+
+  private void verifyClique(UndirectedGraph<Integer> clique) {
     assertTrue(clique.contains(4));
     assertTrue(clique.contains(5));
     assertTrue(clique.contains(6));

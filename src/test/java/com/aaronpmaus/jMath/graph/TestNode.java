@@ -28,7 +28,7 @@ public class TestNode{
   private Node<Integer> n6;
 
   @Before
-  public void setUp(){
+  public void setUp() {
     n1 = new Node<Integer>(1);
     n2 = new Node<Integer>(2);
     n3 = new Node<Integer>(3);
@@ -41,7 +41,7 @@ public class TestNode{
   }
 
   @Test
-  public void testNodeConstruction(){
+  public void testNodeConstruction() {
     n1 = new Node<Integer>(1);
     n2 = new Node<Integer>(2);
     n3 = new Node<Integer>(3);
@@ -62,24 +62,10 @@ public class TestNode{
   }
 
   @Test
-  public void testHashCode(){
+  public void testHashCode() {
     assertEquals(n1.hashCode(), 1);
     assertEquals(n2.hashCode(), 2);
     assertEquals(n3.hashCode(), 3);
   }
 
-  @Test
-  public void testGetNeighbors(){
-    Collection<Node<Integer>> neighbors = n4.getNeighbors();
-    assertEquals(3, neighbors.size());
-    neighbors.remove(n1);
-    assertEquals(3, n4.numNeighbors());
-    assertTrue(n4.hasNeighbor(n1));
-
-    neighbors.add(n5);
-    neighbors.add(n6);
-    assertEquals(3, n4.numNeighbors());
-    assertFalse(n4.hasNeighbor(n5));
-    assertFalse(n4.hasNeighbor(n6));
-  }
 }

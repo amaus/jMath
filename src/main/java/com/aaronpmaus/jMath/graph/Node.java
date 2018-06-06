@@ -1,6 +1,8 @@
 package com.aaronpmaus.jMath.graph;
 import java.util.LinkedHashMap;
 import java.util.Collection;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.ArrayList;
 import java.lang.ClassCastException;
 
@@ -15,26 +17,33 @@ import java.lang.ClassCastException;
 * @since 0.1.0
 */
 public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>>{
-  private T obj;
+  private T element;
   // the key is the node at the end of the edge
-  private LinkedHashMap<Node<T>, Edge<T>> neighbors;
+  private LinkedHashMap<Node<T>, Edge<T>> edges;
 
   /**
   * Constructor for a Node.
-  * @param obj the object that this node holds
+  * @param element the element that this node holds
   * @since 0.1.0
   */
-  public Node(T obj){
-    this.obj = obj;
-    this.neighbors = new LinkedHashMap<Node<T>,Edge<T>>();
+  public Node(T element) {
+    this.element = element;
+    this.edges = new LinkedHashMap<Node<T>,Edge<T>>();
+  }
+
+  protected Node(Node<T> other) {
+    this(other.get());
+    for(Node<T> neighbor : other.getNeighbors()) {
+      this.addNeighbor(neighbor, other.getEdgeWeight(neighbor));
+    }
   }
 
   /**
   * @return the number of neighbors of this node.
   * @since 0.1.0
   */
-  public int numNeighbors(){
-    return this.neighbors.size();
+  public int numNeighbors() {
+    return this.edges.size();
   }
 
   /**
@@ -42,17 +51,17 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @return the Object that this Node wraps.
   * @since 0.4.0
   */
-  public T get(){
-    return this.obj;
+  public T get() {
+    return this.element;
   }
 
   /**
-  * Change the object that this node holds.
-  * @param obj the new object for this node to hold
+  * Change the element that this node holds.
+  * @param element the new element for this node to hold
   * @since 0.7.0
   */
-  public void set(T obj) {
-    this.obj = obj;
+  public void set(T element) {
+    this.element = element;
   }
 
   /**
@@ -60,8 +69,8 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param e the edge to add to this node
   * @since 0.1.0
   */
-  public void addEdge(Edge<T> e){
-    this.neighbors.put(e.getEnd(), e);
+  public void addEdge(Edge<T> e) {
+    this.edges.put(e.getEnd(), e);
   }
 
   /**
@@ -70,8 +79,8 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param n the node to add as a neighbor
   * @since 0.1.0
   */
-  public void addNeighbor(Node<T> n){
-    this.neighbors.put(n, new Edge<T>(this, n));
+  public void addNeighbor(Node<T> n) {
+    this.edges.put(n, new Edge<T>(this, n));
   }
 
   /**
@@ -81,8 +90,8 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param weight the weight of the edge from this node to n
   * @since 0.1.0
   */
-  public void addNeighbor(Node<T> n, double weight){
-    this.neighbors.put(n, new Edge<T>(this, n, weight));
+  public void addNeighbor(Node<T> n, double weight) {
+    this.edges.put(n, new Edge<T>(this, n, weight));
   }
 
   /**
@@ -91,8 +100,8 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @param node the node to remove
   * @since 0.1.0
   */
-  public void removeNeighbor(Node<T> node){
-    this.neighbors.remove(node);
+  public void removeNeighbor(Node<T> node) {
+    this.edges.remove(node);
   }
 
   /**
@@ -101,23 +110,22 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @return true if there is an edge to the node, false otherwise
   * @since 0.1.0
   */
-  public boolean hasNeighbor(Node<T> node){
-    return neighbors.containsKey(node);
+  public boolean hasNeighbor(Node<T> node) {
+    return edges.containsKey(node);
   }
 
   /**
   * Return the Edge from this node to neighbor
-  *
   * @param neighbor a node that is connected to this node by an edge
   * @return the Edge between this and neighbor
   * @throws IllegalArgumentException if neighbor is not a neighbor
   * @since 0.11.0
   */
-  public Edge<T> getEdge(Node<T> neighbor){
-    if(!hasNeighbor(neighbor)){
+  public Edge<T> getEdge(Node<T> neighbor) {
+    if(!hasNeighbor(neighbor)) {
       throw new IllegalArgumentException("Node passed to Node::getEdge() is not a neighbor.");
     }
-    return this.neighbors.get(neighbor);
+    return this.edges.get(neighbor);
   }
 
   /**
@@ -125,51 +133,47 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @return a {@code Collection<Edge<T>>} of edges
   * @since 0.1.0
   */
-  public Collection<Edge<T>> getEdges(){
-    return neighbors.values();
+  protected Collection<Edge<T>> getEdges() {
+    return edges.values();
   }
 
   /**
   * Return the neighbors of this node.
-  *
-  * Any changes to the collection (such as adding or removing nodes) will not affect this node.
-  * Any changes to the nodes in the collection however will affect the graph.
-  *
+  * <p>
+  * Modification of this Collection is UNSAFE. It will be reflected back on this Node.
   * @return a {@code Collection<Node<T>>} of all nodes that are connected
   *         to this node by an edge
   * @since 0.11.0
   */
-  public Collection<Node<T>> getNeighbors(){
-    return new ArrayList<Node<T>>(neighbors.keySet());
+  protected Collection<Node<T>> getNeighbors() {
+    //return new LinkedList<Node<T>>(edges.keySet());
+    return edges.keySet();
   }
 
   /**
   * Return the weight of the edge to the neighbor.
-  *
   * @param neighbor a node that is connected to this node by an edge
   * @return the weight of the edge
   * @throws IllegalArgumentException if neighbor is not a neighbor
   * @since 0.11.0
   */
-  public double getEdgeWeight(Node<T> neighbor){
-    if(!hasNeighbor(neighbor)){
+  public double getEdgeWeight(Node<T> neighbor) {
+    if(!hasNeighbor(neighbor)) {
       throw new IllegalArgumentException("Node passed to Node::getWeight() is not a neighbor.");
     }
     return getEdge(neighbor).getWeight();
   }
 
   /**
-  * Get ArrayList of Node and all its neighbors
-  * @return the ArrayList&lt;Node&lt;T&gt;&gt; containing this node
-  *         and all of its neighbors.
+  * Get a list of this Node and all its neighbors
+  * @return the {@literal List<Node<T>>} containing this node and all of its neighbors.
+  * @version 0.14.0
   * @since 0.2.0
   */
-  public ArrayList<Node<T>> getNodeAndNeighbors(){
+  public List<Node<T>> getNodeAndNeighbors() {
     ArrayList<Node<T>> list = new ArrayList<Node<T>>(numNeighbors()+1);
     list.add(this);
-    for(Node<T> node : getNeighbors()){
-      list.add(node);
-    }
+    list.addAll(edges.keySet());
     return list;
   }
 
@@ -180,8 +184,8 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @since 0.1.0
   */
   @Override
-  public int hashCode(){
-    return obj.hashCode();
+  public int hashCode() {
+    return element.hashCode();
   }
 
   /**
@@ -191,9 +195,9 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @since 0.1.0
   */
   @Override
-  public String toString(){
+  public String toString() {
     String str = this.get() + ": ";
-    for(Node<T> node : getNeighbors()){
+    for(Node<T> node : getNeighbors()) {
       str += node.get() + " ";
     }
     return str;
@@ -207,7 +211,7 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   * @since 0.1.0
   */
   @Override
-  public int compareTo(Node<T> n){
+  public int compareTo(Node<T> n) {
     return numNeighbors() - n.numNeighbors();
   }
 
@@ -220,15 +224,10 @@ public class Node<T extends Comparable<? super T>> implements Comparable<Node<T>
   */
   @Override
   @SuppressWarnings("unchecked")
-  public boolean equals(Object obj){
-    Node<T> n;
-    if(this.getClass().isInstance(obj)){
-      try{
-        n = this.getClass().cast(obj);
-        return get().equals(n.get());
-      }catch(ClassCastException e){
-        e.printStackTrace();
-      }
+  public boolean equals(Object obj) {
+    if(obj instanceof Node) {
+      Node<T> n = (Node<T>) obj;
+      return this.get().equals(n.get());
     }
     return false;
   }
